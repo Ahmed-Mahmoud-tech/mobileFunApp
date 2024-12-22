@@ -1,0 +1,7 @@
+remove card
+alert yes or yes and no style
+
+
+npx eas build -p android
+
+npx eas build --profile development --platform android
