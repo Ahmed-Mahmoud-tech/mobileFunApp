@@ -13,7 +13,6 @@ export const useLogoutFun = () => {
   const logoutFun = async () => {
     dispatch(changeRoute("LoginScreen"))
     router.push("/LoginScreen")
-    console.log("00000000000000000123")
     await removeData("token")
     await removeData("userId")
     dispatch(ChangeMenuStatus(true))

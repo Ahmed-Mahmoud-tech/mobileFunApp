@@ -4,8 +4,8 @@ import {
   TextInput,
   Button,
   Text,
-  Card,
   Chip,
+  Card,
   SegmentedButtons,
   useTheme,
 } from "react-native-paper"
@@ -18,8 +18,6 @@ const EmployeeProfileScreen = () => {
   const [gender, setGender] = useState("Male")
   const [editMode, setEditMode] = useState(false)
 
-  const [newOwnerEmail, setNewOwnerEmail] = useState("")
-  const [requestStatus, setRequestStatus] = useState("")
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   const handleBirthdateChange = (event, selectedDate) => {
@@ -32,29 +30,6 @@ const EmployeeProfileScreen = () => {
   const handleEditToggle = () => setEditMode(!editMode)
   const theme = useTheme()
   const styles = themeStyles(theme)
-
-  const handleSendRequest = () => {
-    if (!newOwnerEmail.trim()) {
-      Alert.alert("Validation", "Please enter an email.")
-      return
-    }
-    Alert.alert("Request Sent", `Request sent to ${newOwnerEmail}.`)
-    setRequestStatus("Pending")
-  }
-
-  const handleRemoveOwner = () => {
-    Alert.alert("Remove Owner", "Are you sure you want to remove the owner?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        onPress: () => {
-          setNewOwnerEmail("")
-          setRequestStatus("")
-          Alert.alert("Owner Removed")
-        },
-      },
-    ])
-  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -118,41 +93,6 @@ const EmployeeProfileScreen = () => {
             style={styles.button}
           >
             {editMode ? "Save" : "Edit"}
-          </Button>
-        </Card.Actions>
-      </Card>
-
-      {/* Owner Request Section */}
-      <Card style={styles.card}>
-        <Card.Title title="Owner Request" />
-        <Card.Content>
-          <TextInput
-            label="Owner's Email"
-            value={newOwnerEmail}
-            onChangeText={setNewOwnerEmail}
-            style={styles.input}
-            placeholder="Enter owner's email"
-          />
-          {requestStatus ? (
-            <Chip mode="outlined" style={styles.input}>
-              Request Status: {requestStatus}
-            </Chip>
-          ) : null}
-        </Card.Content>
-        <Card.Actions>
-          <Button
-            mode="contained"
-            onPress={handleSendRequest}
-            style={styles.button}
-          >
-            Send Request
-          </Button>
-          <Button
-            mode="contained"
-            onPress={handleRemoveOwner}
-            style={styles.button}
-          >
-            Remove Owner
           </Button>
         </Card.Actions>
       </Card>

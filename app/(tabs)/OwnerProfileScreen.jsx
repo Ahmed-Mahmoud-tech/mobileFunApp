@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { StyleSheet, ScrollView, View, Alert } from "react-native"
 import {
   TextInput,
@@ -10,19 +10,30 @@ import {
   Divider,
   useTheme,
   Checkbox,
+  Chip,
 } from "react-native-paper"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useSelector } from "react-redux"
 import useRequest from "@/axios/useRequest"
-
+import { utcToLocal } from "@/common/time"
+import Popup from "@/components/Popup/Popup"
 const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo)
   const [phone, setPhone] = useState(user.phoneNumber || "")
   const [name, setName] = useState(user.username || "")
   const [placeName, setPlaceName] = useState(user.placeName || "")
   const [location, setLocation] = useState(user.location || "")
+  const [newEmployeePhone, setNewEmployeePhone] = useState("")
+  const [visible, setVisible] = useState(false)
+  const [messageTitle, setMessageTitle] = useState()
+  const [handleYes, setHandleYes] = useState(null)
+  const [handleNo, setHandleNo] = useState(null)
+  const [yesWord, setYesWord] = useState("Yes")
+  const [noWord, setNoWord] = useState("No")
+  const [messageDescription, setMessageDescription] = useState()
+  const [update, setUpdate] = useState(0)
   // const [birthdate, setBirthdate] = useState(new Date())
-  const { updateUser } = useRequest()
+  const { updateUser, postRequest, getRequest, deleteRequest } = useRequest()
   const [notificationPreferences, setNotificationPreferences] = useState({
     employeeRequest: user.employeeRequest,
     reservation: user.reservation,
@@ -31,10 +42,7 @@ const OwnerProfile = () => {
     playersPurchases: user.playersPurchases,
     checkout: user.checkout,
   })
-  const [employees, setEmployees] = useState([
-    { id: 1, name: "Alice Smith", phone: "alice@example.com" },
-    { id: 2, name: "Bob Johnson", phone: "bob@example.com" },
-  ])
+  const [employees, setEmployees] = useState([])
   const [places, setPlaces] = useState([
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
@@ -155,8 +163,98 @@ const OwnerProfile = () => {
     })
   }
 
+  const handleSendRequest = async () => {
+    try {
+      if (!newEmployeePhone.trim()) {
+        Alert.alert("Validation", "Please enter an phone.")
+        return
+      }
+      Alert.alert("Request Sent", `Request sent to ${newEmployeePhone}.`)
+      const data = {
+        phone: newEmployeePhone,
+        userId: user.id,
+      }
+      const postResult = await postRequest(data)
+      setUpdate(update + 1)
+    } catch (error) {
+      if (
+        error.response.data.error ==
+        "Employee not found with the provided phone number"
+      ) {
+        setVisible(true)
+        setYesWord("Ok")
+        setMessageDescription(
+          "Employee not found with the provided phone number"
+        )
+        setMessageTitle("Error")
+        setHandleYes(() => () => setVisible(false))
+        setHandleNo(null)
+      } else if (
+        error.response.data.error == "This employee has already been requested."
+      ) {
+        setVisible(true)
+        setYesWord("Ok")
+        setMessageDescription("This employee has already been requested.")
+        setMessageTitle("Error")
+        setHandleYes(() => () => setVisible(false))
+        setHandleNo(null)
+      }
+    }
+  }
+
+  // const handleRemoveOwner = () => {
+  //   Alert.alert("Remove Owner", "Are you sure you want to remove the owner?", [
+  //     { text: "Cancel", style: "cancel" },
+  //     {
+  //       text: "Remove",
+  //       onPress: () => {
+  //         setNewEmployeePhone("")
+  //         setRequestStatus("")
+  //         Alert.alert("Owner Removed")
+  //       },
+  //     },
+  //   ])
+  // }
+
+  // const handleNo = () => {
+  //   console.log("no")
+  //   setVisible(false)
+  // }
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getRequest()
+      setEmployees(data.data)
+    })()
+  }, [update])
+
+  const confirmDeleteRequest = async (id) => {
+    await deleteRequest(id)
+    setVisible(false)
+    setUpdate(update + 1)
+  }
+
+  const deleteRequestCheck = (id) => {
+    setHandleYes(() => () => confirmDeleteRequest(id))
+    setHandleNo(() => () => setVisible(false))
+    setMessageTitle("Error")
+    setMessageDescription("Are you sure you want to delete this request?")
+    setVisible(true)
+    setYesWord("Confirm")
+    setNoWord("No")
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Popup
+        title={messageTitle}
+        description={messageDescription}
+        handleYes={handleYes}
+        handleNo={handleNo}
+        visible={visible}
+        yes={yesWord}
+        no={noWord}
+      />
       {/* Owner Information Section */}
       <Card style={styles.card}>
         <Card.Title title="Owner Profile" />
@@ -216,31 +314,102 @@ const OwnerProfile = () => {
           </Button>
         </Card.Actions>
       </Card>
-
+      {/* Owner Request Section */}
+      {/* <Card style={styles.card}>
+        <Card.Title title="Employee Request" />
+        <Card.Content>
+          <TextInput
+            label="employee's phone"
+            value={newEmployeePhone}
+            onChangeText={setNewEmployeePhone}
+            style={styles.input}
+            placeholder="Enter owner's phone"
+          />
+          {requestStatus ? (
+            <Chip mode="outlined" style={styles.input}>
+              Request Status: {requestStatus}
+            </Chip>
+          ) : null}
+        </Card.Content>
+        <Card.Actions>
+          <Button
+            mode="contained"
+            onPress={handleSendRequest}
+            style={styles.button}
+          >
+            Send Request
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleRemoveOwner}
+            style={styles.button}
+          >
+            Remove Owner
+          </Button>
+        </Card.Actions>
+      </Card> */}
       {/* Employee List Section */}
       <Card style={styles.card}>
         <Card.Title title="Employees List" />
-        <Divider />
+        <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
+          <TextInput
+            label="employee's phone"
+            keyboardType="phone-pad"
+            value={newEmployeePhone}
+            onChangeText={setNewEmployeePhone}
+            style={{ ...styles.input, marginBottom: 0 }}
+            placeholder="Enter owner's phone"
+          />
+          <Button
+            mode="contained"
+            onPress={handleSendRequest}
+            style={styles.button}
+          >
+            Send Request
+          </Button>
+
           {employees.length > 0 ? (
             employees.map((employee) => (
               <List.Item
                 key={employee.id}
-                title={employee.name}
-                description={employee.phone}
+                title={employee.toUserInfo.username}
+                description={
+                  <>
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        alignContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontWeight: "bold" }}>
+                        {employee.toUserInfo.phoneNumber}
+                      </Text>
+                      <Chip style={{ margin: 10, fontsize: 10 }}>
+                        {employee.status}
+                      </Chip>
+                    </View>
+                    <View>
+                      <Text>{utcToLocal(employee.updatedAt)}</Text>
+                    </View>
+                  </>
+                }
                 right={(props) => (
                   <IconButton
                     {...props}
                     icon="delete"
-                    onPress={() =>
-                      Alert.alert("Remove Employee", `Remove ${employee.name}?`)
-                    }
+                    onPress={() => {
+                      deleteRequestCheck(employee.id)
+                    }}
                   />
                 )}
               />
             ))
           ) : (
-            <Text>No employees found.</Text>
+            <Text style={{ margin: 10 }}>No employees found.</Text>
           )}
         </Card.Content>
       </Card>
@@ -304,7 +473,7 @@ const OwnerProfile = () => {
       {/* Notification Preferences */}
       <Card style={styles.card}>
         <Card.Title title="Notification Preferences" />
-        <Divider />
+        <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
           {Object.keys(notificationPreferences).map((key) => (
             <View key={key} style={styles.checkboxRow}>
@@ -331,7 +500,7 @@ function themeStyles(theme) {
       marginBottom: 16,
     },
     input: {
-      marginBottom: 16,
+      // marginBottom: 0,
     },
     button: {
       marginTop: 8,

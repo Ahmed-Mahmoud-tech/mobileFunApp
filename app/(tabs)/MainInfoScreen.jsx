@@ -19,7 +19,9 @@ import useRequest from "@/axios/useRequest"
 import { I18nextProvider, useTranslation } from "react-i18next"
 import { useLogoutFun } from "@/hooks/useLogoutFun"
 import { useDispatch, useSelector } from "react-redux"
-import { setCurrentToken } from "@/store/slices/user"
+import { setCurrentToken, setStoredUser } from "@/store/slices/user"
+import { changeRoute } from "@/store/slices/mainConfig"
+import { useRouter } from "expo-router"
 const MainInfoScreen = ({ route }) => {
   const [phone, setPhone] = useState("")
   const [isOwner, setIsOwner] = useState(false)
@@ -37,6 +39,7 @@ const MainInfoScreen = ({ route }) => {
   const url = Linking.useURL()
   const { hostname, path, queryParams } = Linking.parse(url)
   const user = useSelector((state) => state.user.userInfo)
+  const router = useRouter()
   const handleSubmit = async () => {
     setLoading(true)
     const data = {
@@ -46,6 +49,15 @@ const MainInfoScreen = ({ route }) => {
       location: "location",
     }
     await updateUser(user.id, data)
+    if (isOwner) {
+      dispatch(setStoredUser({ ...user, type: "owner" }))
+      dispatch(changeRoute("OwnerProfileScreen"))
+      router.push("/OwnerProfileScreen")
+    } else {
+      dispatch(setStoredUser({ ...user, type: "employee" }))
+      dispatch(changeRoute("EmployeeProfileScreen"))
+      router.push("/EmployeeProfileScreen")
+    }
     setLoading(false)
   }
 
