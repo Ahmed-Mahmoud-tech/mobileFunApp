@@ -29,7 +29,7 @@ const PlaysScreen = () => {
   const styles = themeStyles(theme)
   const [game, setGame] = useState("")
   const [playType, setPlayType] = useState("Single")
-  const [placeId, setPlaceId] = useState("")
+  const [roomId, setRoomId] = useState("")
   const [startTime, setStartTime] = useState(new Date())
   const [endTime, setEndTime] = useState(
     new Date(new Date().getTime() + 3600000)
@@ -45,7 +45,7 @@ const PlaysScreen = () => {
     if (play) {
       setGame(play.game)
       setPlayType(play.playType)
-      setPlaceId(play.placeId ? play.placeId.toString() : "")
+      setRoomId(play.roomId ? play.roomId.toString() : "")
       setStartTime(new Date(play.startTime))
       setEndTime(new Date(play.endTime))
       setPlayersId(play.playersId ? play.playersId.toString() : "")
@@ -59,7 +59,7 @@ const PlaysScreen = () => {
   const resetForm = () => {
     setGame("")
     setPlayType("Single")
-    setPlaceId("")
+    setRoomId("")
     setStartTime(new Date())
     setEndTime(new Date(new Date().getTime() + 3600000))
     setPlayersId("")
@@ -79,7 +79,7 @@ const PlaysScreen = () => {
       return
     }
 
-    if (checkReservationConflict(placeId, startTime)) {
+    if (checkReservationConflict(roomId, startTime)) {
       return
     }
 
@@ -91,7 +91,7 @@ const PlaysScreen = () => {
                 ...item,
                 game,
                 playType,
-                placeId: placeId ? +placeId : null,
+                roomId: roomId ? +roomId : null,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString(),
                 playersId: playersId ? +playersId : null,
@@ -105,7 +105,7 @@ const PlaysScreen = () => {
         id: plays.length ? plays[plays.length - 1].id + 1 : 1,
         game,
         playType,
-        placeId: placeId ? +placeId : null,
+        roomId: roomId ? +roomId : null,
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
         playersId: playersId ? +playersId : null,
@@ -117,17 +117,17 @@ const PlaysScreen = () => {
   }
 
   // Check for reservation conflict
-  const checkReservationConflict = (placeId, startTime) => {
+  const checkReservationConflict = (roomId, startTime) => {
     const conflictingReservation = plays.find(
       (play) =>
-        play.placeId === placeId &&
+        play.roomId === roomId &&
         Math.abs(new Date(play.startTime) - startTime) < 2 * 60 * 60 * 1000
     )
 
     if (conflictingReservation) {
       Alert.alert(
         "Reservation Conflict",
-        `Place ${placeId} has a reservation at ${new Date(
+        `Room ${roomId} has a reservation at ${new Date(
           conflictingReservation.startTime
         ).toLocaleTimeString()}`
       )
@@ -162,7 +162,7 @@ const PlaysScreen = () => {
       <Card.Content>
         <Text style={styles.itemName}>{item.game}</Text>
         <Text>Type: {item.playType}</Text>
-        <Text>Place ID: {item.placeId}</Text>
+        <Text>Room ID: {item.roomId}</Text>
         <Text>Start: {new Date(item.startTime).toLocaleString()}</Text>
         <Text>End: {new Date(item.endTime).toLocaleString()}</Text>
         <Text>Player ID: {item.playersId}</Text>
@@ -310,7 +310,7 @@ const PlaysScreen = () => {
                 option3: "Option 3",
               }}
               onSelect={setGame} // Pass handleSelect function to handle selection
-              placeholder="Choose a Game"
+              roomholder="Choose a Game"
               style={styles.input}
             />
             <SegmentedButtons
@@ -332,12 +332,12 @@ const PlaysScreen = () => {
             />
             <Dropdown
               data={{
-                placeId1: "place 1",
-                placeId2: "place 2",
-                placeId3: "place 3",
+                roomId1: "room 1",
+                roomId2: "room 2",
+                roomId3: "room 3",
               }}
-              onSelect={setPlaceId} // Pass handleSelect function to handle selection
-              placeholder="Choose a Place"
+              onSelect={setRoomId} // Pass handleSelect function to handle selection
+              roomholder="Choose a Room"
             />
 
             <Button

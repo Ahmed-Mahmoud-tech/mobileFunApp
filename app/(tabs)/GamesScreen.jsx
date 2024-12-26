@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import useRequest from "@/axios/useRequest"
+import Popup from "@/components/Popup/Popup"
 import { FlatList, StyleSheet, View } from "react-native"
 import {
   TextInput,
@@ -9,13 +11,11 @@ import {
   FAB,
   Text,
   useTheme,
+  IconButton,
 } from "react-native-paper"
 
 const GamesScreen = () => {
-  const [games, setGames] = useState([
-    { id: 1, name: "Game 1", singlePrice: 10, multiPrice: 15 },
-    { id: 2, name: "Game 2", singlePrice: 12, multiPrice: 18 },
-  ])
+  const [games, setGames] = useState([])
   const theme = useTheme()
   const styles = themeStyles(theme)
   const [dialogVisible, setDialogVisible] = useState(false)
@@ -23,6 +23,17 @@ const GamesScreen = () => {
   const [gameName, setGameName] = useState("")
   const [singlePrice, setSinglePrice] = useState("")
   const [multiPrice, setMultiPrice] = useState("")
+  const [gameId, setGameId] = useState("")
+  const [updateGameRender, setUpdateGameRender] = useState("")
+  const [visible, setVisible] = useState(false)
+  const [messageTitle, setMessageTitle] = useState()
+  const [messageDescription, setMessageDescription] = useState()
+  const [handleYes, setHandleYes] = useState(null)
+  const [handleNo, setHandleNo] = useState(null)
+  const [yesWord, setYesWord] = useState("Yes")
+  const [noWord, setNoWord] = useState("No")
+
+  const { postGame, getGames, updateGame, deleteGame } = useRequest()
 
   const openDialog = (game = null) => {
     setCurrentGame(game)
@@ -45,59 +56,89 @@ const GamesScreen = () => {
     setMultiPrice("")
   }
 
-  const handleSave = () => {
-    if (currentGame) {
-      // Edit existing game
-      setGames((prevGames) =>
-        prevGames.map((game) =>
-          game.id === currentGame.id
-            ? {
-                ...game,
-                name: gameName,
-                singlePrice: +singlePrice,
-                multiPrice: +multiPrice,
-              }
-            : game
-        )
-      )
-    } else {
-      // Add new game
-      const newGame = {
-        id: games.length ? games[games.length - 1].id + 1 : 1,
-        name: gameName,
-        singlePrice: +singlePrice,
-        multiPrice: +multiPrice,
-      }
-      setGames((prevGames) => [...prevGames, newGame])
+  const handleSave = async () => {
+    const newGame = {
+      name: gameName,
+      singlePrice: singlePrice,
+      multiPrice: multiPrice,
     }
+
+    if (currentGame) {
+      await updateGame(currentGame.id, { ...currentGame, ...newGame })
+    } else {
+      await postGame(newGame)
+    }
+
+    setUpdateGameRender(updateGameRender + 1)
     closeDialog()
   }
 
-  const renderGameItem = ({ item }) => (
+  useEffect(() => {
+    ;(async () => {
+      const data = await getGames()
+      setGames(data.data)
+    })()
+  }, [updateGameRender])
+
+  const confirmDeleteGame = async (id) => {
+    await deleteGame(id)
+    setVisible(false)
+    setUpdateGameRender(updateGameRender + 1)
+  }
+
+  const handleRemoveGame = (id) => {
+    setHandleYes(() => () => confirmDeleteGame(id))
+    setHandleNo(() => () => setVisible(false))
+    setMessageTitle("Confirm")
+    setMessageDescription("Are you sure you want to delete this game?")
+    setYesWord("Confirm")
+    setNoWord("No")
+    setVisible(true)
+  }
+
+  const renderGame = ({ item }) => (
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.gameName}>{item.name}</Text>
-        <Text>Single Price: ${item.singlePrice}</Text>
-        <Text>Multi Price: ${item.multiPrice}</Text>
+        <Text style={{ marginBottom: 5 }}>
+          Single Price: ${item.singlePrice}
+        </Text>
+        <Text style={{ marginBottom: 5 }}>Multi Price: ${item.multiPrice}</Text>
       </Card.Content>
       <Card.Actions>
-        <Button onPress={() => openDialog(item)}>Edit</Button>
+        <View style={styles.gameActions}>
+          <IconButton
+            icon="pencil"
+            onPress={() => {
+              openDialog(item)
+            }}
+          />
+          <IconButton icon="delete" onPress={() => handleRemoveGame(item.id)} />
+        </View>
       </Card.Actions>
     </Card>
   )
 
   return (
     <View style={styles.container}>
+      <Popup
+        title={messageTitle}
+        description={messageDescription}
+        handleYes={handleYes}
+        handleNo={handleNo}
+        visible={visible}
+        yes={yesWord}
+        no={noWord}
+      />
       <FlatList
         data={games}
-        renderItem={renderGameItem}
+        renderItem={renderGame}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No games added yet!</Text>
         }
       />
-
       <Portal>
         <Dialog visible={dialogVisible} onDismiss={closeDialog}>
           <Dialog.Title>{currentGame ? "Edit Game" : "Add Game"}</Dialog.Title>
@@ -134,7 +175,6 @@ const GamesScreen = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-
       <FAB
         style={styles.fab}
         icon="plus"
@@ -176,6 +216,10 @@ function themeStyles(theme) {
       marginTop: 20,
       fontSize: 16,
       color: theme.colors.onBackground,
+    },
+    gameActions: {
+      flexDirection: "row",
+      alignGames: "center",
     },
   })
 }

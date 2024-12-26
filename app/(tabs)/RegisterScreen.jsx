@@ -18,7 +18,7 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isOwner, setIsOwner] = useState(false)
-  const [placeName, setPlaceName] = useState("")
+  const [roomName, setRoomName] = useState("")
   //   const [location, setLocation] = useState(null) // Stores latitude and longitude
   //   const [isMapVisible, setIsMapVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -30,7 +30,7 @@ const RegisterScreen = () => {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      console.log({ email, password, isOwner, placeName }) //, location
+      console.log({ email, password, isOwner, roomName }) //, location
       alert("Registered successfully!")
       // router.push("/login")
     }, 1500)
@@ -93,9 +93,9 @@ const RegisterScreen = () => {
           {isOwner && (
             <>
               <TextInput
-                label="Place Name"
-                value={placeName}
-                onChangeText={setPlaceName}
+                label="Room Name"
+                value={roomName}
+                onChangeText={setRoomName}
                 style={styles.input}
               />
 
@@ -118,7 +118,7 @@ const RegisterScreen = () => {
             onPress={handleRegister}
             loading={loading}
             disabled={
-              !email || !password || (isOwner && !placeName) // || !location
+              !email || !password || (isOwner && !roomName) // || !location
             }
             style={styles.button}
           >

@@ -8,7 +8,7 @@ import {
 } from "react-native"
 import { Text, useTheme } from "react-native-paper"
 
-const Dropdown = ({ data, onSelect, placeholder }) => {
+const Dropdown = ({ data, onSelect, roomholder, backgroundColor }) => {
   const [isVisible, setIsVisible] = useState(false) // Controls dropdown visibility
   const [selectedItem, setSelectedItem] = useState(null) // Stores the selected item
   const theme = useTheme()
@@ -38,9 +38,12 @@ const Dropdown = ({ data, onSelect, placeholder }) => {
   return (
     <View style={styles.container}>
       {/* Dropdown button */}
-      <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
+      <TouchableOpacity
+        onPress={toggleDropdown}
+        style={{ ...styles.dropdownButton }}
+      >
         <Text style={styles.buttonText}>
-          {selectedItem ? selectedItem : placeholder || "Select an option"}
+          {selectedItem ? selectedItem : roomholder || "Select an option"}
         </Text>
       </TouchableOpacity>
 
@@ -71,12 +74,12 @@ const Dropdown = ({ data, onSelect, placeholder }) => {
 function themeStyles(theme) {
   return StyleSheet.create({
     container: {
-      marginBottom: 20,
+      marginBottom: 10,
     },
     dropdownButton: {
       padding: 10,
       marginTop: 10,
-      backgroundColor: theme.colors.elevation.level3,
+      backgroundColor: theme.colors.primaryContainer,
       borderRadius: 0,
       alignItems: "center",
       width: "100%",

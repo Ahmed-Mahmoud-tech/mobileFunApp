@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+import useRequest from "@/axios/useRequest"
+import Popup from "@/components/Popup/Popup"
+import React, { useEffect, useState } from "react"
 import { FlatList, StyleSheet, View } from "react-native"
 import {
   TextInput,
@@ -9,19 +11,30 @@ import {
   FAB,
   Text,
   useTheme,
+  IconButton,
 } from "react-native-paper"
+import { useSelector } from "react-redux"
 
 const PurchaseItemsScreen = () => {
-  const [items, setItems] = useState([
-    { id: 1, name: "Item 1", price: 20 },
-    { id: 2, name: "Item 2", price: 30 },
-  ])
+  const [items, setItems] = useState([])
   const theme = useTheme()
   const styles = themeStyles(theme)
   const [dialogVisible, setDialogVisible] = useState(false)
   const [currentItem, setCurrentItem] = useState(null)
   const [itemName, setItemName] = useState("")
+  const [updateItemRender, setUpdateItemRender] = useState("")
+  const [visible, setVisible] = useState(false)
   const [price, setPrice] = useState("")
+  const [messageTitle, setMessageTitle] = useState()
+  const [messageDescription, setMessageDescription] = useState()
+  const [handleYes, setHandleYes] = useState(null)
+  const [handleNo, setHandleNo] = useState(null)
+  const [yesWord, setYesWord] = useState("Yes")
+  const [noWord, setNoWord] = useState("No")
+
+  const { postItem, getItems, updateItem, deleteItem } = useRequest()
+
+  const user = useSelector((state) => state.user.userInfo)
 
   const openDialog = (item = null) => {
     setCurrentItem(item)
@@ -41,42 +54,77 @@ const PurchaseItemsScreen = () => {
     setPrice("")
   }
 
-  const handleSave = () => {
-    if (currentItem) {
-      // Edit existing item
-      setItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === currentItem.id
-            ? { ...item, name: itemName, price: +price }
-            : item
-        )
-      )
-    } else {
-      // Add new item
-      const newItem = {
-        id: items.length ? items[items.length - 1].id + 1 : 1,
-        name: itemName,
-        price: +price,
-      }
-      setItems((prevItems) => [...prevItems, newItem])
+  const handleSave = async () => {
+    const newItem = {
+      name: itemName,
+      price: price,
+      ownerId: user.type == "owner" ? user.id : user.owner,
     }
+    if (currentItem) {
+      await updateItem(currentItem.id, { ...currentItem, ...newItem })
+    } else {
+      await postItem(newItem)
+    }
+
+    setUpdateItemRender(updateItemRender + 1)
     closeDialog()
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getItems(user.type == "owner" ? user.id : user.owner)
+      setItems(data.data)
+    })()
+  }, [updateItemRender])
+
+  const confirmDeleteItem = async (id) => {
+    await deleteItem(id)
+    setVisible(false)
+    setUpdateItemRender(updateItemRender + 1)
+  }
+
+  const handleRemoveItem = (id) => {
+    setHandleYes(() => () => confirmDeleteItem(id))
+    setHandleNo(() => () => setVisible(false))
+    setMessageTitle("Confirm")
+    setMessageDescription("Are you sure you want to delete this item?")
+    setYesWord("Confirm")
+    setNoWord("No")
+    setVisible(true)
   }
 
   const renderItem = ({ item }) => (
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text>Price: ${item.price}</Text>
+        <Text>Price: {item.price}</Text>
       </Card.Content>
       <Card.Actions>
-        <Button onPress={() => openDialog(item)}>Edit</Button>
+        <View style={styles.itemActions}>
+          <IconButton
+            icon="pencil"
+            onPress={() => {
+              openDialog(item)
+            }}
+          />
+          <IconButton icon="delete" onPress={() => handleRemoveItem(item.id)} />
+        </View>
       </Card.Actions>
     </Card>
   )
 
   return (
     <View style={styles.container}>
+      <Popup
+        title={messageTitle}
+        description={messageDescription}
+        handleYes={handleYes}
+        handleNo={handleNo}
+        visible={visible}
+        yes={yesWord}
+        no={noWord}
+      />
+
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -155,6 +203,10 @@ function themeStyles(theme) {
       marginTop: 20,
       fontSize: 16,
       color: "#666",
+    },
+    itemActions: {
+      flexDirection: "row",
+      alignItems: "center",
     },
   })
 }

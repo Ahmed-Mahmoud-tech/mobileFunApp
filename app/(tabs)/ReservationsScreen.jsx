@@ -25,7 +25,7 @@ const ReservationScreen = () => {
   const [currentReservation, setCurrentReservation] = useState(null)
 
   const [playersId, setPlayersId] = useState("")
-  const [placeId, setPlaceId] = useState("")
+  const [roomId, setRoomId] = useState("")
   const [startDateTime, setStartDateTime] = useState(new Date())
   const [endDateTime, setEndDateTime] = useState(
     new Date(new Date().getTime() + 3600000)
@@ -43,7 +43,7 @@ const ReservationScreen = () => {
       setPlayersId(
         reservation.playersId ? reservation.playersId.toString() : ""
       )
-      setPlaceId(reservation.placeId ? reservation.placeId.toString() : "")
+      setRoomId(reservation.roomId ? reservation.roomId.toString() : "")
       setStartDateTime(new Date(reservation.startDateTime))
       setEndDateTime(new Date(reservation.endDateTime))
     } else {
@@ -54,7 +54,7 @@ const ReservationScreen = () => {
 
   const resetForm = () => {
     setPlayersId("")
-    setPlaceId("")
+    setRoomId("")
     setStartDateTime(new Date())
     setEndDateTime(new Date(new Date().getTime() + 3600000))
   }
@@ -68,7 +68,7 @@ const ReservationScreen = () => {
   const isTimeOverlap = (newReservation) => {
     return reservations.some((reservation) => {
       return (
-        reservation.placeId === newReservation.placeId &&
+        reservation.roomId === newReservation.roomId &&
         ((new Date(newReservation.startDateTime) >=
           new Date(reservation.startDateTime) &&
           new Date(newReservation.startDateTime) <
@@ -83,8 +83,8 @@ const ReservationScreen = () => {
 
   // Save the Reservation Data
   const handleSave = () => {
-    if (!placeId) {
-      Alert.alert("Invalid Place ID", "Place ID is required.")
+    if (!roomId) {
+      Alert.alert("Invalid Room ID", "Room ID is required.")
       return
     }
     if (startDateTime <= new Date()) {
@@ -103,7 +103,7 @@ const ReservationScreen = () => {
         ? reservations[reservations.length - 1].id + 1
         : 1,
       playersId: playersId ? +playersId : null,
-      placeId: placeId ? +placeId : null,
+      roomId: roomId ? +roomId : null,
       startDateTime: startDateTime.toISOString(),
       endDateTime: endDateTime.toISOString(),
     }
@@ -111,7 +111,7 @@ const ReservationScreen = () => {
     if (isTimeOverlap(newReservation)) {
       Alert.alert(
         "Time Overlap",
-        "Another reservation exists for this place during the selected time."
+        "Another reservation exists for this room during the selected time."
       )
       return
     }
@@ -149,7 +149,7 @@ const ReservationScreen = () => {
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.itemName}>Player ID: {item.playersId}</Text>
-        <Text>Place ID: {item.placeId}</Text>
+        <Text>Room ID: {item.roomId}</Text>
         <Text>Start: {new Date(item.startDateTime).toLocaleString()}</Text>
         <Text>End: {new Date(item.endDateTime).toLocaleString()}</Text>
       </Card.Content>
@@ -234,20 +234,20 @@ const ReservationScreen = () => {
               style={styles.input}
             />
             {/* <TextInput
-              label="Place ID"
-              value={placeId}
-              onChangeText={setPlaceId}
+              label="Room ID"
+              value={roomId}
+              onChangeText={setRoomId}
               keyboardType="numeric"
               style={styles.input}
             /> */}
             <Dropdown
               data={{
-                placeId1: "place 1",
-                placeId2: "place 2",
-                placeId3: "place 3",
+                roomId1: "room 1",
+                roomId2: "room 2",
+                roomId3: "room 3",
               }}
-              onSelect={setPlaceId} // Pass handleSelect function to handle selection
-              placeholder="Choose a Place"
+              onSelect={setRoomId} // Pass handleSelect function to handle selection
+              roomholder="Choose a Room"
             />
 
             <Button

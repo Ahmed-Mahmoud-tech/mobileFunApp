@@ -30,7 +30,7 @@ const CheckoutScreen = () => {
         id: 1,
         game: "Soccer",
         playType: "Single",
-        placeId: 101,
+        roomId: 101,
         startTime: new Date().toISOString(),
         endTime: null,
         playersId: "123",
@@ -41,7 +41,7 @@ const CheckoutScreen = () => {
         id: 2,
         game: "Tennis",
         playType: "Multi",
-        placeId: 102,
+        roomId: 102,
         startTime: new Date().toISOString(),
         endTime: new Date(new Date().getTime() + 3600000).toISOString(),
         playersId: "456",
@@ -103,7 +103,7 @@ const CheckoutScreen = () => {
       <Card.Content>
         <Text style={styles.itemName}>{item.game}</Text>
         <Text>Type: {item.playType}</Text>
-        <Text>Place ID: {item.placeId}</Text>
+        <Text>Room ID: {item.roomId}</Text>
         <Text>Start: {new Date(item.startTime).toLocaleString()}</Text>
         <Text>
           End: {item.endTime ? new Date(item.endTime).toLocaleString() : "N/A"}

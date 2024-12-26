@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { FlatList, StyleSheet, View, TouchableOpacity } from "react-native"
 import {
   TextInput,
@@ -12,6 +12,10 @@ import {
   Text,
 } from "react-native-paper"
 import DateTimePicker from "@react-native-community/datetimepicker"
+import useRequest from "@/axios/useRequest"
+import { useSelector } from "react-redux"
+import Dropdown from "@/components/Dropdown/Dropdown"
+import FilterableDropdown from "@/components/FilterableDropDown/FilterableDropDown"
 
 const PlayersPurchasesScreen = () => {
   const theme = useTheme()
@@ -49,6 +53,10 @@ const PlayersPurchasesScreen = () => {
   const [count, setCount] = useState("")
   const [playerId, setPlayerId] = useState("")
   const [status, setStatus] = useState("not paid") // Track status in the popup
+  const [items, setItems] = useState([])
+  const [itemsDropdown, seItemsDropdown] = useState([])
+  const { getItems } = useRequest()
+  const user = useSelector((state) => state.user.userInfo)
 
   const openDialog = (purchase = null) => {
     setCurrentPurchase(purchase)
@@ -76,7 +84,6 @@ const PlayersPurchasesScreen = () => {
 
   const handleSave = () => {
     if (currentPurchase) {
-      // Edit existing purchase
       setPurchases((prevPurchases) =>
         prevPurchases.map((item) =>
           item.id === currentPurchase.id
@@ -120,6 +127,22 @@ const PlayersPurchasesScreen = () => {
         : true) &&
       (filters.date ? purchase.date === filters.date : true)
   )
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getItems(user.type == "owner" ? user.id : user.owner)
+      const items = []
+      const dropDownItems = {}
+      for (let i = 0; i < data.data.length; i++) {
+        const item = data.data[i]
+        dropDownItems[item.id] = item.name
+        items.push({ [item.id]: item })
+      }
+
+      seItemsDropdown(dropDownItems)
+      setItems(items)
+    })()
+  }, [])
 
   const renderPurchaseItem = ({ item }) => (
     <Card style={styles.card}>
@@ -227,12 +250,19 @@ const PlayersPurchasesScreen = () => {
             {currentPurchase ? "Edit Purchase" : "Add Purchase"}
           </Dialog.Title>
           <Dialog.Content>
-            <TextInput
+            {/* <TextInput
               label="Purchase Item Name"
               value={purchasesItemName}
               onChangeText={setPurchasesItemName}
               style={[styles.input, styles.inputRow]}
-            />
+            /> */}
+            <View style={{ zIndex: 10 }}>
+              <FilterableDropdown
+                data={itemsDropdown}
+                onSelect={setPurchasesItemName} // Pass handleSelect function to handle selection
+                roomholder="Choose an Item"
+              />
+            </View>
             <TextInput
               label="Count"
               value={count}
@@ -291,9 +321,6 @@ function themeStyles(theme) {
       flexDirection: "column",
       padding: 10,
     },
-    inputRow: {
-      marginBottom: 10,
-    },
     filterInput: {
       marginBottom: 10,
     },
@@ -323,6 +350,9 @@ function themeStyles(theme) {
       marginTop: 10,
     },
     input: {
+      marginBottom: 10,
+    },
+    inputRow: {
       marginBottom: 10,
     },
     selectedButton: {

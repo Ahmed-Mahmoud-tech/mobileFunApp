@@ -21,7 +21,7 @@ const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo)
   const [phone, setPhone] = useState(user.phoneNumber || "")
   const [name, setName] = useState(user.username || "")
-  const [placeName, setPlaceName] = useState(user.placeName || "")
+  const [roomName, setRoomName] = useState(user.roomName || "")
   const [location, setLocation] = useState(user.location || "")
   const [newEmployeePhone, setNewEmployeePhone] = useState("")
   const [visible, setVisible] = useState(false)
@@ -32,8 +32,18 @@ const OwnerProfile = () => {
   const [noWord, setNoWord] = useState("No")
   const [messageDescription, setMessageDescription] = useState()
   const [update, setUpdate] = useState(0)
+  const [updateRoomsRender, setUpdateRoomsRender] = useState(0)
   // const [birthdate, setBirthdate] = useState(new Date())
-  const { updateUser, postRequest, getRequest, deleteRequest } = useRequest()
+  const {
+    updateUser,
+    postRequest,
+    getRequest,
+    deleteRequest,
+    postRoom,
+    getRooms,
+    updateRoom,
+    deleteRoom,
+  } = useRequest()
   const [notificationPreferences, setNotificationPreferences] = useState({
     employeeRequest: user.employeeRequest,
     reservation: user.reservation,
@@ -43,99 +53,68 @@ const OwnerProfile = () => {
     checkout: user.checkout,
   })
   const [employees, setEmployees] = useState([])
-  const [places, setPlaces] = useState([
+  const [rooms, setRooms] = useState([
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
   ])
   const [editMode, setEditMode] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [newPlaceName, setNewPlaceName] = useState("")
-  const [editingPlace, setEditingPlace] = useState(null)
+  const [newRoomName, setNewRoomName] = useState("")
+  const [editedRoodId, setEditedRoodId] = useState("")
+  const [editingRoom, setEditingRoom] = useState(null)
 
   const theme = useTheme()
   const styles = themeStyles(theme)
 
-  const handleAddOrSavePlace = () => {
-    if (!newPlaceName.trim()) {
-      Alert.alert("Validation", "Please enter a place name.")
+  const handleAddOrSaveRoom = async () => {
+    if (!newRoomName.trim()) {
+      Alert.alert("Validation", "Please enter a room name.")
       return
     }
-
-    if (editingPlace) {
-      // Save edited place
-      setPlaces(
-        places.map((place) =>
-          place.id === editingPlace.id
-            ? { ...place, name: newPlaceName }
-            : place
-        )
-      )
-      Alert.alert("Place Updated", `Place "${newPlaceName}" has been updated.`)
-      setEditingPlace(null) // Exit editing mode
-    } else {
-      // Add new place
-      const newPlace = {
-        id: Date.now(),
-        name: newPlaceName.trim(),
-      }
-      setPlaces([...places, newPlace])
-      Alert.alert("Place Added", `Place "${newPlaceName}" has been added.`)
+    const newRoom = {
+      sectionName: newRoomName.trim(),
     }
 
-    setNewPlaceName("") // Reset input field
+    if (editingRoom) {
+      await updateRoom(editingRoom.id, { ...editingRoom, ...newRoom })
+      setEditingRoom(null) // Exit editing mode
+    } else {
+      await postRoom(newRoom)
+    }
+
+    setUpdateRoomsRender(updateRoomsRender + 1)
+    setNewRoomName("") // Reset input field
   }
 
-  const handleEditPlace = (place) => {
-    setNewPlaceName(place.name) // Populate input with the selected place name
-    setEditingPlace(place) // Set editing mode
+  const handleEditRoom = (room) => {
+    setNewRoomName(room.sectionName) // Populate input with the selected room name
+    setEditingRoom(room) // Set editing mode
   }
 
   const handleCancelEdit = () => {
-    setNewPlaceName("") // Clear input
-    setEditingPlace(null) // Exit editing mode
+    setNewRoomName("") // Clear input
+    setEditingRoom(null) // Exit editing mode
   }
 
-  // const handleBirthdateChange = (event, selectedDate) => {
-  //   setShowDatePicker(false)
-  //   if (selectedDate) {
-  //     setBirthdate(selectedDate)
-  //   }
-  // }
+  const handleRemoveRoom = (id) => {
+    setHandleYes(() => () => confirmDeleteRoom(id))
+    setHandleNo(() => () => setVisible(false))
+    setMessageTitle("Confirm")
+    setMessageDescription("Are you sure you want to delete this room?")
+    setVisible(true)
+    setYesWord("Confirm")
+    setNoWord("No")
 
-  const handleAddPlace = () => {
-    if (!newPlaceName.trim()) {
-      Alert.alert("Validation", "Please enter a place name.")
-      return
-    }
-    const newPlace = {
-      id: Date.now(),
-      name: newPlaceName.trim(),
-    }
-    setPlaces([...places, newPlace])
-    setNewPlaceName("")
-    Alert.alert("Place Added", `Place "${newPlaceName}" has been added.`)
-  }
-
-  // const handleEditPlace = (id, newName) => {
-  //   setPlaces(
-  //     places.map((place) =>
-  //       place.id === id ? { ...place, name: newName } : place
-  //     )
-  //   )
-  //   Alert.alert("Place Updated", `Place name has been updated to "${newName}".`)
-  // }
-
-  const handleRemovePlace = (id) => {
-    Alert.alert("Remove Place", "Are you sure you want to remove this place?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        onPress: () => {
-          setPlaces(places.filter((place) => place.id !== id))
-          Alert.alert("Place Removed", "The place has been removed.")
-        },
-      },
-    ])
+    // Alert.alert("Remove Room", "Are you sure you want to remove this room?", [
+    //   { text: "Cancel", style: "cancel" },
+    //   {
+    //     text: "Remove",
+    //     onPress: () => {
+    //       setRooms(rooms.filter((room) => room.id !== id))
+    //       Alert.alert("Room Removed", "The room has been removed.")
+    //     },
+    //   },
+    // ])
   }
 
   const handleEditToggle = () => {
@@ -144,7 +123,7 @@ const OwnerProfile = () => {
       const data = {
         phoneNumber: phone,
         userName: name,
-        placeName,
+        roomName,
         location,
       }
       updateUser(user.id, data)
@@ -233,16 +212,28 @@ const OwnerProfile = () => {
     setVisible(false)
     setUpdate(update + 1)
   }
+  const confirmDeleteRoom = async (id) => {
+    await deleteRoom(id)
+    setVisible(false)
+    setUpdateRoomsRender(updateRoomsRender + 1)
+  }
 
   const deleteRequestCheck = (id) => {
     setHandleYes(() => () => confirmDeleteRequest(id))
     setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Error")
+    setMessageTitle("Confirm")
     setMessageDescription("Are you sure you want to delete this request?")
     setVisible(true)
     setYesWord("Confirm")
     setNoWord("No")
   }
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getRooms()
+      setRooms(data.data)
+    })()
+  }, [updateRoomsRender])
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -290,9 +281,9 @@ const OwnerProfile = () => {
             editable={editMode}
           />
           <TextInput
-            label="Place Name"
-            value={placeName}
-            onChangeText={setPlaceName}
+            label="Room Name"
+            value={roomName}
+            onChangeText={setRoomName}
             style={styles.input}
             editable={editMode}
           />
@@ -323,7 +314,7 @@ const OwnerProfile = () => {
             value={newEmployeePhone}
             onChangeText={setNewEmployeePhone}
             style={styles.input}
-            placeholder="Enter owner's phone"
+            roomholder="Enter owner's phone"
           />
           {requestStatus ? (
             <Chip mode="outlined" style={styles.input}>
@@ -359,7 +350,7 @@ const OwnerProfile = () => {
             value={newEmployeePhone}
             onChangeText={setNewEmployeePhone}
             style={{ ...styles.input, marginBottom: 0 }}
-            placeholder="Enter owner's phone"
+            roomholder="Enter owner's phone"
           />
           <Button
             mode="contained"
@@ -414,26 +405,26 @@ const OwnerProfile = () => {
         </Card.Content>
       </Card>
 
-      {/* Places List Section */}
+      {/* Rooms List Section */}
       <Card style={styles.card}>
-        <Card.Title title="Places List" />
+        <Card.Title title="Rooms List" />
         <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
           <TextInput
-            label={editingPlace ? "Edit Place Name" : "Add Place Name"}
-            value={newPlaceName}
-            onChangeText={setNewPlaceName}
+            label={editingRoom ? "Edit Room Name" : "Add Room Name"}
+            value={newRoomName}
+            onChangeText={setNewRoomName}
             style={styles.input}
           />
           <View style={styles.buttonRow}>
             <Button
               mode="contained"
-              onPress={handleAddOrSavePlace}
+              onPress={handleAddOrSaveRoom}
               style={styles.button}
             >
-              {editingPlace ? "Save" : "Add"}
+              {editingRoom ? "Save" : "Add"}
             </Button>
-            {editingPlace && (
+            {editingRoom && (
               <Button
                 mode="outlined"
                 onPress={handleCancelEdit}
@@ -443,29 +434,29 @@ const OwnerProfile = () => {
               </Button>
             )}
           </View>
-          {places.length > 0 ? (
-            places.map((place) => (
+          {rooms.length > 0 ? (
+            rooms.map((room) => (
               <List.Item
-                key={place.id}
-                title={place.name}
+                key={room.id}
+                title={room.sectionName}
                 right={(props) => (
-                  <View style={styles.placeActions}>
+                  <View style={styles.roomActions}>
                     <IconButton
                       {...props}
                       icon="pencil"
-                      onPress={() => handleEditPlace(place)}
+                      onPress={() => handleEditRoom(room)}
                     />
                     <IconButton
                       {...props}
                       icon="delete"
-                      onPress={() => handleRemovePlace(place.id)}
+                      onPress={() => handleRemoveRoom(room.id)}
                     />
                   </View>
                 )}
               />
             ))
           ) : (
-            <Text>No places found.</Text>
+            <Text style={{ margin: 10 }}>No rooms found.</Text>
           )}
         </Card.Content>
       </Card>
@@ -505,7 +496,7 @@ function themeStyles(theme) {
     button: {
       marginTop: 8,
     },
-    placeActions: {
+    roomActions: {
       flexDirection: "row",
       alignItems: "center",
     },

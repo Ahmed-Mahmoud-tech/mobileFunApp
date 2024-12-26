@@ -25,7 +25,7 @@ import { useRouter } from "expo-router"
 const MainInfoScreen = ({ route }) => {
   const [phone, setPhone] = useState("")
   const [isOwner, setIsOwner] = useState(false)
-  const [placeName, setPlaceName] = useState("")
+  const [roomName, setRoomName] = useState("")
   const [token, setToken] = useState("")
   const { t, i18n } = useTranslation()
   const logoutFun = useLogoutFun()
@@ -45,7 +45,7 @@ const MainInfoScreen = ({ route }) => {
     const data = {
       phoneNumber: phone,
       type: isOwner ? "owner" : "employee",
-      placeName,
+      roomName,
       location: "location",
     }
     await updateUser(user.id, data)
@@ -126,9 +126,9 @@ const MainInfoScreen = ({ route }) => {
           {isOwner && (
             <>
               <TextInput
-                label="Place Name"
-                value={placeName}
-                onChangeText={setPlaceName}
+                label="Room Name"
+                value={roomName}
+                onChangeText={setRoomName}
                 style={styles.input}
               />
 
@@ -151,7 +151,7 @@ const MainInfoScreen = ({ route }) => {
             onPress={handleSubmit}
             loading={loading}
             disabled={
-              !phone || (isOwner && !placeName) // || !location
+              !phone || (isOwner && !roomName) // || !location
             }
             style={styles.button}
           >
