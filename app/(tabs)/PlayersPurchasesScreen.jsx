@@ -10,223 +10,230 @@ import {
   SegmentedButtons,
   useTheme,
   Text,
+  IconButton,
 } from "react-native-paper"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import useRequest from "@/axios/useRequest"
 import { useSelector } from "react-redux"
-import Dropdown from "@/components/Dropdown/Dropdown"
 import FilterableDropdown from "@/components/FilterableDropDown/FilterableDropDown"
+import { utcToLocal } from "@/common/time"
+import Popup from "@/components/Popup/Popup"
+import PlayerPurchaseRenderHeader from "@/components/PlayerPurchaseRenderHeader/PlayerPurchaseRenderHeader"
+import Dropdown from "@/components/Dropdown/Dropdown"
 
 const PlayersPurchasesScreen = () => {
   const theme = useTheme()
   const styles = themeStyles(theme)
 
-  const [purchases, setPurchases] = useState([
-    {
-      id: 1,
-      purchasesItemName: "Item A",
-      count: 2,
-      playerId: 1,
-      status: "not paid",
-      date: new Date().toDateString(),
-    },
-    {
-      id: 2,
-      purchasesItemName: "Item B",
-      count: 1,
-      playerId: 2,
-      status: "paid",
-      date: new Date().toDateString(),
-    },
-  ])
+  const [purchases, setPurchases] = useState([])
 
   const [filters, setFilters] = useState({
     playerId: "",
     status: "all",
-    date: new Date().toDateString(),
+    createdAt: new Date().toDateString(),
   })
 
   const [isDatePickerVisible, setDatePickerVisible] = useState(false)
   const [dialogVisible, setDialogVisible] = useState(false)
   const [currentPurchase, setCurrentPurchase] = useState(null)
-  const [purchasesItemName, setPurchasesItemName] = useState("")
+  const [purchasesItem, setPurchasesItem] = useState({})
   const [count, setCount] = useState("")
   const [playerId, setPlayerId] = useState("")
-  const [status, setStatus] = useState("not paid") // Track status in the popup
-  const [items, setItems] = useState([])
-  const [itemsDropdown, seItemsDropdown] = useState([])
-  const { getItems } = useRequest()
+  const [players, setPlayers] = useState("")
+  const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
+  const [status, setStatus] = useState("notPaid") // Track status in the popup
+  const [itemsDropdown, setItemsDropdown] = useState([])
+  const [updatePurchaseRender, setUpdatePurchaseRender] = useState("")
+  const [visible, setVisible] = useState(false)
+  const [messageTitle, setMessageTitle] = useState()
+  const [messageDescription, setMessageDescription] = useState()
+  const [handleYes, setHandleYes] = useState(null)
+  const [handleNo, setHandleNo] = useState(null)
+  const [yesWord, setYesWord] = useState("Yes")
+  const [noWord, setNoWord] = useState("No")
+
+  const {
+    getItems,
+    getPurchases,
+    postPurchases,
+    updatePurchases,
+    deletePurchases,
+    playerIdList,
+  } = useRequest()
+
   const user = useSelector((state) => state.user.userInfo)
 
-  const openDialog = (purchase = null) => {
-    setCurrentPurchase(purchase)
+  const openDialog = async (purchase = null) => {
+    const playersList = await playerIdList(
+      user.type == "owner" ? user.id : user.owner
+    )
+    const playersObject = {}
+    playersList.data.playerIds.map((id) => (playersObject[id] = id))
+    setPlayers(playersObject)
     if (purchase) {
-      setPurchasesItemName(purchase.purchasesItemName)
+      setCurrentPurchase(purchase)
+      setPurchasesItem(itemsDropdown.find((item) => item.id === purchase.item))
       setCount(purchase.count.toString())
       setPlayerId(purchase.playerId.toString())
       setStatus(purchase.status) // Initialize status with current value
     } else {
-      setPurchasesItemName("")
+      setPurchasesItem({})
       setCount("")
       setPlayerId("")
-      setStatus("not paid") // Default status
+      setStatus("notPaid") // Default status
     }
     setDialogVisible(true)
   }
 
   const closeDialog = () => {
     setDialogVisible(false)
-    setPurchasesItemName("")
+    setPurchasesItem({})
     setCount("")
     setPlayerId("")
-    setStatus("not paid")
+    setStatus("notPaid")
   }
 
-  const handleSave = () => {
-    if (currentPurchase) {
-      setPurchases((prevPurchases) =>
-        prevPurchases.map((item) =>
-          item.id === currentPurchase.id
-            ? {
-                ...item,
-                purchasesItemName,
-                count: +count,
-                playerId: +playerId,
-                status,
-              }
-            : item
-        )
-      )
-    } else {
-      // Add new purchase
-      const newPurchase = {
-        id: purchases.length ? purchases[purchases.length - 1].id + 1 : 1,
-        purchasesItemName,
-        count: +count,
-        playerId: +playerId,
-        status,
-        date: filters.date,
-      }
-      setPurchases((prevPurchases) => [...prevPurchases, newPurchase])
+  const handleSave = async () => {
+    const newPurchase = {
+      item: purchasesItem.id,
+      count: count,
+      playerId: playerId,
+      status,
+      ownerId: user.type == "owner" ? user.id : user.owner,
+      // item:
     }
+
+    if (currentPurchase) {
+      await updatePurchases(currentPurchase.id, {
+        // ...currentPurchase,
+        ...newPurchase,
+      })
+    } else {
+      await postPurchases(newPurchase)
+    }
+
+    setUpdatePurchaseRender(updatePurchaseRender + 1)
     closeDialog()
   }
-
-  const handleStatusFilterChange = (value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      status: value,
-    }))
-  }
-
-  const filteredPurchases = purchases.filter(
-    (purchase) =>
-      (filters.status === "all" || purchase.status === filters.status) &&
-      (filters.playerId
-        ? purchase.playerId.toString() === filters.playerId
-        : true) &&
-      (filters.date ? purchase.date === filters.date : true)
-  )
 
   useEffect(() => {
     ;(async () => {
       const data = await getItems(user.type == "owner" ? user.id : user.owner)
-      const items = []
-      const dropDownItems = {}
-      for (let i = 0; i < data.data.length; i++) {
-        const item = data.data[i]
-        dropDownItems[item.id] = item.name
-        items.push({ [item.id]: item })
-      }
-
-      seItemsDropdown(dropDownItems)
-      setItems(items)
+      setItemsDropdown(data.data)
     })()
   }, [])
+
+  // useEffect(() => {
+  //   ;(async () => {
+  //     const data = await getPurchases(
+  //       user.type == "owner" ? user.id : user.owner
+  //     )
+  //     setPurchases(data.data)
+  //   })()
+  // }, [updatePurchaseRender])
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { status, createdAt, playerId } = filters
+
+        // Build query parameters dynamically
+        const params = {}
+        if (playerId) params.playerId = debouncedPlayerId
+        if (status) params.status = status == "all" ? "" : status
+        if (createdAt) params.createdAt = new Date(createdAt).getTime()
+
+        const data = await getPurchases({ params })
+        setPurchases(data.data)
+        // setError("")
+      } catch (err) {
+        // setError(err.response?.data?.error || "An error occurred")
+        // setPurchases([])
+      }
+    })()
+  }, [
+    updatePurchaseRender,
+    debouncedPlayerId,
+    filters.status,
+    filters.createdAt,
+  ])
+
+  // Debounce the playerId value
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedPlayerId(filters.playerId) // Update debounced value after 2 seconds
+    }, 1000)
+
+    // Cleanup the timeout if user types again before 2 seconds
+    return () => clearTimeout(handler)
+  }, [filters.playerId])
+
+  const confirmDeletePurchase = async (id) => {
+    await deletePurchases(id)
+    setVisible(false)
+    setUpdatePurchaseRender(updatePurchaseRender + 1)
+  }
+
+  const handleRemovePurchase = (id) => {
+    setHandleYes(() => () => confirmDeletePurchase(id))
+    setHandleNo(() => () => setVisible(false))
+    setMessageTitle("Confirm")
+    setMessageDescription("Are you sure you want to delete this Purchase?")
+    setYesWord("Confirm")
+    setNoWord("No")
+    setVisible(true)
+  }
 
   const renderPurchaseItem = ({ item }) => (
     <Card style={styles.card}>
       <Card.Content>
-        <Text style={styles.itemName}>{item.purchasesItemName}</Text>
+        <Text style={styles.itemName}>
+          {itemsDropdown.find((dropItem) => dropItem.id === item.item).name}
+        </Text>
         <Text>Count: {item.count}</Text>
         <Text>Player ID: {item.playerId}</Text>
-        <Text>Status: {item.status}</Text>
-        <Text>Date: {item.date}</Text>
+        <Text>Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}</Text>
+        <Text>Date: {utcToLocal(item.createdAt)} </Text>
       </Card.Content>
+
       <Card.Actions>
-        <Button onPress={() => openDialog(item)}>Edit</Button>
+        <View style={styles.itemActions}>
+          <IconButton
+            icon="pencil"
+            onPress={() => {
+              openDialog(item)
+            }}
+          />
+          <IconButton
+            icon="delete"
+            onPress={() => handleRemovePurchase(item.id)}
+          />
+        </View>
       </Card.Actions>
     </Card>
   )
 
-  // Render filters above the FlatList
-  const renderHeader = () => (
-    <View style={styles.filters}>
-      <TextInput
-        label="Player ID"
-        value={filters.playerId}
-        onChangeText={(text) =>
-          setFilters((prev) => ({ ...prev, playerId: text }))
-        }
-        style={[styles.filterInput, styles.inputRow]}
-      />
-      <View style={[styles.filterInput, styles.inputRow]}>
-        <SegmentedButtons
-          value={filters.status}
-          onValueChange={handleStatusFilterChange} // Update the status filter
-          buttons={[
-            {
-              value: "all",
-              label: "All",
-              style: filters.status === "all" ? styles.selectedButton : {},
-            },
-            {
-              value: "paid",
-              label: "Paid",
-              style: filters.status === "paid" ? styles.selectedButton : {},
-            },
-            {
-              value: "not paid",
-              label: "Not Paid",
-              style: filters.status === "not paid" ? styles.selectedButton : {},
-            },
-          ]}
-        />
-      </View>
-      <TouchableOpacity
-        style={[styles.datePicker, styles.inputRow]}
-        onPress={() => setDatePickerVisible(true)}
-      >
-        <Text style={styles.datePickerText}>{filters.date}</Text>
-      </TouchableOpacity>
-      <Button
-        mode="outlined"
-        onPress={() =>
-          setFilters({
-            playerId: "",
-            status: "all",
-            date: new Date().toDateString(),
-          })
-        }
-        style={styles.resetButton}
-      >
-        Show All
-      </Button>
-    </View>
-  )
-
   return (
     <View style={styles.container}>
+      <Popup
+        title={messageTitle}
+        description={messageDescription}
+        handleYes={handleYes}
+        handleNo={handleNo}
+        visible={visible}
+        yes={yesWord}
+        no={noWord}
+      />
+
       {isDatePickerVisible && (
         <DateTimePicker
           mode="date"
-          value={new Date(filters.date)}
+          value={new Date(filters.createdAt)}
           onChange={(event, selectedDate) => {
             setDatePickerVisible(false)
             if (selectedDate) {
               setFilters((prev) => ({
                 ...prev,
-                date: selectedDate.toDateString(),
+                createdAt: selectedDate.toDateString(),
               }))
             }
           }}
@@ -234,10 +241,16 @@ const PlayersPurchasesScreen = () => {
       )}
 
       <FlatList
-        data={filteredPurchases}
+        data={purchases}
         renderItem={renderPurchaseItem}
         keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={
+          <PlayerPurchaseRenderHeader
+            filters={filters}
+            setFilters={setFilters}
+            setDatePickerVisible={setDatePickerVisible}
+          />
+        }
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No purchases found!</Text>
@@ -250,17 +263,12 @@ const PlayersPurchasesScreen = () => {
             {currentPurchase ? "Edit Purchase" : "Add Purchase"}
           </Dialog.Title>
           <Dialog.Content>
-            {/* <TextInput
-              label="Purchase Item Name"
-              value={purchasesItemName}
-              onChangeText={setPurchasesItemName}
-              style={[styles.input, styles.inputRow]}
-            /> */}
             <View style={{ zIndex: 10 }}>
               <FilterableDropdown
                 data={itemsDropdown}
-                onSelect={setPurchasesItemName} // Pass handleSelect function to handle selection
-                roomholder="Choose an Item"
+                onSelect={setPurchasesItem} // Pass handleSelect function to handle selection
+                placeholder="Choose an Item"
+                value={purchasesItem}
               />
             </View>
             <TextInput
@@ -270,12 +278,18 @@ const PlayersPurchasesScreen = () => {
               keyboardType="numeric"
               style={[styles.input, styles.inputRow]}
             />
-            <TextInput
+            {/* <TextInput
               label="Player ID"
               value={playerId}
               onChangeText={setPlayerId}
               keyboardType="numeric"
               style={[styles.input, styles.inputRow]}
+            /> */}
+            <Dropdown
+              data={players}
+              onSelect={setPlayerId} // Pass handleSelect function to handle selection
+              roomholder="Choose a PlayerId"
+              flag={true}
             />
             <View style={styles.inputRow}>
               <SegmentedButtons
@@ -283,7 +297,7 @@ const PlayersPurchasesScreen = () => {
                 onValueChange={setStatus} // Update the status in the popup
                 buttons={[
                   { value: "paid", label: "Paid" },
-                  { value: "not paid", label: "Not Paid" },
+                  { value: "notPaid", label: "Not Paid" },
                 ]}
               />
             </View>
@@ -292,7 +306,7 @@ const PlayersPurchasesScreen = () => {
             <Button onPress={closeDialog}>Cancel</Button>
             <Button
               onPress={handleSave}
-              disabled={!purchasesItemName || !count || !playerId}
+              disabled={!purchasesItem.name || !count || !playerId}
             >
               Save
             </Button>
@@ -346,9 +360,6 @@ function themeStyles(theme) {
       fontSize: 18,
       fontWeight: "bold",
     },
-    resetButton: {
-      marginTop: 10,
-    },
     input: {
       marginBottom: 10,
     },
@@ -366,6 +377,10 @@ function themeStyles(theme) {
     emptyText: {
       textAlign: "center",
       marginTop: 20,
+    },
+    itemActions: {
+      flexDirection: "row",
+      alignItems: "center",
     },
   })
 }

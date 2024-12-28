@@ -76,18 +76,18 @@ import {
 } from "react-native"
 import { Button, Menu, TextInput } from "react-native-paper"
 
-const FilterableDropdown = ({ data, placeholder, onSelect }) => {
+const FilterableDropdown = ({ data, placeholder, onSelect, value }) => {
   const [visible, setVisible] = useState(false)
   const [filterText, setFilterText] = useState("")
-  const [selectedValue, setSelectedValue] = useState(null)
 
-  const filteredOptions = Object.values(data).filter((option) =>
-    option.toLowerCase().includes(filterText.toLowerCase())
-  )
+  const filteredOptions = data.filter((option) => {
+    return option.name.toLowerCase().includes(filterText.toLowerCase())
+  })
 
   const handleSelect = (item) => {
-    setSelectedValue(item)
     setVisible(false)
+    console.log(item, "00000000000000000000000name1")
+
     onSelect(item) // Call the onSelect function
   }
 
@@ -99,7 +99,7 @@ const FilterableDropdown = ({ data, placeholder, onSelect }) => {
   return (
     <View style={styles.container}>
       <Button onPress={() => setVisible(true)} mode="outlined">
-        {selectedValue ? selectedValue : "Select an option"}
+        {value.name ? value.name : "Select an option"}
       </Button>
 
       {visible && (
@@ -118,9 +118,9 @@ const FilterableDropdown = ({ data, placeholder, onSelect }) => {
           />
           <FlatList
             data={filteredOptions}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <Menu.Item onPress={() => handleSelect(item)} title={item} />
+              <Menu.Item onPress={() => handleSelect(item)} title={item.name} />
             )}
           />
         </View>

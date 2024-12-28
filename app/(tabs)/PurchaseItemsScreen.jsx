@@ -211,3 +211,6 @@ function themeStyles(theme) {
   })
 }
 export default PurchaseItemsScreen
+
+// currentPurchase
+// purchasesItem

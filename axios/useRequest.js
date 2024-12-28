@@ -85,8 +85,8 @@ const useRequest = () => {
     return await Request.post(`api/playersPurchases`, data)
   }
 
-  const getPurchases = async () => {
-    return await Request.get(`api/playersPurchases`)
+  const getPurchases = async (params) => {
+    return await Request.get(`api/playersPurchases`, params)
   }
 
   const updatePurchases = async (id, data) => {
@@ -95,6 +95,10 @@ const useRequest = () => {
 
   const deletePurchases = async (id) => {
     return await Request.delete(`api/playersPurchases/${id}`)
+  }
+
+  const playerIdList = async (id) => {
+    return await Request.get(`api/playersPurchases/newPlayerId/${id}`)
   }
 
   return {
@@ -120,6 +124,7 @@ const useRequest = () => {
     getPurchases,
     updatePurchases,
     deletePurchases,
+    playerIdList,
   }
 }
 export default useRequest
