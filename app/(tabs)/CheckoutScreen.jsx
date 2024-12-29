@@ -142,12 +142,12 @@ const CheckoutScreen = () => {
         }
         buttons={[
           {
-            value: "Paid",
+            value: "paid",
             label: "Paid",
             style: filters.status === "Paid" ? styles.selectedButton : {},
           },
           {
-            value: "Not Paid",
+            value: "notPaid",
             label: "Not Paid",
             style: filters.status === "Not Paid" ? styles.selectedButton : {},
           },

@@ -40,6 +40,7 @@ const PlayersPurchasesScreen = () => {
   const [count, setCount] = useState("")
   const [playerId, setPlayerId] = useState("")
   const [players, setPlayers] = useState("")
+  const [newPlayer, setNewPlayer] = useState("")
   const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
   const [status, setStatus] = useState("notPaid") // Track status in the popup
   const [itemsDropdown, setItemsDropdown] = useState([])
@@ -67,6 +68,8 @@ const PlayersPurchasesScreen = () => {
     const playersList = await playerIdList(
       user.type == "owner" ? user.id : user.owner
     )
+
+    setNewPlayer(Math.max(...playersList.data.playerIds))
     const playersObject = {}
     playersList.data.playerIds.map((id) => (playersObject[id] = id))
     setPlayers(playersObject)
@@ -77,6 +80,7 @@ const PlayersPurchasesScreen = () => {
       setPlayerId(purchase.playerId.toString())
       setStatus(purchase.status) // Initialize status with current value
     } else {
+      setCurrentPurchase()
       setPurchasesItem({})
       setCount("")
       setPlayerId("")
@@ -278,18 +282,12 @@ const PlayersPurchasesScreen = () => {
               keyboardType="numeric"
               style={[styles.input, styles.inputRow]}
             />
-            {/* <TextInput
-              label="Player ID"
-              value={playerId}
-              onChangeText={setPlayerId}
-              keyboardType="numeric"
-              style={[styles.input, styles.inputRow]}
-            /> */}
             <Dropdown
               data={players}
               onSelect={setPlayerId} // Pass handleSelect function to handle selection
-              roomholder="Choose a PlayerId"
-              flag={true}
+              placeholder="Choose a PlayerId"
+              flag={newPlayer}
+              selected={currentPurchase?.playerId?.toString()}
             />
             <View style={styles.inputRow}>
               <SegmentedButtons

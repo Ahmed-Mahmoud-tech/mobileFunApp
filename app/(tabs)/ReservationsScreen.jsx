@@ -247,7 +247,7 @@ const ReservationScreen = () => {
                 roomId3: "room 3",
               }}
               onSelect={setRoomId} // Pass handleSelect function to handle selection
-              roomholder="Choose a Room"
+              placeholder="Choose a Room"
             />
 
             <Button

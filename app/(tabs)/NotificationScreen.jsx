@@ -116,7 +116,7 @@ const NotificationPage = () => {
               checkout: "Checkout",
             }}
             onSelect={notificationType} // Pass handleSelect function to handle selection
-            roomholder="Choose a Game"
+            placeholder="Choose a Game"
           />
 
           {/* Date Filter */}

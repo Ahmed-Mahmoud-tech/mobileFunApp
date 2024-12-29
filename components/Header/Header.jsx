@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Appbar, Badge, Text, useTheme } from "react-native-paper"
 import { useDispatch, useSelector } from "react-redux"
 import { ChangeMenuStatus, changeRoute } from "@/store/slices/mainConfig"
-import { StyleSheet, View } from "react-native"
+import { Image, StyleSheet, View } from "react-native"
 import { I18nextProvider, useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
 
@@ -33,7 +33,9 @@ const Header = ({ userName }) => {
 
   return (
     <Appbar.Header style={styles.container}>
-      <Appbar.Content title={t("welcome")} />
+      {/* <Appbar.Content title={t("welcome")} /> */}
+      <Image source={require("@/assets/images/fun.png")} style={styles.logo} />
+
       <Appbar.Content title={userName} />
       <View>
         <Appbar.Action icon="bell" onPress={notificationPage} />
@@ -62,6 +64,12 @@ function themeStyles(theme) {
       right: 9,
       backgroundColor: "red",
       color: "white",
+    },
+    logo: {
+      width: 90, // Adjust the width as needed
+      height: 40, // Adjust the height as needed
+      marginRight: 20, // Add some space to the right of the logo
+      marginLeft: 10,
     },
   })
 }

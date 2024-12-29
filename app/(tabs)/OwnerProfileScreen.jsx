@@ -53,6 +53,7 @@ const OwnerProfile = () => {
     checkout: user.checkout,
   })
   const [employees, setEmployees] = useState([])
+
   const [rooms, setRooms] = useState([
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
@@ -230,7 +231,7 @@ const OwnerProfile = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getRooms()
+      const data = await getRooms(user.type == "owner" ? user.id : user.owner)
       setRooms(data.data)
     })()
   }, [updateRoomsRender])
@@ -314,7 +315,7 @@ const OwnerProfile = () => {
             value={newEmployeePhone}
             onChangeText={setNewEmployeePhone}
             style={styles.input}
-            roomholder="Enter owner's phone"
+            placeholder="Enter owner's phone"
           />
           {requestStatus ? (
             <Chip mode="outlined" style={styles.input}>
@@ -350,7 +351,7 @@ const OwnerProfile = () => {
             value={newEmployeePhone}
             onChangeText={setNewEmployeePhone}
             style={{ ...styles.input, marginBottom: 0 }}
-            roomholder="Enter owner's phone"
+            placeholder="Enter owner's phone"
           />
           <Button
             mode="contained"

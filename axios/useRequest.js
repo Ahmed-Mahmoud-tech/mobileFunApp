@@ -33,8 +33,8 @@ const useRequest = () => {
     return await Request.post(`api/sections`, data)
   }
 
-  const getRooms = async () => {
-    return await Request.get(`api/sections`)
+  const getRooms = async (id) => {
+    return await Request.get(`api/sections/${id}`)
   }
 
   const updateRoom = async (id, data) => {
@@ -68,8 +68,8 @@ const useRequest = () => {
     return await Request.post(`api/games`, data)
   }
 
-  const getGames = async () => {
-    return await Request.get(`api/games`)
+  const getGames = async (id) => {
+    return await Request.get(`api/games/${id}`)
   }
 
   const updateGame = async (id, data) => {
@@ -101,6 +101,24 @@ const useRequest = () => {
     return await Request.get(`api/playersPurchases/newPlayerId/${id}`)
   }
 
+  /*******************   player Sessions  ******************** */
+
+  const postSessions = async (data) => {
+    return await Request.post(`api/sessions`, data)
+  }
+
+  const getSessions = async (params) => {
+    return await Request.get(`api/sessions`, params)
+  }
+
+  const updateSessions = async (id, data) => {
+    return await Request.put(`api/sessions/${id}`, data)
+  }
+
+  const deleteSessions = async (id) => {
+    return await Request.delete(`api/sessions/${id}`)
+  }
+
   return {
     getUserInfo,
     googleLogOut,
@@ -125,6 +143,10 @@ const useRequest = () => {
     updatePurchases,
     deletePurchases,
     playerIdList,
+    postSessions,
+    getSessions,
+    updateSessions,
+    deleteSessions,
   }
 }
 export default useRequest

@@ -13,6 +13,7 @@ import {
   useTheme,
   IconButton,
 } from "react-native-paper"
+import { useSelector } from "react-redux"
 
 const GamesScreen = () => {
   const [games, setGames] = useState([])
@@ -32,6 +33,8 @@ const GamesScreen = () => {
   const [handleNo, setHandleNo] = useState(null)
   const [yesWord, setYesWord] = useState("Yes")
   const [noWord, setNoWord] = useState("No")
+
+  const user = useSelector((state) => state.user.userInfo)
 
   const { postGame, getGames, updateGame, deleteGame } = useRequest()
 
@@ -75,7 +78,7 @@ const GamesScreen = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getGames()
+      const data = await getGames(user.type == "owner" ? user.id : user.owner)
       setGames(data.data)
     })()
   }, [updateGameRender])

@@ -49,12 +49,12 @@ const MainDrawer = () => {
         }}
       />
     ),
-    PlayScreen: (
+    SessionScreen: (
       <Drawer.Item
-        label="play"
-        active={active === "PlayScreen"}
+        label="Session"
+        active={active === "SessionScreen"}
         onPress={() => {
-          changeRouteFun("PlayScreen")
+          changeRouteFun("SessionScreen")
         }}
       />
     ),
@@ -124,12 +124,12 @@ const MainDrawer = () => {
         }}
       />
     ),
-    PlayScreen: (
+    SessionScreen: (
       <Drawer.Item
-        label="play"
-        active={active === "PlayScreen"}
+        label="Session"
+        active={active === "SessionScreen"}
         onPress={() => {
-          changeRouteFun("PlayScreen")
+          changeRouteFun("SessionScreen")
         }}
       />
     ),

@@ -8,15 +8,11 @@ import {
 } from "react-native"
 import { Text, useTheme } from "react-native-paper"
 
-const Dropdown = ({
-  data,
-  onSelect,
-  roomholder,
-  backgroundColor,
-  flag = false,
-}) => {
+const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
   const [isVisible, setIsVisible] = useState(false) // Controls dropdown visibility
-  const [selectedItem, setSelectedItem] = useState(null) // Stores the selected item
+  const [selectedItem, setSelectedItem] = useState(
+    selected ? data[selected] : null
+  ) // Stores the selected item
   const theme = useTheme()
   const styles = themeStyles(theme)
   // Function to toggle visibility of the dropdown
@@ -37,23 +33,7 @@ const Dropdown = ({
       onPress={() => handleSelectItem(item)}
       style={styles.item}
     >
-      <Text style={styles.itemText}>
-        {data[item] == Object.values(data)[0] && flag ? (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-          >
-            <Text>{data[item]}</Text>
-            <Text style={{ color: "orange", fontWeight: "bold" }}>New</Text>
-          </View>
-        ) : (
-          data[item]
-        )}
-      </Text>
+      <Text style={styles.itemText}>{data[item] != flag && data[item]}</Text>
     </TouchableOpacity>
   )
 
@@ -65,7 +45,7 @@ const Dropdown = ({
         style={{ ...styles.dropdownButton }}
       >
         <Text style={styles.buttonText}>
-          {selectedItem ? selectedItem : roomholder || "Select an option"}
+          {selectedItem ? selectedItem : placeholder || "Select an option"}
         </Text>
       </TouchableOpacity>
 
@@ -81,6 +61,28 @@ const Dropdown = ({
           onPress={() => setIsVisible(false)}
         >
           <View style={styles.modalContainer}>
+            {flag && (
+              <TouchableOpacity
+                onPress={() => handleSelectItem(flag)}
+                style={styles.item}
+              >
+                <Text style={styles.itemText}>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Text>{data[flag]}</Text>
+                    <Text style={{ color: "orange", fontWeight: "bold" }}>
+                      New
+                    </Text>
+                  </View>
+                </Text>
+              </TouchableOpacity>
+            )}
             <FlatList
               data={Object.keys(data)}
               renderItem={renderItem}
