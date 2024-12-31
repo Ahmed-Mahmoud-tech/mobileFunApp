@@ -14,6 +14,7 @@ import { useSelector } from "react-redux"
 import { utcToLocal } from "@/common/time"
 import { calculateTimeDifference } from "@/common/timeDifference"
 import RenderCheckOutHeader from "@/components/RenderCheckOutHeader/RenderCheckOutHeader"
+import Popup from "@/components/Popup/Popup"
 
 let firstLoadSession = 1
 let firstLoadPurchase = 1
@@ -39,6 +40,8 @@ const CheckoutScreen = () => {
   const [updateSessionRender, setUpdateSessionRender] = useState(0)
   const [updatePurchasesRender, setUpdatePurchasesRender] = useState(false)
   const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
+  const [visible, setVisible] = useState("")
+  const [totalPayment, setTotalPayment] = useState()
   const [filters, setFilters] = useState({
     status: "All",
     playerId: "",
@@ -105,8 +108,6 @@ const CheckoutScreen = () => {
     setUpdatePurchasesRender(updatePurchasesRender + 1)
   }
 
-  const handleCheckoutAll = () => {}
-
   const showDatePicker = () => {
     setDatePickerVisible(true)
   }
@@ -164,6 +165,47 @@ const CheckoutScreen = () => {
     })()
   }, [updatePurchasesRender, debouncedPlayerId, filters.status, filters.day])
 
+  const handleCheckoutAll = async () => {
+    const purchasesPromises = purchases.map(
+      (purchase) =>
+        purchases.status == "notPaid" &&
+        updatePurchases(purchase.id, { status: "paid" })
+    )
+    const sessionsPromises = sessions.map((session) =>
+      updateSessions(session.id, {
+        amount: calculatePrice(session),
+        status: "paid",
+      })
+    )
+    await Promise.all([...purchasesPromises, ...sessionsPromises])
+    setUpdatePurchasesRender(updatePurchasesRender + 1)
+    setUpdateSessionRender(updateSessionRender + 1)
+    setVisible(false)
+  }
+
+  useEffect(() => {
+    if ((sessions.length > 0 || purchases.length > 0) && filters.playerId) {
+      const total =
+        sessions.reduce(
+          (sum, item) =>
+            parseFloat(sum) +
+            (item.status == "notPaid" ? calculatePrice(item) : 0),
+          0
+        ) +
+        purchases.reduce(
+          (sum, purchase) =>
+            parseFloat(sum) +
+            (purchase.status == "notPaid"
+              ? parseFloat(items[purchase.item].price) *
+                parseFloat(purchase.count)
+              : 0),
+          0
+        )
+
+      setTotalPayment(total)
+    }
+  }, [sessions, purchases, filters.playerId])
+
   const renderSessionItem = ({ item }) =>
     games &&
     rooms && (
@@ -214,6 +256,7 @@ const CheckoutScreen = () => {
               Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}
             </Text>
             <Text>Count: {item.count}</Text>
+            <Text>Player ID: {item.playerId}</Text>
             <Text>
               Total Price:
               {+items[item.item].price * +item.count}
@@ -236,6 +279,16 @@ const CheckoutScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <Popup
+        title={`Are you sure to checkout all purchases and sessions for player ID ${filters.playerId} ?`}
+        description={"The total payment is " + totalPayment}
+        handleYes={() => handleCheckoutAll()}
+        handleNo={() => setVisible(false)}
+        visible={visible}
+        yes={"Confirm"}
+        no={"Cancel"}
+      />
+
       <RenderCheckOutHeader
         filters={filters}
         setFilters={setFilters}
@@ -291,16 +344,17 @@ const CheckoutScreen = () => {
       />
 
       {/* Checkout All Button */}
-      {sessions.length > 0 && (
+      {parseFloat(totalPayment) ? (
         <Button
           mode="contained"
-          onPress={handleCheckoutAll}
+          onPress={() => {
+            setVisible(true)
+          }}
           style={styles.checkoutAll}
         >
-          Checkout All (
-          {sessions.reduce((sum, session) => sum + session.price, 0)})
+          Checkout All ({totalPayment})
         </Button>
-      )}
+      ) : null}
     </ScrollView>
   )
 }
