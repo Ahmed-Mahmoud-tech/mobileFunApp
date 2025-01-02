@@ -86,11 +86,13 @@ function Wrapper({ children }) {
       //   path
       // )
       if ((queryParams.token || localToken) && (route || realRoute)) {
+        console.log("000000000000000000000")
         if (!user && userId) {
           const userInfo = await getUserInfo(userId)
           if (userInfo) {
             dispatch(setStoredUser(userInfo.data))
             userCheck(userInfo.data, path)
+            // userInfo.data.token && saveData("token", userInfo.data.token)
           } else {
             // if ((route || realRoute) != "LoginScreen") {
             //   dispatch(changeRoute("LoginScreen"))

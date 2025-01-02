@@ -72,7 +72,8 @@ const PurchaseItemsScreen = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getItems(user.type == "owner" ? user.id : user.owner)
+      const data = await getItems()
+      // const data = await getItems(user.type == "owner" ? user.id : user.owner)
       setItems(data.data)
     })()
   }, [updateItemRender])

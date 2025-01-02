@@ -19,8 +19,17 @@ const useRequest = () => {
   const postRequest = async (data) => {
     return await Request.post(`api/requests`, data)
   }
-  const getRequest = async () => {
-    return await Request.get(`api/requests`)
+
+  const getOwnerRequest = async () => {
+    return await Request.get(`api/requests/owner`)
+  }
+
+  const getEmployeeRequest = async () => {
+    return await Request.get(`api/requests/employee`)
+  }
+
+  const updateRequest = async (requestId, data) => {
+    return await Request.put(`api/requests/${requestId}`, data)
   }
 
   const deleteRequest = async (requestId) => {
@@ -52,7 +61,7 @@ const useRequest = () => {
   }
 
   const getItems = async (id) => {
-    return await Request.get(`api/purchasesItems/${id}`)
+    return await Request.get(`api/purchasesItems`)
   }
 
   const updateItem = async (id, data) => {
@@ -124,7 +133,8 @@ const useRequest = () => {
     googleLogOut,
     updateUser,
     postRequest,
-    getRequest,
+    getOwnerRequest,
+    getEmployeeRequest,
     deleteRequest,
     postRoom,
     getRooms,
@@ -147,6 +157,7 @@ const useRequest = () => {
     getSessions,
     updateSessions,
     deleteSessions,
+    updateRequest,
   }
 }
 export default useRequest

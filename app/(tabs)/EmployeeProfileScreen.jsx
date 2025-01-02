@@ -1,35 +1,55 @@
-import React, { useState } from "react"
-import { StyleSheet, View, ScrollView, Alert } from "react-native"
+import useRequest from "@/axios/useRequest"
+import { saveData } from "@/common/localStorage"
+import { utcToLocal } from "@/common/time"
+import React, { useEffect, useState } from "react"
+import { StyleSheet, ScrollView, View } from "react-native"
 import {
   TextInput,
   Button,
+  Card,
+  useTheme,
+  List,
   Text,
   Chip,
-  Card,
-  SegmentedButtons,
-  useTheme,
+  IconButton,
 } from "react-native-paper"
-import DateTimePicker from "@react-native-community/datetimepicker"
+import { useSelector } from "react-redux"
 
 const EmployeeProfileScreen = () => {
-  const [email, setEmail] = useState("employee@example.com")
-  const [name, setName] = useState("John Doe")
-  const [birthdate, setBirthdate] = useState(new Date())
-  const [gender, setGender] = useState("Male")
+  const user = useSelector((state) => state.user.userInfo)
+  const [name, setName] = useState(user.username || "")
   const [editMode, setEditMode] = useState(false)
+  const [phone, setPhone] = useState(user.phoneNumber || "")
+  const [ownerRequests, setOwnerRequests] = useState([])
+  const [update, setUpdate] = useState(0)
+  const { updateUser, getEmployeeRequest, updateRequest } = useRequest()
 
-  const [showDatePicker, setShowDatePicker] = useState(false)
-
-  const handleBirthdateChange = (event, selectedDate) => {
-    setShowDatePicker(false)
-    if (selectedDate) {
-      setBirthdate(selectedDate)
+  const handleEditToggle = async () => {
+    if (editMode == true) {
+      const data = {
+        phoneNumber: phone,
+        username: name,
+      }
+      await updateUser(user.id, data)
     }
+    setEditMode(!editMode)
   }
 
-  const handleEditToggle = () => setEditMode(!editMode)
   const theme = useTheme()
   const styles = themeStyles(theme)
+
+  const updateRequestAction = async (id, status, fromUser) => {
+    const response = await updateRequest(id, { status, fromUser })
+    saveData("token", response.data.token)
+    setUpdate(update + 1)
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      const data = await getEmployeeRequest()
+      setOwnerRequests(data.data)
+    })()
+  }, [update])
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -38,52 +58,18 @@ const EmployeeProfileScreen = () => {
         <Card.Title title="Personal Information" />
         <Card.Content>
           <TextInput
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            style={styles.input}
-            editable={editMode}
-          />
-          <TextInput
             label="Name"
             value={name}
             onChangeText={setName}
             style={styles.input}
             editable={editMode}
           />
-          <Button
-            mode="outlined"
-            onPress={() => setShowDatePicker(true)}
+          <TextInput
+            label="Phone"
+            value={phone}
+            onChangeText={setPhone}
             style={styles.input}
-            disabled={!editMode}
-          >
-            Birthdate: {birthdate.toLocaleDateString()}
-          </Button>
-          {showDatePicker && (
-            <DateTimePicker
-              value={birthdate}
-              mode="date"
-              display="default"
-              onChange={handleBirthdateChange}
-            />
-          )}
-          <SegmentedButtons
-            value={gender}
-            onValueChange={setGender}
-            buttons={[
-              {
-                value: "Male",
-                label: "Male",
-                style: gender === "Male" ? styles.selectedButton : {},
-              },
-              {
-                value: "Female",
-                label: "Female",
-                style: gender === "Female" ? styles.selectedButton : {},
-              },
-            ]}
-            disabled={!editMode}
-            style={styles.segmentedButtons}
+            editable={editMode}
           />
         </Card.Content>
         <Card.Actions>
@@ -92,9 +78,80 @@ const EmployeeProfileScreen = () => {
             onPress={handleEditToggle}
             style={styles.button}
           >
-            {editMode ? "Save" : "Edit"}
+            {editMode ? "Save" : "Open edit mode"}
           </Button>
         </Card.Actions>
+      </Card>
+      <Card>
+        <Card.Content>
+          {ownerRequests.length > 0 ? (
+            ownerRequests.map((request) => (
+              <List.Item
+                key={request.id}
+                title={request.fromUserInfo.username}
+                description={
+                  <>
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        alignContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontWeight: "bold" }}>
+                        {request.fromUserInfo.phoneNumber}
+                      </Text>
+                      <Chip style={{ margin: 10, fontsize: 10 }}>
+                        {request.status}
+                      </Chip>
+                    </View>
+                    <View>
+                      <Text>{utcToLocal(request.updatedAt)}</Text>
+                    </View>
+                  </>
+                }
+                right={() =>
+                  request.status == "pending" ? (
+                    <View style={styles.roomActions}>
+                      <Button
+                        mode="outlined"
+                        onPress={() =>
+                          updateRequestAction(
+                            request.id,
+                            "rejected",
+                            request.fromUser
+                          )
+                        }
+                        style={styles.button}
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        mode="contained"
+                        onPress={() =>
+                          updateRequestAction(
+                            request.id,
+                            "accepted",
+                            request.fromUser
+                          )
+                        }
+                        style={styles.button}
+                      >
+                        Accept
+                      </Button>
+                    </View>
+                  ) : (
+                    <></>
+                  )
+                }
+              />
+            ))
+          ) : (
+            <Text style={{ margin: 10 }}>No requests found.</Text>
+          )}
+        </Card.Content>
       </Card>
     </ScrollView>
   )
@@ -110,17 +167,22 @@ function themeStyles(theme) {
     card: {
       marginBottom: 16,
     },
-    input: {
-      marginBottom: 16,
-    },
+    // input: {
+    //   marginBottom: 16,
+    // },
     button: {
       marginTop: 8,
+      marginInlineStart: 5,
     },
     segmentedButtons: {
       marginBottom: 16,
     },
     selectedButton: {
       backgroundColor: theme.colors.primaryContainer, // Active color
+    },
+    roomActions: {
+      flexDirection: "row",
+      alignItems: "center",
     },
   })
 }

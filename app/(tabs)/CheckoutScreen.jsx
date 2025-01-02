@@ -152,9 +152,10 @@ const CheckoutScreen = () => {
       const purchasesResponse = await getPurchases({ params })
       setPurchases(purchasesResponse.data)
       if (firstLoadPurchase == 1) {
-        const itemsResponse = await getItems(
-          user.type == "owner" ? user.id : user.owner
-        )
+        const itemsResponse = await getItems()
+        // const itemsResponse = await getItems(
+        //   user.type == "owner" ? user.id : user.owner
+        // )
 
         const items = {}
         itemsResponse.data.map((item) => (items[item.id] = item))

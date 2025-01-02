@@ -122,7 +122,8 @@ const PlayersPurchasesScreen = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getItems(user.type == "owner" ? user.id : user.owner)
+      const data = await getItems()
+      // const data = await getItems(user.type == "owner" ? user.id : user.owner)
       setItemsDropdown(data.data)
     })()
   }, [])

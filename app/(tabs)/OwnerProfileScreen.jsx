@@ -37,7 +37,7 @@ const OwnerProfile = () => {
   const {
     updateUser,
     postRequest,
-    getRequest,
+    getOwnerRequest,
     deleteRequest,
     postRoom,
     getRooms,
@@ -203,7 +203,7 @@ const OwnerProfile = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getRequest()
+      const data = await getOwnerRequest()
       setEmployees(data.data)
     })()
   }, [update])
