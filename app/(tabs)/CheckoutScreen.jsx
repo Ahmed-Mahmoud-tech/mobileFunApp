@@ -73,16 +73,12 @@ const CheckoutScreen = () => {
 
       setSessions(sessionResponse.data)
       if (firstLoadSession == 1) {
-        const gameResponse = await getGames(
-          user.type == "owner" ? user.id : user.owner
-        )
+        const gameResponse = await getGames()
         const games = {}
         gameResponse.data.map((item) => (games[item.id] = item))
         setGames(games)
 
-        const roomResponse = await getRooms(
-          user.type == "owner" ? user.id : user.owner
-        )
+        const roomResponse = await getRooms()
         const rooms = {}
         roomResponse.data.map((item) => (rooms[item.id] = item))
         setRooms(rooms)
@@ -153,9 +149,6 @@ const CheckoutScreen = () => {
       setPurchases(purchasesResponse.data)
       if (firstLoadPurchase == 1) {
         const itemsResponse = await getItems()
-        // const itemsResponse = await getItems(
-        //   user.type == "owner" ? user.id : user.owner
-        // )
 
         const items = {}
         itemsResponse.data.map((item) => (items[item.id] = item))

@@ -78,7 +78,7 @@ const GamesScreen = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getGames(user.type == "owner" ? user.id : user.owner)
+      const data = await getGames()
       setGames(data.data)
     })()
   }, [updateGameRender])

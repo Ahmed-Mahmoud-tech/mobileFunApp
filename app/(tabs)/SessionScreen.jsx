@@ -70,9 +70,7 @@ const SessionsScreen = () => {
 
   // Open Dialog to Add/Edit Session
   const openDialog = async (session = null) => {
-    const playersList = await playerIdList(
-      user.type == "owner" ? user.id : user.owner
-    )
+    const playersList = await playerIdList()
     setNewPlayer(Math.max(...playersList.data.playerIds))
     const playersObject = {}
     playersList.data.playerIds.map((id) => (playersObject[id] = id))
@@ -186,8 +184,8 @@ const SessionsScreen = () => {
 
   useEffect(() => {
     ;(async () => {
-      const games = await getGames(user.type == "owner" ? user.id : user.owner)
-      const rooms = await getRooms(user.type == "owner" ? user.id : user.owner)
+      const games = await getGames()
+      const rooms = await getRooms()
       const gamesObject = {}
       games.data.map((game) => {
         gamesObject[game.id] = game.name

@@ -42,8 +42,8 @@ const useRequest = () => {
     return await Request.post(`api/sections`, data)
   }
 
-  const getRooms = async (id) => {
-    return await Request.get(`api/sections/${id}`)
+  const getRooms = async () => {
+    return await Request.get(`api/sections`)
   }
 
   const updateRoom = async (id, data) => {
@@ -60,7 +60,7 @@ const useRequest = () => {
     return await Request.post(`api/purchasesItems`, data)
   }
 
-  const getItems = async (id) => {
+  const getItems = async () => {
     return await Request.get(`api/purchasesItems`)
   }
 
@@ -77,8 +77,8 @@ const useRequest = () => {
     return await Request.post(`api/games`, data)
   }
 
-  const getGames = async (id) => {
-    return await Request.get(`api/games/${id}`)
+  const getGames = async () => {
+    return await Request.get(`api/games`)
   }
 
   const updateGame = async (id, data) => {
@@ -106,8 +106,8 @@ const useRequest = () => {
     return await Request.delete(`api/playersPurchases/${id}`)
   }
 
-  const playerIdList = async (id) => {
-    return await Request.get(`api/playersPurchases/newPlayerId/${id}`)
+  const playerIdList = async () => {
+    return await Request.get(`api/playersPurchases/newPlayerId`)
   }
 
   /*******************   player Sessions  ******************** */

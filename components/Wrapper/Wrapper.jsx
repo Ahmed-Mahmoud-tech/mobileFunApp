@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { useTheme } from "react-native-paper"
 import { I18nextProvider, useTranslation } from "react-i18next"
 import i18n from "../Translation/i18n"
-import { getData } from "@/common/localStorage"
+import { getData, saveData } from "@/common/localStorage"
 import useRequest from "@/axios/useRequest"
 import { setStoredUser } from "@/store/slices/user"
 import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router"
@@ -92,7 +92,7 @@ function Wrapper({ children }) {
           if (userInfo) {
             dispatch(setStoredUser(userInfo.data))
             userCheck(userInfo.data, path)
-            // userInfo.data.token && saveData("token", userInfo.data.token)
+            userInfo.data.token && saveData("token", userInfo.data.token)
           } else {
             // if ((route || realRoute) != "LoginScreen") {
             //   dispatch(changeRoute("LoginScreen"))

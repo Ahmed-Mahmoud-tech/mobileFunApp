@@ -19,13 +19,14 @@ import useRequest from "@/axios/useRequest"
 import { I18nextProvider, useTranslation } from "react-i18next"
 import { useLogoutFun } from "@/hooks/useLogoutFun"
 import { useDispatch, useSelector } from "react-redux"
-import { setStoredUser } from "@/store/slices/user"
+import { setCurrentToken, setStoredUser } from "@/store/slices/user"
 import { changeRoute } from "@/store/slices/mainConfig"
 import { useRouter } from "expo-router"
 const MainInfoScreen = ({ route }) => {
   const [phone, setPhone] = useState("")
   const [isOwner, setIsOwner] = useState(false)
   const [roomName, setRoomName] = useState("")
+  const [token, setToken] = useState("")
   const { t, i18n } = useTranslation()
   const logoutFun = useLogoutFun()
   const dispatch = useDispatch()
@@ -90,7 +91,9 @@ const MainInfoScreen = ({ route }) => {
   useEffect(() => {
     if (queryParams.token) {
       saveData("token", queryParams.token)
+      saveData("userId", queryParams.userId)
     }
+    dispatch(setCurrentToken(queryParams.token))
   }, [queryParams.token])
 
   return (

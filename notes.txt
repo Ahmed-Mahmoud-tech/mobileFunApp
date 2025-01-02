@@ -5,3 +5,17 @@ alert yes or yes and no style
 npx eas build -p android
 
 npx eas build --profile development --platform android
+
+
+
+Notification
+    new Session
+    new PurchaseItem
+    new playerPurchase
+    employee accept owner request
+
+    owner send request to employee
+    end time Notification
+
+
+validation

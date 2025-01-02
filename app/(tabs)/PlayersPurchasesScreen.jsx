@@ -65,9 +65,7 @@ const PlayersPurchasesScreen = () => {
   const user = useSelector((state) => state.user.userInfo)
 
   const openDialog = async (purchase = null) => {
-    const playersList = await playerIdList(
-      user.type == "owner" ? user.id : user.owner
-    )
+    const playersList = await playerIdList()
 
     setNewPlayer(Math.max(...playersList.data.playerIds))
     const playersObject = {}
@@ -103,7 +101,7 @@ const PlayersPurchasesScreen = () => {
       count: count,
       playerId: playerId,
       status,
-      ownerId: user.type == "owner" ? user.id : user.owner,
+      ownerId: user.owner,
       // item:
     }
 
@@ -123,7 +121,6 @@ const PlayersPurchasesScreen = () => {
   useEffect(() => {
     ;(async () => {
       const data = await getItems()
-      // const data = await getItems(user.type == "owner" ? user.id : user.owner)
       setItemsDropdown(data.data)
     })()
   }, [])
@@ -131,7 +128,7 @@ const PlayersPurchasesScreen = () => {
   // useEffect(() => {
   //   ;(async () => {
   //     const data = await getPurchases(
-  //       user.type == "owner" ? user.id : user.owner
+  //       user.owner
   //     )
   //     setPurchases(data.data)
   //   })()

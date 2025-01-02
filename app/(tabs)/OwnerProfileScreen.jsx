@@ -46,7 +46,7 @@ const OwnerProfile = () => {
   } = useRequest()
   const [notificationPreferences, setNotificationPreferences] = useState({
     employeeRequest: user.employeeRequest,
-    reservation: user.reservation,
+    // reservation: user.reservation,
     session: user.session,
     purchasesItems: user.purchasesItems,
     playersPurchases: user.playersPurchases,
@@ -231,7 +231,7 @@ const OwnerProfile = () => {
 
   useEffect(() => {
     ;(async () => {
-      const data = await getRooms(user.type == "owner" ? user.id : user.owner)
+      const data = await getRooms()
       setRooms(data.data)
     })()
   }, [updateRoomsRender])

@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { setStoredUser } from "@/store/slices/user"
+import { setCurrentToken, setStoredUser } from "@/store/slices/user"
 import { removeData } from "@/common/localStorage"
 import useRequest from "@/axios/useRequest"
 import { useRouter } from "expo-router"
@@ -11,12 +11,13 @@ export const useLogoutFun = () => {
   const router = useRouter()
 
   const logoutFun = async () => {
-    dispatch(changeRoute("LoginScreen"))
-    router.push("/LoginScreen")
     await removeData("token")
     await removeData("userId")
     dispatch(ChangeMenuStatus(true))
     dispatch(setStoredUser({}))
+    dispatch(setCurrentToken(null))
+    router.push("/LoginScreen")
+    dispatch(changeRoute("LoginScreen"))
     googleLogOut()
   }
 

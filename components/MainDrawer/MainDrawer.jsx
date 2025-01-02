@@ -67,12 +67,33 @@ const MainDrawer = () => {
         }}
       />
     ),
-    Reservations: (
+    // Reservations: (
+    //   <Drawer.Item
+    //     label="Reservations"
+    //     active={active === "ReservationsScreen"}
+    //     onPress={() => {
+    //       changeRouteFun("ReservationsScreen")
+    //     }}
+    //   />
+    // ),
+    LoginScreen: (
       <Drawer.Item
-        label="Reservations"
-        active={active === "ReservationsScreen"}
+        label="Logout"
+        active={active === "LoginScreen"}
         onPress={() => {
-          changeRouteFun("ReservationsScreen")
+          logoutFun("LoginScreen")
+        }}
+      />
+    ),
+  }
+
+  const realEmployeeMenu = {
+    EmployeeProfileScreen: (
+      <Drawer.Item
+        label="Employee Profile"
+        active={active === "EmployeeProfileScreen"}
+        onPress={() => {
+          changeRouteFun("EmployeeProfileScreen")
         }}
       />
     ),
@@ -142,15 +163,15 @@ const MainDrawer = () => {
         }}
       />
     ),
-    Reservations: (
-      <Drawer.Item
-        label="Reservations"
-        active={active === "ReservationsScreen"}
-        onPress={() => {
-          changeRouteFun("ReservationsScreen")
-        }}
-      />
-    ),
+    // Reservations: (
+    //   <Drawer.Item
+    //     label="Reservations"
+    //     active={active === "ReservationsScreen"}
+    //     onPress={() => {
+    //       changeRouteFun("ReservationsScreen")
+    //     }}
+    //   />
+    // ),
     LoginScreen: (
       <Drawer.Item
         label="Logout"
@@ -165,15 +186,16 @@ const MainDrawer = () => {
   const menu = {
     owner: ownerMenu,
     employee: employeeMenu,
+    realEmployeeMenu,
   }
 
   return (
     <ScrollView style={styles.container}>
       <Drawer.Section>
         {user?.type &&
-          Object.values(menu[user.type]).map((item, index) => (
-            <View key={index}>{item}</View>
-          ))}
+          Object.values(
+            user.owner ? menu[user.type] : menu.realEmployeeMenu
+          ).map((item, index) => <View key={index}>{item}</View>)}
         {/* <Drawer.Item
           label="Login"
           active={active === "LoginScreen"}

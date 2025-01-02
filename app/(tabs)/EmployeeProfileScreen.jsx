@@ -1,6 +1,7 @@
 import useRequest from "@/axios/useRequest"
 import { saveData } from "@/common/localStorage"
 import { utcToLocal } from "@/common/time"
+import { setCurrentToken } from "@/store/slices/user"
 import React, { useEffect, useState } from "react"
 import { StyleSheet, ScrollView, View } from "react-native"
 import {
@@ -13,7 +14,7 @@ import {
   Chip,
   IconButton,
 } from "react-native-paper"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 
 const EmployeeProfileScreen = () => {
   const user = useSelector((state) => state.user.userInfo)
@@ -24,6 +25,7 @@ const EmployeeProfileScreen = () => {
   const [update, setUpdate] = useState(0)
   const { updateUser, getEmployeeRequest, updateRequest } = useRequest()
 
+  const dispatch = useDispatch()
   const handleEditToggle = async () => {
     if (editMode == true) {
       const data = {
@@ -41,6 +43,9 @@ const EmployeeProfileScreen = () => {
   const updateRequestAction = async (id, status, fromUser) => {
     const response = await updateRequest(id, { status, fromUser })
     saveData("token", response.data.token)
+    // if (status == "accepted") {
+    //   dispatch(setCurrentToken({ ...user, owner }))
+    // }
     setUpdate(update + 1)
   }
 
