@@ -1,23 +1,25 @@
-import React from "react"
-import { Linking } from "react-native"
-import { Button, Card, Title, useTheme } from "react-native-paper"
+import React, { useEffect } from "react";
+import { Linking } from "react-native";
+import { Button, Card, Title, useTheme } from "react-native-paper";
 
-import { StyleSheet, View } from "react-native"
-import { BACKEND_URL } from "@/constants/main"
+import { StyleSheet, View } from "react-native";
+import { BACKEND_URL } from "@/constants/main";
+import { useDispatch } from "react-redux";
+import { setStoredUser } from "@/store/slices/user";
 
 const LoginScreen = () => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const dispatch = useDispatch();
   const handleGoogleLogin = async () => {
     try {
-      const url = `${BACKEND_URL}/api/auth/google`
+      const url = `${BACKEND_URL}/api/auth/google`;
       // Open the authentication URL
-      await Linking.openURL(url)
+      await Linking.openURL(url);
     } catch (error) {
-      console.error("Error opening Google login:", error)
+      console.error("Error opening Google login:", error);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -38,8 +40,8 @@ const LoginScreen = () => {
         </Card.Content>
       </Card>
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -65,7 +67,7 @@ function themeStyles(theme) {
       textAlign: "center",
       color: "gray",
     },
-  })
+  });
 }
 
-export default LoginScreen
+export default LoginScreen;

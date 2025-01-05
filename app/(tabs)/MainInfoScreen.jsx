@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { StyleSheet, View, TouchableOpacity, Modal } from "react-native"
-import * as Linking from "expo-linking"
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, TouchableOpacity, Modal } from "react-native";
+import * as Linking from "expo-linking";
 import {
   TextInput,
   Button,
@@ -10,56 +10,65 @@ import {
   Title,
   Text,
   IconButton,
-} from "react-native-paper"
+} from "react-native-paper";
 // import MapView, { Marker } from "react-native-maps"
 // import * as Location from "expo-location"
 
-import { removeData, saveData } from "@/common/localStorage"
-import useRequest from "@/axios/useRequest"
-import { I18nextProvider, useTranslation } from "react-i18next"
-import { useLogoutFun } from "@/hooks/useLogoutFun"
-import { useDispatch, useSelector } from "react-redux"
-import { setCurrentToken, setStoredUser } from "@/store/slices/user"
-import { changeRoute } from "@/store/slices/mainConfig"
-import { useRouter } from "expo-router"
+import { removeData, saveData } from "@/common/localStorage";
+import useRequest from "@/axios/useRequest";
+import { I18nextProvider, useTranslation } from "react-i18next";
+import { useLogoutFun } from "@/hooks/useLogoutFun";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentToken, setStoredUser } from "@/store/slices/user";
+import { changeRoute } from "@/store/slices/mainConfig";
+import { useRouter } from "expo-router";
 const MainInfoScreen = ({ route }) => {
-  const [phone, setPhone] = useState("")
-  const [isOwner, setIsOwner] = useState(false)
-  const [roomName, setRoomName] = useState("")
-  const [token, setToken] = useState("")
-  const { t, i18n } = useTranslation()
-  const logoutFun = useLogoutFun()
-  const dispatch = useDispatch()
+  const [phone, setPhone] = useState("");
+  const [isOwner, setIsOwner] = useState(false);
+  const [roomName, setRoomName] = useState("");
+  const [token, setToken] = useState("");
+  const { t, i18n } = useTranslation();
+  const logoutFun = useLogoutFun();
+  const dispatch = useDispatch();
   //   const [location, setLocation] = useState(null) // Stores latitude and longitude
   //   const [isMapVisible, setIsMapVisible] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const { googleLogOut, updateUser } = useRequest()
-  const url = Linking.useURL()
-  const { hostname, path, queryParams } = Linking.parse(url)
-  const user = useSelector((state) => state.user.userInfo)
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const { googleLogOut, updateUser } = useRequest();
+  const url = Linking.useURL();
+  let hostname, path, queryParams;
+  // throw new Error(JSON.stringify(user), "3333333333333333333333333", url);
+
+  if (typeof url === "string" && url) {
+    const parsedUrl = Linking.parse(url);
+    hostname = parsedUrl.hostname;
+    path = parsedUrl.path;
+    queryParams = parsedUrl.queryParams;
+  }
+  const user = useSelector((state) => state.user.userInfo);
+  const router = useRouter();
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     const data = {
       phoneNumber: phone,
       type: isOwner ? "owner" : "employee",
       roomName,
       location: "location",
-    }
-    await updateUser(user.id, data)
+    };
+    await updateUser(user.id, data);
+
     if (isOwner) {
-      dispatch(setStoredUser({ ...user, type: "owner" }))
-      dispatch(changeRoute("OwnerProfileScreen"))
-      router.push("/OwnerProfileScreen")
+      dispatch(setStoredUser({ ...user, type: "owner" }));
+      dispatch(changeRoute("OwnerProfileScreen"));
+      router.push("/OwnerProfileScreen");
     } else {
-      dispatch(setStoredUser({ ...user, type: "employee" }))
-      dispatch(changeRoute("EmployeeProfileScreen"))
-      router.push("/EmployeeProfileScreen")
+      dispatch(setStoredUser({ ...user, type: "employee" }));
+      dispatch(changeRoute("EmployeeProfileScreen"));
+      router.push("/EmployeeProfileScreen");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   //   const openMap = async () => {
   //     const { status } = await Location.requestForegroundPermissionsAsync()
@@ -85,16 +94,18 @@ const MainInfoScreen = ({ route }) => {
   const _handleLanguage = () => {
     i18n.language == "en"
       ? i18n.changeLanguage("ar")
-      : i18n.changeLanguage("en")
-  }
+      : i18n.changeLanguage("en");
+  };
 
   useEffect(() => {
-    if (queryParams.token) {
-      saveData("token", queryParams.token)
-      saveData("userId", queryParams.userId)
+    if (queryParams && queryParams.token) {
+      console.log(queryParams, "666666666666666666666666665");
+
+      saveData("token", queryParams.token);
+      saveData("userId", queryParams.userId);
+      dispatch(setCurrentToken(queryParams.token));
     }
-    dispatch(setCurrentToken(queryParams.token))
-  }, [queryParams.token])
+  }, [queryParams]);
 
   return (
     <View style={styles.container}>
@@ -155,7 +166,7 @@ const MainInfoScreen = ({ route }) => {
             }
             style={styles.button}
           >
-            Submit
+            <Text>Submit</Text>
           </Button>
 
           {/* Links
@@ -175,7 +186,7 @@ const MainInfoScreen = ({ route }) => {
       </Card>
       <Text
         onPress={() => {
-          logoutFun()
+          logoutFun();
         }}
         style={{
           marginTop: 25,
@@ -212,12 +223,12 @@ const MainInfoScreen = ({ route }) => {
           onPress={() => setIsMapVisible(false)}
           style={{ marginBottom: 10 }}
         >
-          Confirm Location
+          <Text>Confirm Location</Text>
         </Button>
       </Modal> */}
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -265,7 +276,7 @@ function themeStyles(theme) {
       marginTop: 10,
       color: theme.colors.onPrimaryContainer,
     },
-  })
+  });
 }
 
-export default MainInfoScreen
+export default MainInfoScreen;

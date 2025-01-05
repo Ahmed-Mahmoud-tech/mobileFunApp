@@ -11,20 +11,14 @@ export const useLogoutFun = () => {
   const router = useRouter();
 
   const logoutFun = async () => {
-    try {
-      console.log("Starting logout process...");
-      await removeData("token");
-      await removeData("userId");
-      dispatch(ChangeMenuStatus(true));
-      dispatch(setStoredUser({}));
-      // dispatch(setCurrentToken(null));
-      console.log("Completed logout process, navigating to LoginScreen...");
-      router.push("/LoginScreen");
-      dispatch(changeRoute("LoginScreen"));
-      await googleLogOut();
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+    await removeData("token");
+    await removeData("userId");
+    dispatch(ChangeMenuStatus(true));
+    dispatch(setStoredUser({}));
+    dispatch(setCurrentToken(null));
+    router.push("/LoginScreen");
+    dispatch(changeRoute("LoginScreen"));
+    googleLogOut();
   };
 
   return logoutFun;

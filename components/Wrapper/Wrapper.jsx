@@ -1,36 +1,36 @@
-import { useEffect, useMemo, useState } from "react"
-import Header from "@/components/Header/Header"
-import MainDrawer from "@/components/MainDrawer/MainDrawer"
-import * as Linking from "expo-linking"
+import { useEffect, useMemo, useState } from "react";
+import Header from "@/components/Header/Header";
+import MainDrawer from "@/components/MainDrawer/MainDrawer";
+import * as Linking from "expo-linking";
 // import { Stack, useNavigation } from "expo-router"
 
-import { Alert, Animated, StyleSheet, View } from "react-native"
-import { useSelector, useDispatch } from "react-redux"
-import { useTheme } from "react-native-paper"
-import { I18nextProvider, useTranslation } from "react-i18next"
-import i18n from "../Translation/i18n"
-import { getData, saveData } from "@/common/localStorage"
-import useRequest from "@/axios/useRequest"
-import { setStoredUser } from "@/store/slices/user"
-import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router"
-import { changeRoute } from "@/store/slices/mainConfig"
+import { Alert, Animated, StyleSheet, Text, View } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { useTheme } from "react-native-paper";
+import { I18nextProvider, useTranslation } from "react-i18next";
+import i18n from "../Translation/i18n";
+import { getData, saveData } from "@/common/localStorage";
+import useRequest from "@/axios/useRequest";
+import { setStoredUser } from "@/store/slices/user";
+import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router";
+import { changeRoute } from "@/store/slices/mainConfig";
 
 function Wrapper({ children }) {
-  const router = useRouter()
+  const router = useRouter();
   // const navigation = useNavigation()
-  const { routes } = useRootNavigationState()
-  const dispatch = useDispatch()
-  const { getUserInfo } = useRequest()
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const [first, setFirst] = useState(false)
-  const menuStatus = useSelector((state) => state.mainConfig.menuStatus)
-  const route = useSelector((state) => state.mainConfig.route)
-  const user = useSelector((state) => state.user.userInfo)
-  const currentToken = useSelector((state) => state.user.currentToken)
+  const { routes } = useRootNavigationState();
+  const dispatch = useDispatch();
+  const { getUserInfo } = useRequest();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const [first, setFirst] = useState(false);
+  const menuStatus = useSelector((state) => state.mainConfig.menuStatus);
+  const route = useSelector((state) => state.mainConfig.route);
+  const user = useSelector((state) => state.user.userInfo);
+  const currentToken = useSelector((state) => state.user.currentToken);
 
   // Initialize height with an animated value
-  const height = useMemo(() => new Animated.Value(0), []) // Start with height of 0
+  const height = useMemo(() => new Animated.Value(0), []); // Start with height of 0
 
   // Function to animate the height value
   const animateHeight = () => {
@@ -38,17 +38,23 @@ function Wrapper({ children }) {
       toValue: menuStatus ? 0 : 300, // Toggle between 0 (hidden) and 300 (expanded height)
       duration: first ? 500 : 0, // Animation duration
       useNativeDriver: false, // Cannot use native driver for `height`
-    }).start()
-    setFirst(true)
-  }
+    }).start();
+    setFirst(true);
+  };
 
   // Trigger animation on menuStatus change
   useEffect(() => {
-    animateHeight()
-  }, [menuStatus])
+    animateHeight();
+  }, [menuStatus]);
 
-  const url = Linking.useURL()
-  const { hostname, path, queryParams } = Linking.parse(url)
+  const url = Linking.useURL();
+  let queryParams, path;
+
+  if (typeof url === "string" && url) {
+    const { path: pathLink, queryParams: queryParamsLink } = Linking.parse(url);
+    path = pathLink;
+    queryParams = queryParamsLink;
+  }
 
   // if (url) {
   //   const { hostname, path, queryParams } = Linking.parse(url)
@@ -58,60 +64,80 @@ function Wrapper({ children }) {
   //     )}`
   //   )
 
-  const notAuth = ["LoginScreen", "MainInfoScreen"]
+  const notAuth = ["LoginScreen", "MainInfoScreen", "index"];
 
   const userCheck = (user, route) => {
     if (!user?.type && !notAuth.includes(route)) {
-      router.push("/MainInfoScreen")
+      router.push("/MainInfoScreen");
     } else if (user?.type && notAuth.includes(route)) {
       user?.type == "employee"
         ? router.push("/EmployeeProfileScreen")
-        : router.push("/OwnerProfileScreen")
+        : router.push("/OwnerProfileScreen");
     }
-  }
+  };
 
   useEffect(() => {
-    !route && dispatch(changeRoute(path))
-    const realRoute = routes[0].name.split("/")[1]
-    ;(async () => {
-      const localToken = await getData("token")
-      const userId = await getData("userId")
-      // console.log(
-      //   realRoute,
-      //   user,
-      //   "999999999999999999",
-      //   userId,
-      //   !user && userId,
-      //   route,
-      //   path
-      // )
-      if ((queryParams.token || localToken) && (route || realRoute)) {
-        console.log("000000000000000000000")
-        if (!user && userId) {
-          const userInfo = await getUserInfo(userId)
+    !route && dispatch(changeRoute(path));
+    const realRoute = routes[0].name.split("/")[1];
+    (async () => {
+      const localToken = await getData("token");
+      const userId = (await getData("userId")) || queryParams?.token;
+      console.log("\n", 7, "\n");
+
+      console.log(
+        "\n",
+        "999999999999999999",
+        {
+          realRoute,
+          user,
+          userId,
+          route,
+          path,
+          "queryParams?.token": queryParams?.token,
+          localToken,
+        },
+        "\n"
+      );
+      if ((queryParams?.token || localToken) && (route || realRoute)) {
+        console.log("\n", 1, "\n");
+
+        if (!user?.email && userId) {
+          console.log("\n", 2, "\n");
+
+          const userInfo = await getUserInfo(userId);
           if (userInfo) {
-            dispatch(setStoredUser(userInfo.data))
-            userCheck(userInfo.data, path)
-            userInfo.data.token && saveData("token", userInfo.data.token)
+            console.log("\n", 3, "\n");
+
+            dispatch(setStoredUser(userInfo.data));
+            userCheck(userInfo.data, path || route);
+            userInfo.data.token && saveData("token", userInfo.data.token);
           } else {
+            console.log("\n", 4, "\n");
+
             // if ((route || realRoute) != "LoginScreen") {
             //   dispatch(changeRoute("LoginScreen"))
             //   router.push("/LoginScreen")
             // }
           }
         } else {
-          userCheck(user, path)
+          console.log("\n", 5, "\n");
+
+          userCheck(user, path || route);
         }
       } else {
+        console.log("\n", 6, "\n");
+
         // route && path != "LoginScreen" && router.push("/LoginScreen")
       }
       // console.log(
       //   route,
       //   "0000000000000000",
       //   navigation.getCurrentRoute().name.split("/")[1]
-      // )
-    })()
-  }, [user, route, currentToken])
+      // );
+      // routes[0].path.length == 0 && router.push("/LoginScreen");
+    })();
+  }, [currentToken]);
+  // }, [user, route, currentToken]);
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -139,14 +165,16 @@ function Wrapper({ children }) {
           route,
           "4564656",
           path,
-          user?.type || notAuth.includes(path)
+          routes[0].name.split("/")[1],
+          user?.type
         )}
-        {(user?.type || notAuth.includes(route || path)) && (
+        {(user?.type ||
+          notAuth.includes(route || path || routes[0].name.split("/")[1])) && (
           <View style={styles.childrenContainer}>{children}</View>
         )}
       </View>
     </I18nextProvider>
-  )
+  );
 }
 
 function themeStyles(theme) {
@@ -171,7 +199,7 @@ function themeStyles(theme) {
       padding: 10,
       backgroundColor: theme.colors.elevation.level3,
     },
-  })
+  });
 }
 
-export default Wrapper
+export default Wrapper;

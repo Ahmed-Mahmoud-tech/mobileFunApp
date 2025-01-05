@@ -17,11 +17,10 @@ export const useLogoutFun = () => {
       await removeData("userId");
       dispatch(ChangeMenuStatus(true));
       dispatch(setStoredUser({}));
-      // dispatch(setCurrentToken(null));
-      console.log("Completed logout process, navigating to LoginScreen...");
-      router.push("/LoginScreen");
+      // await googleLogOut();
       dispatch(changeRoute("LoginScreen"));
-      await googleLogOut();
+      router.push("/LoginScreen");
+      dispatch(setCurrentToken(null));
     } catch (error) {
       console.error("Error during logout:", error);
     }

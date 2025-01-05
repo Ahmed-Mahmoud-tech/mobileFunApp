@@ -1,13 +1,13 @@
-import { Stack, useNavigation } from "expo-router"
-import { StatusBar } from "expo-status-bar"
-import "react-native-reanimated"
-import Wrapper from "@/components/Wrapper/Wrapper"
-import { useFonts } from "expo-font"
-import * as SplashScreen from "expo-splash-screen"
-import { useEffect } from "react"
-import { store } from "@/store/store"
-import { Provider } from "react-redux"
-import { Provider as PaperProvider, DefaultTheme } from "react-native-paper"
+import { Stack, useNavigation } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
+import Wrapper from "@/components/Wrapper/Wrapper";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { store } from "@/store/store";
+import { Provider } from "react-redux";
+import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 
 // const lightTheme = {
 // colors: {
@@ -54,34 +54,38 @@ import { Provider as PaperProvider, DefaultTheme } from "react-native-paper"
 // }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   // Load fonts
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-  })
+  });
 
   // Hide splash screen once fonts are loaded
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync()
+      SplashScreen.hideAsync();
     }
-  }, [loaded])
+  }, [loaded]);
 
   if (!loaded) {
-    return null
+    return null;
   }
 
   return (
     <PaperProvider>
       <Provider store={store}>
         <Wrapper>
+          {console.log("0000000000000000000000")}
+
           <Stack
+            // initialRouteName="(tabs)/LoginScreen"
             screenOptions={{
               headerShown: false,
             }}
           >
+            {/* <Stack.Screen name="(tabs)/LoginScreen" /> */}
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="+not-found" />
           </Stack>
@@ -89,5 +93,5 @@ export default function RootLayout() {
         </Wrapper>
       </Provider>
     </PaperProvider>
-  )
+  );
 }
