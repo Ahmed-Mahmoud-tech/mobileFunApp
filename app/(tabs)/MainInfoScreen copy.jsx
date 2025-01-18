@@ -22,8 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentToken, setStoredUser } from "@/store/slices/user";
 import { changeRoute } from "@/store/slices/mainConfig";
 import { useRootNavigationState, useRouter } from "expo-router";
-import { useRoute } from "@react-navigation/native";
-
 const MainInfoScreen = ({}) => {
   const [phone, setPhone] = useState("");
   const [isOwner, setIsOwner] = useState(false);
@@ -32,18 +30,25 @@ const MainInfoScreen = ({}) => {
   const { t, i18n } = useTranslation();
   const logoutFun = useLogoutFun();
   const dispatch = useDispatch();
-  const router = useRouter();
   //   const [location, setLocation] = useState(null) // Stores latitude and longitude
   //   const [isMapVisible, setIsMapVisible] = useState(false)
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
   const styles = themeStyles(theme);
   const { googleLogOut, updateUser } = useRequest();
-  const route = useRoute();
-  const params = route.params;
-  // const { routes } = useRootNavigationState();
-  // const params = routes[0].params;
+  const url = Linking.useURL();
+  let hostname, path, queryParams;
+  // throw new Error(JSON.stringify(user), "3333333333333333333333333", url);
+  const route = useSelector((state) => state.mainConfig.route);
+  if (typeof url === "string" && url) {
+    const parsedUrl = Linking.parse(url);
+    hostname = parsedUrl.hostname;
+    path = parsedUrl.path;
+    queryParams = parsedUrl.queryParams;
+  }
   const user = useSelector((state) => state.user.userInfo);
+  const router = useRouter();
+  const currentToken = useSelector((state) => state.user.currentToken);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -53,14 +58,18 @@ const MainInfoScreen = ({}) => {
       roomName,
       location: "location",
     };
-    await updateUser(user.id, data);
-    if (isOwner) {
-      dispatch(setStoredUser({ ...user, type: "owner" }));
-      router.push("/OwnerProfileScreen");
-    } else {
-      dispatch(setStoredUser({ ...user, type: "employee" }));
-      router.push("/EmployeeProfileScreen");
-    }
+    console.log(user, "0000000000000000000000000000");
+
+    // await updateUser(user.id, data);
+    // if (isOwner) {
+    //   dispatch(setStoredUser({ ...user, type: "owner" }));
+    //   dispatch(changeRoute("OwnerProfileScreen"));
+    //   router.push("/OwnerProfileScreen");
+    // } else {
+    //   dispatch(setStoredUser({ ...user, type: "employee" }));
+    //   dispatch(changeRoute("EmployeeProfileScreen"));
+    //   router.push("/EmployeeProfileScreen");
+    // }
     setLoading(false);
   };
 
@@ -91,15 +100,31 @@ const MainInfoScreen = ({}) => {
       : i18n.changeLanguage("en");
   };
 
+  const { routes } = useRootNavigationState();
+
   useEffect(() => {
-    if (params && params?.token) {
-      // Alert.alert("Token", JSON.stringify(params?.token));
-      console.log(params);
-      saveData("token", params.token);
-      saveData("userId", params.userId);
-      dispatch(setCurrentToken(params.token));
+    if (queryParams && queryParams.token) {
+      console.log(
+        queryParams,
+        "666666666666666666666666665",
+        routes[0].name.split("/")[1],
+        route,
+        user?.type,
+        "0000000000000000000000000000"
+      );
+
+      // if (currentToken) {
+      //   removeData("token");
+      //   removeData("userId");
+      //   dispatch(setCurrentToken(null));
+      // } else {
+      Alert.alert("Token", queryParams.token);
+      saveData("token", queryParams.token);
+      saveData("userId", queryParams.userId);
+      dispatch(setCurrentToken(queryParams.token));
+      // }
     }
-  }, [params?.token]);
+  }, [queryParams?.token]);
 
   return (
     <View style={styles.container}>

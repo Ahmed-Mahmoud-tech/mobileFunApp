@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header/Header";
 import MainDrawer from "@/components/MainDrawer/MainDrawer";
+import * as Linking from "expo-linking";
 // import { Stack, useNavigation } from "expo-router"
 
 import { Alert, Animated, StyleSheet, Text, View } from "react-native";
@@ -13,10 +14,10 @@ import useRequest from "@/axios/useRequest";
 import { setStoredUser } from "@/store/slices/user";
 import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router";
 import { changeRoute } from "@/store/slices/mainConfig";
-import { useRoute } from "@react-navigation/native";
 
 function Wrapper({ children }) {
   const router = useRouter();
+  // const navigation = useNavigation()
   const { routes } = useRootNavigationState();
   const dispatch = useDispatch();
   const { getUserInfo } = useRequest();
@@ -24,8 +25,10 @@ function Wrapper({ children }) {
   const styles = themeStyles(theme);
   const [first, setFirst] = useState(false);
   const menuStatus = useSelector((state) => state.mainConfig.menuStatus);
+  const route = useSelector((state) => state.mainConfig.route);
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
+
   // Initialize height with an animated value
   const height = useMemo(() => new Animated.Value(0), []); // Start with height of 0
 
@@ -44,6 +47,23 @@ function Wrapper({ children }) {
     animateHeight();
   }, [menuStatus]);
 
+  const url = Linking.useURL();
+  let queryParams, path;
+
+  if (typeof url === "string" && url) {
+    const { path: pathLink, queryParams: queryParamsLink } = Linking.parse(url);
+    path = pathLink;
+    queryParams = queryParamsLink;
+  }
+
+  // if (url) {
+  //   const { hostname, path, queryParams } = Linking.parse(url)
+  //   Alert.alert(
+  //     `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+  //       queryParams
+  //     )}`
+  //   )
+
   const notAuth = ["LoginScreen", "MainInfoScreen", "index"];
 
   const userCheck = (user, route) => {
@@ -57,28 +77,68 @@ function Wrapper({ children }) {
   };
 
   useEffect(() => {
+    !route && dispatch(changeRoute(path));
     const realRoute = routes[0].name.split("/")[1];
-    // const params = routes[0].params;
-    // console.log(realRoute, "=====", params);
-    router.push("/ddd");
-
     (async () => {
-      const userId = await getData("userId");
-      if (userId) {
-        if (!user?.email) {
+      const localToken = await getData("token");
+      const userId = (await getData("userId")) || queryParams?.token;
+      console.log("\n", 7, "\n");
+
+      console.log(
+        "\n",
+        "999999999999999999",
+        {
+          realRoute,
+          user,
+          userId,
+          route,
+          path,
+          "queryParams?.token": queryParams?.token,
+          localToken,
+        },
+        "\n"
+      );
+      if ((queryParams?.token || localToken) && (route || realRoute)) {
+        console.log("\n", 1, "\n");
+
+        if (!user?.email && userId) {
+          console.log("\n", 2, "\n");
+
           const userInfo = await getUserInfo(userId);
           if (userInfo) {
+            console.log("\n", 3, "\n");
+
             dispatch(setStoredUser(userInfo.data));
-            userCheck(userInfo.data, realRoute);
+            userCheck(userInfo.data, path || route);
             userInfo.data.token &&
               (await saveData("token", userInfo.data.token));
+          } else {
+            console.log("\n", 4, "\n");
+
+            // if ((route || realRoute) != "LoginScreen") {
+            //   dispatch(changeRoute("LoginScreen"))
+            //   router.push("/LoginScreen")
+            // }
           }
         } else {
-          userCheck(user, realRoute);
+          console.log("\n", 5, "\n");
+
+          userCheck(user, path || route);
         }
+      } else {
+        console.log("\n", 6, "\n");
+
+        // route && path != "LoginScreen" && router.push("/LoginScreen")
       }
+      // console.log(
+      //   route,
+      //   "0000000000000000",
+      //   navigation.getCurrentRoute().name.split("/")[1]
+      // );
+      // routes[0].path.length == 0 && router.push("/LoginScreen");
     })();
   }, [currentToken]);
+  // }, [user, route, currentToken]);
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -94,7 +154,7 @@ function Wrapper({ children }) {
               style={[
                 styles.drawer,
                 {
-                  height: height,
+                  height: height, // Apply animated height value
                 },
               ]}
             >
@@ -102,8 +162,17 @@ function Wrapper({ children }) {
             </Animated.View>
           </View>
         )}
-
-        <View style={styles.childrenContainer}>{children}</View>
+        {console.log(
+          route,
+          "4564656",
+          path,
+          routes[0].name.split("/")[1],
+          user?.type
+        )}
+        {(user?.type ||
+          notAuth.includes(route || path || routes[0].name.split("/")[1])) && (
+          <View style={styles.childrenContainer}>{children}</View>
+        )}
       </View>
     </I18nextProvider>
   );
