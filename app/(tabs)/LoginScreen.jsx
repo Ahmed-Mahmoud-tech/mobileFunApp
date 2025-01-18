@@ -4,10 +4,13 @@ import { Button, Card, Title, useTheme } from "react-native-paper";
 
 import { StyleSheet, View } from "react-native";
 import { BACKEND_URL } from "@/constants/main";
-import { useDispatch } from "react-redux";
-import { setStoredUser } from "@/store/slices/user";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentToken, setStoredUser } from "@/store/slices/user";
 
 const LoginScreen = () => {
+  const user = useSelector((state) => state.user.userInfo);
+  const currentToken = useSelector((state) => state.user.currentToken);
+
   const theme = useTheme();
   const styles = themeStyles(theme);
   const dispatch = useDispatch();
@@ -20,7 +23,9 @@ const LoginScreen = () => {
       console.error("Error opening Google login:", error);
     }
   };
-
+  useEffect(() => {
+    console.log(user, "444444444444444444", currentToken);
+  }, [user, currentToken]);
   return (
     <View style={styles.container}>
       <Card style={styles.card}>

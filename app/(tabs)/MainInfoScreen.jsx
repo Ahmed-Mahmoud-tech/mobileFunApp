@@ -21,8 +21,8 @@ import { useLogoutFun } from "@/hooks/useLogoutFun";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentToken, setStoredUser } from "@/store/slices/user";
 import { changeRoute } from "@/store/slices/mainConfig";
-import { useRouter } from "expo-router";
-const MainInfoScreen = ({ route }) => {
+import { useRootNavigationState, useRouter } from "expo-router";
+const MainInfoScreen = ({}) => {
   const [phone, setPhone] = useState("");
   const [isOwner, setIsOwner] = useState(false);
   const [roomName, setRoomName] = useState("");
@@ -39,7 +39,7 @@ const MainInfoScreen = ({ route }) => {
   const url = Linking.useURL();
   let hostname, path, queryParams;
   // throw new Error(JSON.stringify(user), "3333333333333333333333333", url);
-
+  const route = useSelector((state) => state.mainConfig.route);
   if (typeof url === "string" && url) {
     const parsedUrl = Linking.parse(url);
     hostname = parsedUrl.hostname;
@@ -48,6 +48,8 @@ const MainInfoScreen = ({ route }) => {
   }
   const user = useSelector((state) => state.user.userInfo);
   const router = useRouter();
+  const currentToken = useSelector((state) => state.user.currentToken);
+
   const handleSubmit = async () => {
     setLoading(true);
     const data = {
@@ -57,7 +59,6 @@ const MainInfoScreen = ({ route }) => {
       location: "location",
     };
     await updateUser(user.id, data);
-
     if (isOwner) {
       dispatch(setStoredUser({ ...user, type: "owner" }));
       dispatch(changeRoute("OwnerProfileScreen"));
@@ -97,13 +98,28 @@ const MainInfoScreen = ({ route }) => {
       : i18n.changeLanguage("en");
   };
 
+  const { routes } = useRootNavigationState();
+
   useEffect(() => {
     if (queryParams && queryParams.token) {
-      console.log(queryParams, "666666666666666666666666665");
+      console.log(
+        queryParams,
+        "666666666666666666666666665",
+        routes[0].name.split("/")[1],
+        route,
+        user?.type,
+        "0000000000000000000000000000"
+      );
 
+      // if (currentToken) {
+      //   removeData("token");
+      //   removeData("userId");
+      //   dispatch(setCurrentToken(null));
+      // } else {
       saveData("token", queryParams.token);
       saveData("userId", queryParams.userId);
       dispatch(setCurrentToken(queryParams.token));
+      // }
     }
   }, [queryParams]);
 

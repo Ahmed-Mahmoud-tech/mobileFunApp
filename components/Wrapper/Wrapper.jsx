@@ -110,7 +110,8 @@ function Wrapper({ children }) {
 
             dispatch(setStoredUser(userInfo.data));
             userCheck(userInfo.data, path || route);
-            userInfo.data.token && saveData("token", userInfo.data.token);
+            userInfo.data.token &&
+              (await saveData("token", userInfo.data.token));
           } else {
             console.log("\n", 4, "\n");
 

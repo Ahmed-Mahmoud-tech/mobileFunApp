@@ -1,9 +1,9 @@
-import useRequest from "@/axios/useRequest"
-import { saveData } from "@/common/localStorage"
-import { utcToLocal } from "@/common/time"
-import { setCurrentToken } from "@/store/slices/user"
-import React, { useEffect, useState } from "react"
-import { StyleSheet, ScrollView, View } from "react-native"
+import useRequest from "@/axios/useRequest";
+import { saveData } from "@/common/localStorage";
+import { utcToLocal } from "@/common/time";
+import { setCurrentToken } from "@/store/slices/user";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, ScrollView, View } from "react-native";
 import {
   TextInput,
   Button,
@@ -13,48 +13,48 @@ import {
   Text,
   Chip,
   IconButton,
-} from "react-native-paper"
-import { useSelector, useDispatch } from "react-redux"
+} from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
 
 const EmployeeProfileScreen = () => {
-  const user = useSelector((state) => state.user.userInfo)
-  const [name, setName] = useState(user.username || "")
-  const [editMode, setEditMode] = useState(false)
-  const [phone, setPhone] = useState(user.phoneNumber || "")
-  const [ownerRequests, setOwnerRequests] = useState([])
-  const [update, setUpdate] = useState(0)
-  const { updateUser, getEmployeeRequest, updateRequest } = useRequest()
+  const user = useSelector((state) => state.user.userInfo);
+  const [name, setName] = useState(user.username || "");
+  const [editMode, setEditMode] = useState(false);
+  const [phone, setPhone] = useState(user.phoneNumber || "");
+  const [ownerRequests, setOwnerRequests] = useState([]);
+  const [update, setUpdate] = useState(0);
+  const { updateUser, getEmployeeRequest, updateRequest } = useRequest();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const handleEditToggle = async () => {
     if (editMode == true) {
       const data = {
         phoneNumber: phone,
         username: name,
-      }
-      await updateUser(user.id, data)
+      };
+      await updateUser(user.id, data);
     }
-    setEditMode(!editMode)
-  }
+    setEditMode(!editMode);
+  };
 
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
   const updateRequestAction = async (id, status, fromUser) => {
-    const response = await updateRequest(id, { status, fromUser })
-    saveData("token", response.data.token)
+    const response = await updateRequest(id, { status, fromUser });
+    saveData("token", response.data.token);
     // if (status == "accepted") {
     //   dispatch(setCurrentToken({ ...user, owner }))
     // }
-    setUpdate(update + 1)
-  }
+    setUpdate(update + 1);
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getEmployeeRequest()
-      setOwnerRequests(data.data)
-    })()
-  }, [update])
+    (async () => {
+      const data = await getEmployeeRequest();
+      setOwnerRequests(data.data);
+    })();
+  }, [update]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -159,8 +159,8 @@ const EmployeeProfileScreen = () => {
         </Card.Content>
       </Card>
     </ScrollView>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -189,6 +189,6 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
-export default EmployeeProfileScreen
+export default EmployeeProfileScreen;

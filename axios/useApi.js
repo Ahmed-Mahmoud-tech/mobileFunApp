@@ -1,43 +1,43 @@
-import axios from "axios"
+import axios from "axios";
 // import { toast } from "react-toastify"
 // import { useDispatch } from "react-redux"
 // import { logOut } from "../store/slices/auth"
 // import { changePreloader } from "../store/slices/main"
 // import { addUserInfo } from "../store/slices/auth"
 // import { Client_id } from "../const"
-import { BACKEND_URL } from "@/constants/main"
-import { getData } from "@/common/localStorage"
+import { BACKEND_URL } from "@/constants/main";
+import { getData } from "@/common/localStorage";
 
 const useApi = () => {
   let axiosObject = {
     baseURL: BACKEND_URL,
-  }
+  };
 
-  const mainInstance = axios.create(axiosObject)
+  const mainInstance = axios.create(axiosObject);
   // const dispatch = useDispatch()
 
   mainInstance.interceptors.request.use(
     async function (config) {
       // dispatch(changePreloader(true))
-      const noAuthRoutes = ["/api/auth/google", "/api/auth/google/callback"]
+      const noAuthRoutes = ["/api/auth/google", "/api/auth/google/callback"];
       //* add auth
       if (!noAuthRoutes.includes(config.url)) {
-        const localStorageToken = await getData("token")
-        console.log("localStorageToken", localStorageToken)
+        const localStorageToken = await getData("token");
+        console.log("localStorageToken", localStorageToken);
         config.headers.Authorization = localStorageToken
           ? `Bearer ${localStorageToken}`
-          : ""
+          : "";
       } else {
         // config.headers["Client-Id"] = Client_id
       }
       //* end auth
-      return config
+      return config;
     },
     (error) => {
       //if err don't do any thing and i will handel it in my global handel error
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
-  )
+  );
 
   mainInstance.interceptors.response.use(
     async (res) => {
@@ -53,10 +53,10 @@ const useApi = () => {
       //     })
       //   )
       // }
-      return res
+      return res;
     },
     async (err) => {
-      console.log(err)
+      console.log(err);
       // dispatch(changePreloader(false))
       // if (err?.response?.status == 401) {
       //   dispatch(logOut())
@@ -71,10 +71,10 @@ const useApi = () => {
       //     })
       //   })
       // }
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
-  )
-  return mainInstance
-}
+  );
+  return mainInstance;
+};
 
-export default useApi
+export default useApi;
