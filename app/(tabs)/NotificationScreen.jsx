@@ -1,6 +1,6 @@
-import Dropdown from "@/components/Dropdown/Dropdown"
-import React, { useState } from "react"
-import { StyleSheet, ScrollView, View, Alert } from "react-native"
+import Dropdown from "@/components/Dropdown/Dropdown";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, ScrollView, View, Alert } from "react-native";
 import {
   TextInput,
   Button,
@@ -12,91 +12,49 @@ import {
   SegmentedButtons,
   Text,
   useTheme,
-} from "react-native-paper"
+} from "react-native-paper";
+
+import { useDispatch, useSelector } from "react-redux";
+import { notificationTypes } from "@/constants/notification";
+import { utcToLocal } from "@/common/time";
+import useRequest from "@/axios/useRequest";
 
 const NotificationPage = () => {
-  const [notificationPreferences, setNotificationPreferences] = useState({
-    employeeRequest: false,
-    reservation: false,
-    play: false,
-    purchasesItems: false,
-    playersPurchases: false,
-    checkout: false,
-  })
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-
+  const { getNotification } = useRequest();
+  const unReadCount = useSelector((state) => state.notification.unReadCount);
+  const dispatch = useDispatch();
+  const [notification, setNotification] = useState([]);
+  const theme = useTheme();
+  const styles = themeStyles(theme);
   const [filters, setFilters] = useState({
     notificationType: "all",
     date: new Date().toISOString().split("T")[0], // Default to today
     email: "",
-  })
+  });
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Employee Request",
-      body: "Alice Smith has requested to join your company.",
-      author: "Alice Smith",
-      time: "2024-12-08 10:30 AM",
-      type: "employeeRequest",
-      actions: {
-        accept: true,
-        reject: true,
-      },
-    },
-    {
-      id: 2,
-      title: "New Reservation",
-      body: "Reservation made for VIP Room on 2024-12-08 02:00 PM.",
-      author: "John Doe",
-      time: "2024-12-08 09:15 AM",
-      type: "reservation",
-      actions: {
-        accept: false,
-        reject: false,
-      },
-    },
-  ])
-
-  const togglePreference = (key) => {
-    setNotificationPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }))
-  }
+  const user = useSelector((state) => state.user.userInfo);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
-    }))
-  }
-
-  const handleNotificationAction = (id, action) => {
-    Alert.alert(
-      `Notification Action`,
-      `You chose to ${action} for notification ID ${id}.`
-    )
-    // Add logic for handling accept/reject actions
-  }
-
-  const filteredNotifications = notifications.filter((notification) => {
-    const matchesType =
-      filters.notificationType === "all" ||
-      notification.type === filters.notificationType
-    const matchesEmail =
-      !filters.email ||
-      notification.author.toLowerCase().includes(filters.email.toLowerCase())
-    const matchesDate =
-      !filters.date || notification.time.startsWith(filters.date)
-
-    return matchesType && matchesEmail && matchesDate
-  })
+    }));
+  };
 
   const notificationType = (value) => {
-    handleFilterChange("notificationType", value)
-  }
+    handleFilterChange("notificationType", value);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getNotification(user.id);
+        setNotification(response.data);
+      } catch (error) {
+        console.log("Error", error.message);
+      }
+    })();
+  }, [unReadCount]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -141,53 +99,50 @@ const NotificationPage = () => {
 
       {/* Notification List */}
       <Card style={styles.card}>
-        <Card.Title title="Notifications" />
+        <Card.Title title="Notifications" titleStyle={styles.cardTitle} />
         <Divider />
         <Card.Content>
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map((notification) => (
-              <View key={notification.id}>
-                <List.Item
-                  title={notification.title}
-                  description={`${notification.body}\nBy: ${notification.author}\nAt: ${notification.time}`}
-                />
-                {notification.actions.accept || notification.actions.reject ? (
-                  <View style={styles.actions}>
-                    {notification.actions.accept && (
-                      <Button
-                        mode="contained"
-                        onPress={() =>
-                          handleNotificationAction(notification.id, "accept")
-                        }
-                        style={styles.actionButton}
-                      >
-                        Accept
-                      </Button>
-                    )}
-                    {notification.actions.reject && (
-                      <Button
-                        mode="outlined"
-                        onPress={() =>
-                          handleNotificationAction(notification.id, "reject")
-                        }
-                        style={styles.actionButton}
-                      >
-                        Reject
-                      </Button>
-                    )}
-                  </View>
-                ) : null}
-                <Divider style={styles.spaceTop} />
-              </View>
-            ))
+          {notification.length > 0 ? (
+            notification.map((notification, index) => {
+              const notificationType = notificationTypes(notification.body)[
+                notification.body.type
+              ];
+              return (
+                <View
+                  key={index}
+                  style={{
+                    backgroundColor: !notification.is_read
+                      ? theme.colors.elevation.level5
+                      : "",
+                  }}
+                >
+                  <List.Item
+                    titleStyle={{
+                      ...styles.notificationTitle,
+                    }}
+                    title={notificationType.title}
+                    descriptionNumberOfLines={null}
+                    description={notificationType.body}
+                    left={(props) => <List.Icon {...props} icon="bell" />}
+                    right={(props) => <List.Icon {...props} icon="read" />}
+                  />
+                  <Text style={styles.notificationTime}>
+                    {utcToLocal(notificationType.time)}
+                  </Text>
+
+                  <Divider style={styles.spaceTop} />
+                </View>
+              );
+            })
           ) : (
             <Text style={styles.notFound}>No notifications found.</Text>
           )}
         </Card.Content>
       </Card>
     </ScrollView>
-  )
-}
+  );
+};
+
 function themeStyles(theme) {
   return StyleSheet.create({
     container: {
@@ -197,6 +152,10 @@ function themeStyles(theme) {
     card: {
       marginBottom: 16,
     },
+    cardTitle: {
+      fontWeight: "bold",
+      marginBottom: -8,
+    },
     input: {
       marginBottom: 16,
     },
@@ -204,6 +163,14 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
       marginBottom: 8,
+    },
+    notificationTime: {
+      textAlign: "center",
+    },
+    notificationTitle: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginBottom: 4,
     },
     actions: {
       flexDirection: "row",
@@ -219,6 +186,6 @@ function themeStyles(theme) {
     spaceTop: {
       marginTop: 10,
     },
-  })
+  });
 }
-export default NotificationPage
+export default NotificationPage;

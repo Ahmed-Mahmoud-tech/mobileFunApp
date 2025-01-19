@@ -1,6 +1,6 @@
-import React from "react"
-import { View } from "react-native"
-import { Button, Dialog, Portal, Text } from "react-native-paper"
+import React from "react";
+import { View } from "react-native";
+import { Button, Dialog, Portal, Text } from "react-native-paper";
 
 function Popup({
   title,
@@ -11,7 +11,7 @@ function Popup({
   yes = "Yes",
   no = "No",
 }) {
-  console.log(handleYes, "This is the title")
+  console.log(handleYes, "This is the title");
   return (
     <View>
       <Portal>
@@ -28,7 +28,7 @@ function Popup({
         </Dialog>
       </Portal>
     </View>
-  )
+  );
 }
 
-export default Popup
+export default Popup;

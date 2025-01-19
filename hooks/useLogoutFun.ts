@@ -12,11 +12,9 @@ export const useLogoutFun = () => {
 
   const logoutFun = async () => {
     try {
-      dispatch(setStoredUser({}));
       await removeData("token");
       await removeData("userId");
       dispatch(ChangeMenuStatus(true));
-      dispatch(changeRoute("LoginScreen"));
       dispatch(setCurrentToken(null));
       router.push("/LoginScreen");
       await googleLogOut();

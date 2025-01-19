@@ -8,11 +8,14 @@ npx eas build --profile development --platform android
 
 
 
+// notifications sorting for is_read and time and add filter for date 
+
 Notification
     new Session
     new PurchaseItem
     new playerPurchase
     employee accept owner request
+    employeeRejectOwnerRequest
 
     owner send request to employee
     end time Notification

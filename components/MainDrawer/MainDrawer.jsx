@@ -1,25 +1,25 @@
-import * as React from "react"
-import { Drawer, useTheme } from "react-native-paper"
-import { useRouter } from "expo-router"
-import { ScrollView, StyleSheet, View } from "react-native"
-import { useDispatch, useSelector } from "react-redux"
-import { changeRoute } from "@/store/slices/mainConfig"
-import { useLogoutFun } from "@/hooks/useLogoutFun"
+import * as React from "react";
+import { Drawer, useTheme } from "react-native-paper";
+import { useRouter } from "expo-router";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { ChangeMenuStatus, changeRoute } from "@/store/slices/mainConfig";
+import { useLogoutFun } from "@/hooks/useLogoutFun";
 const MainDrawer = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [active, setActive] = React.useState("")
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const router = useRouter()
-  const logoutFun = useLogoutFun()
+  const [active, setActive] = React.useState("");
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const router = useRouter();
+  const logoutFun = useLogoutFun();
 
   const changeRouteFun = (route) => {
-    dispatch(changeRoute(route))
-    router.push(`/${route}`)
-    setActive(route)
-  }
-  const user = useSelector((state) => state.user.userInfo)
+    dispatch(ChangeMenuStatus(true));
+    router.push(`/${route}`);
+    setActive(route);
+  };
+  const user = useSelector((state) => state.user.userInfo);
 
   const employeeMenu = {
     EmployeeProfileScreen: (
@@ -27,7 +27,7 @@ const MainDrawer = () => {
         label="Employee Profile"
         active={active === "EmployeeProfileScreen"}
         onPress={() => {
-          changeRouteFun("EmployeeProfileScreen")
+          changeRouteFun("EmployeeProfileScreen");
         }}
       />
     ),
@@ -36,7 +36,7 @@ const MainDrawer = () => {
         label="Purchases Items"
         active={active === "PurchaseItemsScreen"}
         onPress={() => {
-          changeRouteFun("PurchaseItemsScreen")
+          changeRouteFun("PurchaseItemsScreen");
         }}
       />
     ),
@@ -45,7 +45,7 @@ const MainDrawer = () => {
         label="Players Purchases"
         active={active === "PlayersPurchasesScreen"}
         onPress={() => {
-          changeRouteFun("PlayersPurchasesScreen")
+          changeRouteFun("PlayersPurchasesScreen");
         }}
       />
     ),
@@ -54,7 +54,7 @@ const MainDrawer = () => {
         label="Session"
         active={active === "SessionScreen"}
         onPress={() => {
-          changeRouteFun("SessionScreen")
+          changeRouteFun("SessionScreen");
         }}
       />
     ),
@@ -63,7 +63,7 @@ const MainDrawer = () => {
         label="Checkout"
         active={active === "CheckoutScreen"}
         onPress={() => {
-          changeRouteFun("CheckoutScreen")
+          changeRouteFun("CheckoutScreen");
         }}
       />
     ),
@@ -81,11 +81,11 @@ const MainDrawer = () => {
         label="Logout"
         active={active === "LoginScreen"}
         onPress={() => {
-          logoutFun("LoginScreen")
+          logoutFun("LoginScreen");
         }}
       />
     ),
-  }
+  };
 
   const realEmployeeMenu = {
     EmployeeProfileScreen: (
@@ -93,7 +93,7 @@ const MainDrawer = () => {
         label="Employee Profile"
         active={active === "EmployeeProfileScreen"}
         onPress={() => {
-          changeRouteFun("EmployeeProfileScreen")
+          changeRouteFun("EmployeeProfileScreen");
         }}
       />
     ),
@@ -102,11 +102,11 @@ const MainDrawer = () => {
         label="Logout"
         active={active === "LoginScreen"}
         onPress={() => {
-          logoutFun("LoginScreen")
+          logoutFun("LoginScreen");
         }}
       />
     ),
-  }
+  };
 
   const ownerMenu = {
     OwnerProfileScreen: (
@@ -114,7 +114,7 @@ const MainDrawer = () => {
         label="Owner Profile"
         active={active === "OwnerProfileScreen"}
         onPress={() => {
-          changeRouteFun("OwnerProfileScreen")
+          changeRouteFun("OwnerProfileScreen");
         }}
       />
     ),
@@ -123,7 +123,7 @@ const MainDrawer = () => {
         label="Purchases Items"
         active={active === "PurchaseItemsScreen"}
         onPress={() => {
-          changeRouteFun("PurchaseItemsScreen")
+          changeRouteFun("PurchaseItemsScreen");
         }}
       />
     ),
@@ -132,7 +132,7 @@ const MainDrawer = () => {
         label="Players Purchases"
         active={active === "PlayersPurchasesScreen"}
         onPress={() => {
-          changeRouteFun("PlayersPurchasesScreen")
+          changeRouteFun("PlayersPurchasesScreen");
         }}
       />
     ),
@@ -141,7 +141,7 @@ const MainDrawer = () => {
         label="Games"
         active={active === "GamesScreen"}
         onPress={() => {
-          changeRouteFun("GamesScreen")
+          changeRouteFun("GamesScreen");
         }}
       />
     ),
@@ -150,7 +150,7 @@ const MainDrawer = () => {
         label="Session"
         active={active === "SessionScreen"}
         onPress={() => {
-          changeRouteFun("SessionScreen")
+          changeRouteFun("SessionScreen");
         }}
       />
     ),
@@ -159,7 +159,7 @@ const MainDrawer = () => {
         label="Checkout"
         active={active === "CheckoutScreen"}
         onPress={() => {
-          changeRouteFun("CheckoutScreen")
+          changeRouteFun("CheckoutScreen");
         }}
       />
     ),
@@ -177,17 +177,17 @@ const MainDrawer = () => {
         label="Logout"
         active={active === "LoginScreen"}
         onPress={() => {
-          logoutFun("LoginScreen")
+          logoutFun("LoginScreen");
         }}
       />
     ),
-  }
+  };
 
   const menu = {
     owner: ownerMenu,
     employee: employeeMenu,
     realEmployeeMenu,
-  }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -241,8 +241,8 @@ const MainDrawer = () => {
         /> */}
       </Drawer.Section>
     </ScrollView>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -250,7 +250,7 @@ function themeStyles(theme) {
       paddingVertical: 10,
       backgroundColor: theme.colors.elevation.level2,
     },
-  })
+  });
 }
 
-export default MainDrawer
+export default MainDrawer;

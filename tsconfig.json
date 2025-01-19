@@ -17,6 +17,7 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "**/*.jsx",
-    "app/index.tsx"
+    "app/index.tsx",
+    "constants/notification.js"
   ]
 }

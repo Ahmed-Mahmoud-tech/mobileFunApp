@@ -12,23 +12,29 @@ import { getData, saveData } from "@/common/localStorage";
 import useRequest from "@/axios/useRequest";
 import { setStoredUser } from "@/store/slices/user";
 import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router";
-import { changeRoute } from "@/store/slices/mainConfig";
-import { useRoute } from "@react-navigation/native";
+import { io } from "socket.io-client";
+import { BACKEND_URL } from "@/constants/main";
+import {
+  setStoredNotification,
+  setUnReadCount,
+} from "@/store/slices/notification";
+import Popup from "../Popup/Popup";
+import Note from "../Note/Note";
 
 function Wrapper({ children }) {
   const router = useRouter();
   const { routes } = useRootNavigationState();
   const dispatch = useDispatch();
-  const { getUserInfo } = useRequest();
+  const { getUserInfo, getNotificationCount } = useRequest();
   const theme = useTheme();
   const styles = themeStyles(theme);
   const [first, setFirst] = useState(false);
+  const [newNote, setNewNote] = useState(false);
   const menuStatus = useSelector((state) => state.mainConfig.menuStatus);
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
   // Initialize height with an animated value
   const height = useMemo(() => new Animated.Value(0), []); // Start with height of 0
-
   // Function to animate the height value
   const animateHeight = () => {
     Animated.timing(height, {
@@ -56,11 +62,11 @@ function Wrapper({ children }) {
     }
   };
 
+  const realRoute = routes[0].name.split("/")[1];
   useEffect(() => {
-    const realRoute = routes[0].name.split("/")[1];
     // const params = routes[0].params;
     // console.log(realRoute, "=====", params);
-    router.push("/ddd");
+    // router.push("/ddd");
 
     (async () => {
       const userId = await getData("userId");
@@ -80,8 +86,33 @@ function Wrapper({ children }) {
     })();
   }, [currentToken]);
 
+  const myNotification = async () => {
+    const response = await getNotificationCount(user.id);
+    dispatch(setUnReadCount(response.data.count));
+  };
+  useEffect(() => {
+    (async () => {
+      if (user?.type) {
+        await myNotification();
+        const newSocket = io(`${BACKEND_URL}/`, {
+          transports: ["websocket"],
+        });
+
+        newSocket.on(user?.id, async (data) => {
+          await myNotification();
+          setNewNote(true);
+          setTimeout(() => {
+            setNewNote(false);
+          }, 2000);
+        });
+        return () => newSocket.disconnect();
+      }
+    })();
+  }, [user?.type]);
+
   return (
     <I18nextProvider i18n={i18n}>
+      {<Note visible={newNote} title="You have new notification" />}
       <View style={styles.wrapperContainer}>
         {user?.type && (
           <View style={styles.header}>
@@ -102,8 +133,9 @@ function Wrapper({ children }) {
             </Animated.View>
           </View>
         )}
-
-        <View style={styles.childrenContainer}>{children}</View>
+        {(user?.type || notAuth.includes(realRoute)) && (
+          <View style={styles.childrenContainer}>{children}</View>
+        )}
       </View>
     </I18nextProvider>
   );

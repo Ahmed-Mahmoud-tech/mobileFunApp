@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { StyleSheet, ScrollView, View, Alert } from "react-native"
+import React, { useEffect, useState } from "react";
+import { StyleSheet, ScrollView, View, Alert } from "react-native";
 import {
   TextInput,
   Button,
@@ -11,28 +11,28 @@ import {
   useTheme,
   Checkbox,
   Chip,
-} from "react-native-paper"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import { useSelector } from "react-redux"
-import useRequest from "@/axios/useRequest"
-import { utcToLocal } from "@/common/time"
-import Popup from "@/components/Popup/Popup"
+} from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSelector } from "react-redux";
+import useRequest from "@/axios/useRequest";
+import { utcToLocal } from "@/common/time";
+import Popup from "@/components/Popup/Popup";
 const OwnerProfile = () => {
-  const user = useSelector((state) => state.user.userInfo)
-  const [phone, setPhone] = useState(user.phoneNumber || "")
-  const [name, setName] = useState(user.username || "")
-  const [roomName, setRoomName] = useState(user.roomName || "")
-  const [location, setLocation] = useState(user.location || "")
-  const [newEmployeePhone, setNewEmployeePhone] = useState("")
-  const [visible, setVisible] = useState(false)
-  const [messageTitle, setMessageTitle] = useState()
-  const [handleYes, setHandleYes] = useState(null)
-  const [handleNo, setHandleNo] = useState(null)
-  const [yesWord, setYesWord] = useState("Yes")
-  const [noWord, setNoWord] = useState("No")
-  const [messageDescription, setMessageDescription] = useState()
-  const [update, setUpdate] = useState(0)
-  const [updateRoomsRender, setUpdateRoomsRender] = useState(0)
+  const user = useSelector((state) => state.user.userInfo);
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
+  const [name, setName] = useState(user?.username || "");
+  const [roomName, setRoomName] = useState(user?.roomName || "");
+  const [location, setLocation] = useState(user?.location || "");
+  const [newEmployeePhone, setNewEmployeePhone] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState();
+  const [handleYes, setHandleYes] = useState(null);
+  const [handleNo, setHandleNo] = useState(null);
+  const [yesWord, setYesWord] = useState("Yes");
+  const [noWord, setNoWord] = useState("No");
+  const [messageDescription, setMessageDescription] = useState();
+  const [update, setUpdate] = useState(0);
+  const [updateRoomsRender, setUpdateRoomsRender] = useState(0);
   // const [birthdate, setBirthdate] = useState(new Date())
   const {
     updateUser,
@@ -43,68 +43,68 @@ const OwnerProfile = () => {
     getRooms,
     updateRoom,
     deleteRoom,
-  } = useRequest()
+  } = useRequest();
   const [notificationPreferences, setNotificationPreferences] = useState({
-    employeeRequest: user.employeeRequest,
+    employeeRequest: user?.employeeRequest,
     // reservation: user.reservation,
-    session: user.session,
+    session: user?.session,
     purchasesItems: user.purchasesItems,
     playersPurchases: user.playersPurchases,
     checkout: user.checkout,
-  })
-  const [employees, setEmployees] = useState([])
+  });
+  const [employees, setEmployees] = useState([]);
 
   const [rooms, setRooms] = useState([
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
-  ])
-  const [editMode, setEditMode] = useState(false)
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [newRoomName, setNewRoomName] = useState("")
-  const [editedRoodId, setEditedRoodId] = useState("")
-  const [editingRoom, setEditingRoom] = useState(null)
+  ]);
+  const [editMode, setEditMode] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [newRoomName, setNewRoomName] = useState("");
+  const [editedRoodId, setEditedRoodId] = useState("");
+  const [editingRoom, setEditingRoom] = useState(null);
 
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
   const handleAddOrSaveRoom = async () => {
     if (!newRoomName.trim()) {
-      Alert.alert("Validation", "Please enter a room name.")
-      return
+      Alert.alert("Validation", "Please enter a room name.");
+      return;
     }
     const newRoom = {
       sectionName: newRoomName.trim(),
-    }
+    };
 
     if (editingRoom) {
-      await updateRoom(editingRoom.id, { ...editingRoom, ...newRoom })
-      setEditingRoom(null) // Exit editing mode
+      await updateRoom(editingRoom.id, { ...editingRoom, ...newRoom });
+      setEditingRoom(null); // Exit editing mode
     } else {
-      await postRoom(newRoom)
+      await postRoom(newRoom);
     }
 
-    setUpdateRoomsRender(updateRoomsRender + 1)
-    setNewRoomName("") // Reset input field
-  }
+    setUpdateRoomsRender(updateRoomsRender + 1);
+    setNewRoomName(""); // Reset input field
+  };
 
   const handleEditRoom = (room) => {
-    setNewRoomName(room.sectionName) // Populate input with the selected room name
-    setEditingRoom(room) // Set editing mode
-  }
+    setNewRoomName(room.sectionName); // Populate input with the selected room name
+    setEditingRoom(room); // Set editing mode
+  };
 
   const handleCancelEdit = () => {
-    setNewRoomName("") // Clear input
-    setEditingRoom(null) // Exit editing mode
-  }
+    setNewRoomName(""); // Clear input
+    setEditingRoom(null); // Exit editing mode
+  };
 
   const handleRemoveRoom = (id) => {
-    setHandleYes(() => () => confirmDeleteRoom(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this room?")
-    setVisible(true)
-    setYesWord("Confirm")
-    setNoWord("No")
+    setHandleYes(() => () => confirmDeleteRoom(id));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle("Confirm");
+    setMessageDescription("Are you sure you want to delete this room?");
+    setVisible(true);
+    setYesWord("Confirm");
+    setNoWord("No");
 
     // Alert.alert("Remove Room", "Are you sure you want to remove this room?", [
     //   { text: "Cancel", style: "cancel" },
@@ -116,71 +116,72 @@ const OwnerProfile = () => {
     //     },
     //   },
     // ])
-  }
+  };
 
   const handleEditToggle = () => {
-    setEditMode(!editMode)
+    setEditMode(!editMode);
     if (editMode == true) {
       const data = {
         phoneNumber: phone,
         userName: name,
         roomName,
         location,
-      }
-      updateUser(user.id, data)
+      };
+      updateUser(user.id, data);
     }
-  }
+  };
 
   const togglePreference = (key) => {
     setNotificationPreferences((prev) => {
-      console.log(key, !prev[key])
-      const data = { [key]: !prev[key] }
-      updateUser(user.id, data)
+      console.log(key, !prev[key]);
+      const data = { [key]: !prev[key] };
+      updateUser(user.id, data);
       return {
         ...prev,
         [key]: !prev[key],
-      }
-    })
-  }
+      };
+    });
+  };
 
   const handleSendRequest = async () => {
     try {
       if (!newEmployeePhone.trim()) {
-        Alert.alert("Validation", "Please enter an phone.")
-        return
+        Alert.alert("Validation", "Please enter an phone.");
+        return;
       }
-      Alert.alert("Request Sent", `Request sent to ${newEmployeePhone}.`)
+      Alert.alert("Request Sent", `Request sent to ${newEmployeePhone}.`);
       const data = {
         phone: newEmployeePhone,
         userId: user.id,
-      }
-      const postResult = await postRequest(data)
-      setUpdate(update + 1)
+        ownerName: user.username,
+      };
+      const postResult = await postRequest(data);
+      setUpdate(update + 1);
     } catch (error) {
       if (
         error.response.data.error ==
         "Employee not found with the provided phone number"
       ) {
-        setVisible(true)
-        setYesWord("Ok")
+        setVisible(true);
+        setYesWord("Ok");
         setMessageDescription(
           "Employee not found with the provided phone number"
-        )
-        setMessageTitle("Error")
-        setHandleYes(() => () => setVisible(false))
-        setHandleNo(null)
+        );
+        setMessageTitle("Error");
+        setHandleYes(() => () => setVisible(false));
+        setHandleNo(null);
       } else if (
         error.response.data.error == "This employee has already been requested."
       ) {
-        setVisible(true)
-        setYesWord("Ok")
-        setMessageDescription("This employee has already been requested.")
-        setMessageTitle("Error")
-        setHandleYes(() => () => setVisible(false))
-        setHandleNo(null)
+        setVisible(true);
+        setYesWord("Ok");
+        setMessageDescription("This employee has already been requested.");
+        setMessageTitle("Error");
+        setHandleYes(() => () => setVisible(false));
+        setHandleNo(null);
       }
     }
-  }
+  };
 
   // const handleRemoveOwner = () => {
   //   Alert.alert("Remove Owner", "Are you sure you want to remove the owner?", [
@@ -202,39 +203,39 @@ const OwnerProfile = () => {
   // }
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getOwnerRequest()
-      setEmployees(data.data)
-    })()
-  }, [update])
+    (async () => {
+      const data = await getOwnerRequest();
+      setEmployees(data.data);
+    })();
+  }, [update]);
 
   const confirmDeleteRequest = async (id) => {
-    await deleteRequest(id)
-    setVisible(false)
-    setUpdate(update + 1)
-  }
+    await deleteRequest(id);
+    setVisible(false);
+    setUpdate(update + 1);
+  };
   const confirmDeleteRoom = async (id) => {
-    await deleteRoom(id)
-    setVisible(false)
-    setUpdateRoomsRender(updateRoomsRender + 1)
-  }
+    await deleteRoom(id);
+    setVisible(false);
+    setUpdateRoomsRender(updateRoomsRender + 1);
+  };
 
   const deleteRequestCheck = (id) => {
-    setHandleYes(() => () => confirmDeleteRequest(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this request?")
-    setVisible(true)
-    setYesWord("Confirm")
-    setNoWord("No")
-  }
+    setHandleYes(() => () => confirmDeleteRequest(id));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle("Confirm");
+    setMessageDescription("Are you sure you want to delete this request?");
+    setVisible(true);
+    setYesWord("Confirm");
+    setNoWord("No");
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getRooms()
-      setRooms(data.data)
-    })()
-  }, [updateRoomsRender])
+    (async () => {
+      const data = await getRooms();
+      setRooms(data.data);
+    })();
+  }, [updateRoomsRender]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -394,7 +395,7 @@ const OwnerProfile = () => {
                     {...props}
                     icon="delete"
                     onPress={() => {
-                      deleteRequestCheck(employee.id)
+                      deleteRequestCheck(employee.id);
                     }}
                   />
                 )}
@@ -479,8 +480,8 @@ const OwnerProfile = () => {
         </Card.Content>
       </Card>
     </ScrollView>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -506,6 +507,6 @@ function themeStyles(theme) {
       alignItems: "center",
       marginBottom: 8,
     },
-  })
+  });
 }
-export default OwnerProfile
+export default OwnerProfile;
