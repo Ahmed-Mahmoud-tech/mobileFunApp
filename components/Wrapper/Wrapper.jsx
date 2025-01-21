@@ -15,7 +15,7 @@ import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router";
 import { io } from "socket.io-client";
 import { BACKEND_URL } from "@/constants/main";
 import {
-  setStoredNotification,
+  setStoredLastNotification,
   setUnReadCount,
 } from "@/store/slices/notification";
 import Popup from "../Popup/Popup";
@@ -99,6 +99,7 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
+          dispatch(setStoredLastNotification(data));
           await myNotification();
           setNewNote(true);
           setTimeout(() => {

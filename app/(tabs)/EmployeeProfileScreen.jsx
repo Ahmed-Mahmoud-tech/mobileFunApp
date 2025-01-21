@@ -16,6 +16,7 @@ import {
 } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
+let start = 0;
 const EmployeeProfileScreen = () => {
   const user = useSelector((state) => state.user.userInfo);
   const [name, setName] = useState(user.username || "");
@@ -24,7 +25,9 @@ const EmployeeProfileScreen = () => {
   const [ownerRequests, setOwnerRequests] = useState([]);
   const [update, setUpdate] = useState(0);
   const { updateUser, getEmployeeRequest, updateRequest } = useRequest();
-
+  const lastNotification = useSelector(
+    (state) => state.notification.notification
+  );
   const dispatch = useDispatch();
   const handleEditToggle = async () => {
     if (editMode == true) {
@@ -55,6 +58,23 @@ const EmployeeProfileScreen = () => {
       setOwnerRequests(data.data);
     })();
   }, [update]);
+
+  useEffect(() => {
+    console.log(lastNotification, "999999999");
+
+    (async () => {
+      if (
+        (lastNotification?.body?.type == "ownerSendRequest" ||
+          lastNotification?.body?.type == "ownerRemoveRequest") &&
+        start > 0
+      ) {
+        const data = await getEmployeeRequest();
+        setOwnerRequests(data.data);
+      } else {
+        start++;
+      }
+    })();
+  }, [lastNotification?.body?.type]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

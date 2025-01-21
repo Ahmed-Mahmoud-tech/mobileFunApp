@@ -32,8 +32,8 @@ const useRequest = () => {
     return await Request.put(`api/requests/${requestId}`, data);
   };
 
-  const deleteRequest = async (requestId) => {
-    return await Request.delete(`api/requests/${requestId}`);
+  const deleteRequest = async (query) => {
+    return await Request.delete(`api/requests?${query}`);
   };
 
   /*******************  rooms  ******************** */
@@ -138,14 +138,6 @@ const useRequest = () => {
     return await Request.get(`api/notifications/count/${id}`);
   };
 
-  const updateNotification = async (id, data) => {
-    return await Request.put(`api/notifications/${id}`, data);
-  };
-
-  const deleteNotification = async (id) => {
-    return await Request.delete(`api/notifications/${id}`);
-  };
-
   return {
     getUserInfo,
     googleLogOut,
@@ -177,8 +169,6 @@ const useRequest = () => {
     deleteSessions,
     updateRequest,
     getNotification,
-    updateNotification,
-    deleteNotification,
     getNotificationCount,
   };
 };

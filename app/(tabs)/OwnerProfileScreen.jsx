@@ -209,8 +209,9 @@ const OwnerProfile = () => {
     })();
   }, [update]);
 
-  const confirmDeleteRequest = async (id) => {
-    await deleteRequest(id);
+  const confirmDeleteRequest = async (requestEmployee) => {
+    const query = `ownerId=${user.id}&ownerName=${user.username}&requestId=${requestEmployee.id}&employeeId=${requestEmployee.toUserInfo.id}`;
+    await deleteRequest(query);
     setVisible(false);
     setUpdate(update + 1);
   };
@@ -220,8 +221,8 @@ const OwnerProfile = () => {
     setUpdateRoomsRender(updateRoomsRender + 1);
   };
 
-  const deleteRequestCheck = (id) => {
-    setHandleYes(() => () => confirmDeleteRequest(id));
+  const deleteRequestCheck = (requestEmployee) => {
+    setHandleYes(() => () => confirmDeleteRequest(requestEmployee));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
     setMessageDescription("Are you sure you want to delete this request?");
@@ -369,6 +370,7 @@ const OwnerProfile = () => {
                 title={employee.toUserInfo.username}
                 description={
                   <>
+                    {console.log(employee, "66666666666444444444444444")}
                     <View
                       style={{
                         flex: 1,
@@ -395,7 +397,7 @@ const OwnerProfile = () => {
                     {...props}
                     icon="delete"
                     onPress={() => {
-                      deleteRequestCheck(employee.id);
+                      deleteRequestCheck(employee);
                     }}
                   />
                 )}

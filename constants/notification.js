@@ -35,5 +35,10 @@ export const notificationTypes = (data) => {
       body: `${data.author} send a request to join his team. check your profile to accept his request.`,
       time: data.time,
     },
+    ownerRemoveRequest: {
+      title: "Remove Request",
+      body: `${data.author} remove a request to get out his team.`,
+      time: data.time,
+    },
   };
 };

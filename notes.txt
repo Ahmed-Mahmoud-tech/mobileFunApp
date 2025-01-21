@@ -16,9 +16,15 @@ Notification
     new playerPurchase
     employee accept owner request
     employeeRejectOwnerRequest
-
-    owner send request to employee
+    // owner send request to employee
+    // owner remove request to employee
     end time Notification
 
 
 validation
+
+when invalid token go to login
+
+if accept update the menu as employee
+
+translate
