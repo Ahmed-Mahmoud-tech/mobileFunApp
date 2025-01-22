@@ -17,6 +17,8 @@ import { useSelector } from "react-redux";
 import useRequest from "@/axios/useRequest";
 import { utcToLocal } from "@/common/time";
 import Popup from "@/components/Popup/Popup";
+
+let start = 0;
 const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo);
   const [phone, setPhone] = useState(user?.phoneNumber || "");
@@ -54,6 +56,9 @@ const OwnerProfile = () => {
   });
   const [employees, setEmployees] = useState([]);
 
+  const lastNotification = useSelector(
+    (state) => state.notification.notification
+  );
   const [rooms, setRooms] = useState([
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
@@ -201,6 +206,21 @@ const OwnerProfile = () => {
   //   console.log("no")
   //   setVisible(false)
   // }
+
+  useEffect(() => {
+    (async () => {
+      if (
+        (lastNotification?.body?.type == "employeeRejectOwnerRequest" ||
+          lastNotification?.body?.type == "employeeAcceptOwnerRequest") &&
+        start > 0
+      ) {
+        const data = await getOwnerRequest();
+        setEmployees(data.data);
+      } else {
+        start++;
+      }
+    })();
+  }, [lastNotification?.body?.type]);
 
   useEffect(() => {
     (async () => {

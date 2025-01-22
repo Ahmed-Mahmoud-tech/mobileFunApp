@@ -14,10 +14,13 @@ Notification
     new Session
     new PurchaseItem
     new playerPurchase
-    employee accept owner request
-    employeeRejectOwnerRequest
+    checkout 
+    
+    // employee accept owner request
+    // employeeRejectOwnerRequest
     // owner send request to employee
     // owner remove request to employee
+
     end time Notification
 
 

@@ -99,6 +99,8 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
+          console.log(data, "6666666666666666666");
+
           dispatch(setStoredLastNotification(data));
           await myNotification();
           setNewNote(true);
