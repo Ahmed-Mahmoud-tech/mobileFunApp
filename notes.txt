@@ -8,25 +8,22 @@ npx eas build --profile development --platform android
 
 
 
-// notifications sorting for is_read and time and add filter for date 
+// when invalid token go to login
 
 Notification
-    new Session
-    new PurchaseItem
-    new playerPurchase
-    checkout 
-    
-    // employee accept owner request
-    // employeeRejectOwnerRequest
-    // owner send request to employee
-    // owner remove request to employee
+
+    checkout for sessions and purchase if new or update by Cancel test from employee we have error
 
     end time Notification
+
+    add game before session not that no games please add game
+    
+notifications sorting for is_read and time and add filter for date 
 
 
 validation
 
-when invalid token go to login
+load when take action
 
 if accept update the menu as employee
 

@@ -253,7 +253,7 @@ const OwnerProfile = () => {
 
   useEffect(() => {
     (async () => {
-      const data = await getRooms();
+      const data = await getRooms(user.owner);
       setRooms(data.data);
     })();
   }, [updateRoomsRender]);

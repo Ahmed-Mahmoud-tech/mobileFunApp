@@ -102,6 +102,7 @@ const NotificationPage = () => {
         <Card.Title title="Notifications" titleStyle={styles.cardTitle} />
         <Divider />
         <Card.Content>
+          {console.log(notification, "notification")}
           {notification.length > 0 ? (
             notification.map((notification, index) => {
               const notificationType = notificationTypes(notification.body)[
@@ -132,6 +133,7 @@ const NotificationPage = () => {
 
                   <Divider style={styles.spaceTop} />
                 </View>
+                // <></>
               );
             })
           ) : (

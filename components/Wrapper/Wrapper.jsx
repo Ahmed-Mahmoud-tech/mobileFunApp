@@ -114,9 +114,9 @@ function Wrapper({ children }) {
   useEffect(() => {
     (async () => {
       if (backToLogin == true) {
-        await removeData("token");
-        await removeData("userId");
-        router.push("/LoginScreen");
+        // await removeData("token");
+        // await removeData("userId");
+        // router.push("/LoginScreen");
       }
     })();
   }, [backToLogin]);

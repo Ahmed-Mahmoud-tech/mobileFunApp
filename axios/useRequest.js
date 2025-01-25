@@ -42,8 +42,8 @@ const useRequest = () => {
     return await Request.post(`api/sections`, data);
   };
 
-  const getRooms = async () => {
-    return await Request.get(`api/sections`);
+  const getRooms = async (id) => {
+    return await Request.get(`api/sections/${id}`);
   };
 
   const updateRoom = async (id, data) => {
@@ -68,8 +68,8 @@ const useRequest = () => {
     return await Request.put(`api/purchasesItems/${id}`, data);
   };
 
-  const deleteItem = async (id) => {
-    return await Request.delete(`api/purchasesItems/${id}`);
+  const deleteItem = async (query) => {
+    return await Request.delete(`api/purchasesItems?${query}`);
   };
   /*******************   games  ******************** */
 
@@ -124,8 +124,8 @@ const useRequest = () => {
     return await Request.put(`api/sessions/${id}`, data);
   };
 
-  const deleteSessions = async (id) => {
-    return await Request.delete(`api/sessions/${id}`);
+  const deleteSessions = async (queryString) => {
+    return await Request.delete(`api/sessions?${queryString}`);
   };
 
   /*******************   player Sessions  ******************** */

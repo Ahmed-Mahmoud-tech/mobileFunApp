@@ -1,31 +1,33 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
   Modal,
   FlatList,
   StyleSheet,
-} from "react-native"
-import { Text, useTheme } from "react-native-paper"
+} from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
 const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
-  const [isVisible, setIsVisible] = useState(false) // Controls dropdown visibility
+  console.log(data, "00000000000000000044", flag);
+
+  const [isVisible, setIsVisible] = useState(false); // Controls dropdown visibility
   const [selectedItem, setSelectedItem] = useState(
     selected ? data[selected] : null
-  ) // Stores the selected item
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  ); // Stores the selected item
+  const theme = useTheme();
+  const styles = themeStyles(theme);
   // Function to toggle visibility of the dropdown
-  const toggleDropdown = () => setIsVisible(!isVisible)
+  const toggleDropdown = () => setIsVisible(!isVisible);
 
   // Function to handle selection of an item
   const handleSelectItem = (item) => {
-    setSelectedItem(data[item]) // Set the selected item
-    setIsVisible(false) // Close the dropdown
+    setSelectedItem(data[item]); // Set the selected item
+    setIsVisible(false); // Close the dropdown
     if (onSelect) {
-      onSelect(item) // Pass the selected item to the parent component
+      onSelect(item); // Pass the selected item to the parent component
     }
-  }
+  };
 
   // Function to render each dropdown item
   const renderItem = ({ item }) => (
@@ -35,7 +37,7 @@ const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
     >
       <Text style={styles.itemText}>{data[item] != flag && data[item]}</Text>
     </TouchableOpacity>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -92,8 +94,8 @@ const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
         </TouchableOpacity>
       </Modal>
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -132,6 +134,6 @@ function themeStyles(theme) {
     itemText: {
       fontSize: 16,
     },
-  })
+  });
 }
-export default Dropdown
+export default Dropdown;

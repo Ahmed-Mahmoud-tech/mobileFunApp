@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, View, FlatList, Alert, ScrollView } from "react-native"
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, FlatList, Alert, ScrollView } from "react-native";
 import {
   TextInput,
   Button,
@@ -11,51 +11,51 @@ import {
   useTheme,
   Text,
   IconButton,
-} from "react-native-paper"
-import DateTimePickerModal from "react-native-modal-datetime-picker"
-import Dropdown from "@/components/Dropdown/Dropdown"
-import useRequest from "@/axios/useRequest"
-import { useSelector } from "react-redux"
-import Popup from "@/components/Popup/Popup"
-import { utcToLocal } from "@/common/time"
-import SessionRenderHeader from "@/components/SessionRenderHeader/SessionRenderHeader"
+} from "react-native-paper";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Dropdown from "@/components/Dropdown/Dropdown";
+import useRequest from "@/axios/useRequest";
+import { useSelector } from "react-redux";
+import Popup from "@/components/Popup/Popup";
+import { utcToLocal } from "@/common/time";
+import SessionRenderHeader from "@/components/SessionRenderHeader/SessionRenderHeader";
 
 const SessionsScreen = () => {
-  const [sessions, setSessions] = useState([])
+  const [sessions, setSessions] = useState([]);
   const [filters, setFilters] = useState({
     sessionType: "All",
     status: "All",
     startDate: new Date(),
     playerId: "",
-  })
+  });
 
-  const [dialogVisible, setDialogVisible] = useState(false)
-  const [currentSession, setCurrentSession] = useState(null)
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const [game, setGame] = useState("")
-  const [roomDropDown, setRoomDropDown] = useState({})
-  const [gameDropDown, setGameDropDown] = useState({})
-  const [sessionType, setSessionType] = useState("Single")
-  const [updateSessionRender, setUpdateSessionRender] = useState(0)
-  const [roomId, setRoomId] = useState("")
-  const [startTime, setStartTime] = useState(new Date())
-  const [players, setPlayers] = useState("")
-  const [newPlayer, setNewPlayer] = useState("")
-  const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
-  const [playerId, setPlayerId] = useState("")
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [currentSession, setCurrentSession] = useState(null);
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const [game, setGame] = useState("");
+  const [roomDropDown, setRoomDropDown] = useState({});
+  const [gameDropDown, setGameDropDown] = useState({});
+  const [sessionType, setSessionType] = useState("Single");
+  const [updateSessionRender, setUpdateSessionRender] = useState(0);
+  const [roomId, setRoomId] = useState("");
+  const [startTime, setStartTime] = useState(new Date());
+  const [players, setPlayers] = useState("");
+  const [newPlayer, setNewPlayer] = useState("");
+  const [debouncedPlayerId, setDebouncedPlayerId] = useState("");
+  const [playerId, setPlayerId] = useState("");
   const [endTime, setEndTime] = useState(
     new Date(new Date().getTime() + 3600000)
-  )
-  const [status, setStatus] = useState("Not Paid")
-  const [datePickerType, setDatePickerType] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const [messageTitle, setMessageTitle] = useState()
-  const [messageDescription, setMessageDescription] = useState()
-  const [handleYes, setHandleYes] = useState(null)
-  const [handleNo, setHandleNo] = useState(null)
-  const [yesWord, setYesWord] = useState("Yes")
-  const [noWord, setNoWord] = useState("No")
+  );
+  const [status, setStatus] = useState("Not Paid");
+  const [datePickerType, setDatePickerType] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState();
+  const [messageDescription, setMessageDescription] = useState();
+  const [handleYes, setHandleYes] = useState(null);
+  const [handleNo, setHandleNo] = useState(null);
+  const [yesWord, setYesWord] = useState("Yes");
+  const [noWord, setNoWord] = useState("No");
 
   const {
     playerIdList,
@@ -65,48 +65,50 @@ const SessionsScreen = () => {
     getSessions,
     updateSessions,
     deleteSessions,
-  } = useRequest()
-  const user = useSelector((state) => state.user.userInfo)
+  } = useRequest();
+  const user = useSelector((state) => state.user.userInfo);
 
   // Open Dialog to Add/Edit Session
   const openDialog = async (session = null) => {
-    const playersList = await playerIdList()
-    setNewPlayer(Math.max(...playersList.data.playerIds))
-    const playersObject = {}
-    playersList.data.playerIds.map((id) => (playersObject[id] = id))
-    setPlayers(playersObject)
+    const playersList = await playerIdList();
+    setNewPlayer(Math.max(...playersList.data.playerIds));
+    console.log(Math.max(...playersList.data.playerIds), "99999999");
+
+    const playersObject = {};
+    playersList.data.playerIds.map((id) => (playersObject[id] = id));
+    setPlayers(playersObject);
 
     if (session) {
-      setCurrentSession(session)
-      setGame(session.gameId)
-      setSessionType(session.type == "single" ? "Single" : "Multi")
-      setRoomId(session.sectionId ? session.sectionId.toString() : "")
-      setStartTime(new Date(session.startTime))
-      setEndTime(new Date(session.endTime))
-      setPlayerId(session.playerId ? session.playerId.toString() : "")
-      setStatus(session.status == "notPaid" ? "Not Paid" : "paid")
+      setCurrentSession(session);
+      setGame(session.gameId);
+      setSessionType(session.type == "single" ? "Single" : "Multi");
+      setRoomId(session.sectionId ? session.sectionId.toString() : "");
+      setStartTime(new Date(session.startTime));
+      setEndTime(new Date(session.endTime));
+      setPlayerId(session.playerId ? session.playerId.toString() : "");
+      setStatus(session.status == "notPaid" ? "Not Paid" : "paid");
     } else {
-      resetForm()
+      resetForm();
     }
-    setDialogVisible(true)
-  }
+    setDialogVisible(true);
+  };
 
   const resetForm = () => {
-    setCurrentSession(null)
-    setGame("")
-    setSessionType("Single")
-    setRoomId("")
-    setStartTime(new Date())
-    setEndTime(new Date(new Date().getTime() + 3600000))
-    setPlayerId("")
-    setStatus("Not Paid")
-  }
+    setCurrentSession(null);
+    setGame("");
+    setSessionType("Single");
+    setRoomId("");
+    setStartTime(new Date());
+    setEndTime(new Date(new Date().getTime() + 3600000));
+    setPlayerId("");
+    setStatus("Not Paid");
+  };
 
   // Close Dialog
   const closeDialog = () => {
-    setDialogVisible(false)
-    resetForm()
-  }
+    setDialogVisible(false);
+    resetForm();
+  };
 
   // Save the Session Data
   const handleSave = async () => {
@@ -121,26 +123,30 @@ const SessionsScreen = () => {
       endTime: endTime.toISOString(),
       playerId: playerId ? playerId : null,
       status: status == "Not Paid" ? "notPaid" : "paid",
-    }
+      isFromEmployee: user.type,
+      ownerId: user.owner,
+      username: user.username,
+      sectionName: roomDropDown[roomId],
+    };
 
     if (currentSession) {
       await updateSessions(currentSession.id, {
         ...newSession,
-      })
+      });
     } else {
-      await postSessions(newSession)
+      await postSessions(newSession);
     }
 
-    setUpdateSessionRender(updateSessionRender + 1)
-    closeDialog()
-  }
+    setUpdateSessionRender(updateSessionRender + 1);
+    closeDialog();
+  };
 
   const renderSessionItem = ({ item }) => (
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.itemName}>{gameDropDown[item.gameId]}</Text>
         <Text>Type: {item.type == "single" ? "Single" : "Multi"}</Text>
-        <Text>Room ID: {item.id}</Text>
+        <Text>Room ID: {roomDropDown[item.sectionId]}</Text>
         <Text>Start: {utcToLocal(item.startTime)}</Text>
         <Text>End: {utcToLocal(item.endTime)}</Text>
         <Text>Player ID: {item.playerId}</Text>
@@ -151,109 +157,118 @@ const SessionsScreen = () => {
           <IconButton
             icon="pencil"
             onPress={() => {
-              openDialog(item)
+              openDialog(item);
             }}
           />
-          <IconButton
-            icon="delete"
-            onPress={() => handleRemoveSession(item.id)}
-          />
+          <IconButton icon="delete" onPress={() => handleRemoveSession(item)} />
         </View>
       </Card.Actions>
     </Card>
-  )
+  );
 
   const showDatePicker = (type) => {
-    setDatePickerType(type)
-  }
+    setDatePickerType(type);
+  };
 
   const hideDatePicker = () => {
-    setDatePickerType(null)
-  }
+    setDatePickerType(null);
+  };
 
   const handleConfirmDate = (selectedDate) => {
     if (datePickerType === "startTime") {
-      setStartTime(selectedDate)
+      setStartTime(selectedDate);
     } else if (datePickerType === "endTime") {
-      setEndTime(selectedDate)
+      setEndTime(selectedDate);
     } else if (datePickerType === "startDate") {
-      setFilters((prev) => ({ ...prev, startDate: selectedDate }))
+      setFilters((prev) => ({ ...prev, startDate: selectedDate }));
     }
-    hideDatePicker()
-  }
+    hideDatePicker();
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const games = await getGames()
-      const rooms = await getRooms()
-      const gamesObject = {}
+    (async () => {
+      const games = await getGames();
+      const rooms = await getRooms(user.owner);
+      const gamesObject = {};
       games.data.map((game) => {
-        gamesObject[game.id] = game.name
-      })
-      const roomsObject = {}
+        gamesObject[game.id] = game.name;
+      });
+      const roomsObject = {};
       rooms.data.map((room) => {
-        roomsObject[room.id] = room.sectionName
-      })
-      setGameDropDown(gamesObject)
-      setRoomDropDown(roomsObject)
-    })()
-  }, [])
+        roomsObject[room.id] = room.sectionName;
+      });
+      setGameDropDown(gamesObject);
+      setRoomDropDown(roomsObject);
+    })();
+  }, []);
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
         // const { status, createdAt, playerId } = filters
-        const { sessionType, status, startDate, playerId } = filters
+        const { sessionType, status, startDate, playerId } = filters;
         // Build query parameters dynamically
-        const params = {}
-        if (playerId) params.playerId = debouncedPlayerId
+        const params = {};
+        if (playerId) params.playerId = debouncedPlayerId;
         if (startDate)
           params.startDate = new Date(
             new Date(startDate).toDateString()
-          ).getTime()
+          ).getTime();
         if (sessionType)
-          params.sessionType = sessionType == "All" ? null : sessionType
-        if (status) params.status = status == "All" ? null : status
+          params.sessionType = sessionType == "All" ? null : sessionType;
+        if (status) params.status = status == "All" ? null : status;
 
-        const data = await getSessions({ params })
-        setSessions(data.data)
+        const data = await getSessions({ params });
+        setSessions(data.data);
         // setError("")
       } catch (err) {
         // setError(err.response?.data?.error || "An error occurred")
         // setSessions([])
       }
-    })()
+    })();
   }, [
     updateSessionRender,
     debouncedPlayerId,
     filters.status,
     filters.sessionType,
     filters.startDate,
-  ])
+  ]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedPlayerId(filters.playerId) // Update debounced value after 2 seconds
-    }, 1000)
+      setDebouncedPlayerId(filters.playerId); // Update debounced value after 2 seconds
+    }, 1000);
     // Cleanup the timeout if user types again before 2 seconds
-    return () => clearTimeout(handler)
-  }, [filters.playerId])
+    return () => clearTimeout(handler);
+  }, [filters.playerId]);
 
-  const confirmDeleteSession = async (id) => {
-    await deleteSessions(id)
-    setVisible(false)
-    setUpdateSessionRender(updateSessionRender + 1)
-  }
+  const confirmDeleteSession = async (item) => {
+    const deletedQuery = {
+      startTime: item.startTime.toISOString(),
+      sectionId: item.sectionId,
+      ownerId: item.ownerId,
+      sectionName: roomDropDown[item.sectionId],
+      id: item.id,
+      isFromEmployee: user.type,
+      username: user.username,
+    };
 
-  const handleRemoveSession = (id) => {
-    setHandleYes(() => () => confirmDeleteSession(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this Session?")
-    setYesWord("Confirm")
-    setNoWord("No")
-    setVisible(true)
-  }
+    console.log(deletedQuery, "deletedQuery", item);
+    const queryString = `startTime=${deletedQuery.startTime}&sectionId=${deletedQuery.sectionId}&ownerId=${deletedQuery.ownerId}&sectionName=${deletedQuery.sectionName}&id=${deletedQuery.id}&isFromEmployee=${deletedQuery.isFromEmployee}&username=${deletedQuery.username}`;
+    await deleteSessions(queryString);
+    setVisible(false);
+    setUpdateSessionRender(updateSessionRender + 1);
+  };
+
+  const handleRemoveSession = (item) => {
+    setHandleYes(() => () => confirmDeleteSession(item));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle("Confirm");
+    setMessageDescription("Are you sure you want to delete this Session?");
+    setYesWord("Confirm");
+    setNoWord("No");
+    setVisible(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -389,8 +404,8 @@ const SessionsScreen = () => {
       {/* Add Session FAB */}
       <FAB style={styles.fab} icon="plus" onPress={() => openDialog()} />
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -434,6 +449,6 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
-export default SessionsScreen
+export default SessionsScreen;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, View, FlatList, ScrollView } from "react-native"
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, FlatList, ScrollView } from "react-native";
 import {
   TextInput,
   Button,
@@ -7,20 +7,20 @@ import {
   Card,
   SegmentedButtons,
   useTheme,
-} from "react-native-paper"
-import DateTimePickerModal from "react-native-modal-datetime-picker"
-import useRequest from "@/axios/useRequest"
-import { useSelector } from "react-redux"
-import { utcToLocal } from "@/common/time"
-import { calculateTimeDifference } from "@/common/timeDifference"
-import RenderCheckOutHeader from "@/components/RenderCheckOutHeader/RenderCheckOutHeader"
-import Popup from "@/components/Popup/Popup"
+} from "react-native-paper";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import useRequest from "@/axios/useRequest";
+import { useSelector } from "react-redux";
+import { utcToLocal } from "@/common/time";
+import { calculateTimeDifference } from "@/common/timeDifference";
+import RenderCheckOutHeader from "@/components/RenderCheckOutHeader/RenderCheckOutHeader";
+import Popup from "@/components/Popup/Popup";
 
-let firstLoadSession = 1
-let firstLoadPurchase = 1
+let firstLoadSession = 1;
+let firstLoadPurchase = 1;
 const CheckoutScreen = () => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const theme = useTheme();
+  const styles = themeStyles(theme);
   const {
     getPurchases,
     updatePurchases,
@@ -29,153 +29,153 @@ const CheckoutScreen = () => {
     getGames,
     getRooms,
     getItems,
-  } = useRequest()
-  const user = useSelector((state) => state.user.userInfo)
+  } = useRequest();
+  const user = useSelector((state) => state.user.userInfo);
 
-  const [sessions, setSessions] = useState([])
-  const [purchases, setPurchases] = useState([])
-  const [games, setGames] = useState()
-  const [rooms, setRooms] = useState()
-  const [items, setItems] = useState()
-  const [updateSessionRender, setUpdateSessionRender] = useState(0)
-  const [updatePurchasesRender, setUpdatePurchasesRender] = useState(false)
-  const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
-  const [visible, setVisible] = useState("")
-  const [totalPayment, setTotalPayment] = useState()
+  const [sessions, setSessions] = useState([]);
+  const [purchases, setPurchases] = useState([]);
+  const [games, setGames] = useState();
+  const [rooms, setRooms] = useState();
+  const [items, setItems] = useState();
+  const [updateSessionRender, setUpdateSessionRender] = useState(0);
+  const [updatePurchasesRender, setUpdatePurchasesRender] = useState(false);
+  const [debouncedPlayerId, setDebouncedPlayerId] = useState("");
+  const [visible, setVisible] = useState("");
+  const [totalPayment, setTotalPayment] = useState();
   const [filters, setFilters] = useState({
     status: "All",
     playerId: "",
     day: new Date(),
-  })
+  });
 
-  const [datePickerVisible, setDatePickerVisible] = useState(false)
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedPlayerId(filters.playerId) // Update debounced value after 2 seconds
-    }, 1000)
+      setDebouncedPlayerId(filters.playerId); // Update debounced value after 2 seconds
+    }, 1000);
     // Cleanup the timeout if user types again before 2 seconds
-    return () => clearTimeout(handler)
-  }, [filters.playerId])
+    return () => clearTimeout(handler);
+  }, [filters.playerId]);
 
   useEffect(() => {
-    ;(async () => {
-      const { status, day, playerId } = filters
+    (async () => {
+      const { status, day, playerId } = filters;
 
       // Build query parameters dynamically
-      const params = {}
-      if (playerId) params.playerId = debouncedPlayerId
-      if (status) params.status = status == "All" ? "" : status
+      const params = {};
+      if (playerId) params.playerId = debouncedPlayerId;
+      if (status) params.status = status == "All" ? "" : status;
       if (day)
-        params.startDate = new Date(new Date(day).toDateString()).getTime()
+        params.startDate = new Date(new Date(day).toDateString()).getTime();
 
-      const sessionResponse = await getSessions({ params })
+      const sessionResponse = await getSessions({ params });
 
-      setSessions(sessionResponse.data)
+      setSessions(sessionResponse.data);
       if (firstLoadSession == 1) {
-        const gameResponse = await getGames()
-        const games = {}
-        gameResponse.data.map((item) => (games[item.id] = item))
-        setGames(games)
+        const gameResponse = await getGames();
+        const games = {};
+        gameResponse.data.map((item) => (games[item.id] = item));
+        setGames(games);
 
-        const roomResponse = await getRooms()
-        const rooms = {}
-        roomResponse.data.map((item) => (rooms[item.id] = item))
-        setRooms(rooms)
-        firstLoadSession++
+        const roomResponse = await getRooms(user.owner);
+        const rooms = {};
+        roomResponse.data.map((item) => (rooms[item.id] = item));
+        setRooms(rooms);
+        firstLoadSession++;
       }
-    })()
-  }, [updateSessionRender, debouncedPlayerId, filters.status, filters.day])
+    })();
+  }, [updateSessionRender, debouncedPlayerId, filters.status, filters.day]);
 
   const handleSessionCheckout = async (sessionId, price) => {
-    await updateSessions(sessionId, { amount: price, status: "paid" })
-    setUpdateSessionRender(updateSessionRender + 1)
-  }
+    await updateSessions(sessionId, { amount: price, status: "paid" });
+    setUpdateSessionRender(updateSessionRender + 1);
+  };
   const handleSessionCancel = async (sessionId) => {
-    await updateSessions(sessionId, { amount: null, status: "notPaid" })
-    setUpdateSessionRender(updateSessionRender + 1)
-  }
+    await updateSessions(sessionId, { amount: null, status: "notPaid" });
+    setUpdateSessionRender(updateSessionRender + 1);
+  };
   const handlePurchaseCheckout = async (purchaseId) => {
-    await updatePurchases(purchaseId, { status: "paid" })
-    setUpdatePurchasesRender(updatePurchasesRender + 1)
-  }
+    await updatePurchases(purchaseId, { status: "paid" });
+    setUpdatePurchasesRender(updatePurchasesRender + 1);
+  };
   const handlePurchaseCancel = async (purchaseId) => {
-    await updatePurchases(purchaseId, { status: "notPaid" })
-    setUpdatePurchasesRender(updatePurchasesRender + 1)
-  }
+    await updatePurchases(purchaseId, { status: "notPaid" });
+    setUpdatePurchasesRender(updatePurchasesRender + 1);
+  };
 
   const showDatePicker = () => {
-    setDatePickerVisible(true)
-  }
+    setDatePickerVisible(true);
+  };
 
   const hideDatePicker = () => {
-    setDatePickerVisible(false)
-  }
+    setDatePickerVisible(false);
+  };
 
   const handleConfirmDate = (selectedDate) => {
     setFilters((prev) => ({
       ...prev,
       day: selectedDate,
-    }))
-    hideDatePicker()
-  }
+    }));
+    hideDatePicker();
+  };
 
   const calculatePrice = (item) => {
     const price =
       item.type == "single"
         ? games[item.gameId].singlePrice
-        : games[item.gameId].multiPrice
+        : games[item.gameId].multiPrice;
 
     const time = calculateTimeDifference(
       item.startTime,
       item.endTime || new Date()
-    )
+    );
 
-    return (parseFloat(price) / 60) * parseFloat(time)
-  }
+    return (parseFloat(price) / 60) * parseFloat(time);
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const { status, day, playerId } = filters
+    (async () => {
+      const { status, day, playerId } = filters;
 
       // Build query parameters dynamically
-      const params = {}
-      if (playerId) params.playerId = debouncedPlayerId
-      if (status) params.status = status == "All" ? "" : status
+      const params = {};
+      if (playerId) params.playerId = debouncedPlayerId;
+      if (status) params.status = status == "All" ? "" : status;
       if (day)
-        params.createdAt = new Date(new Date(day).toDateString()).getTime()
+        params.createdAt = new Date(new Date(day).toDateString()).getTime();
 
-      const purchasesResponse = await getPurchases({ params })
-      setPurchases(purchasesResponse.data)
+      const purchasesResponse = await getPurchases({ params });
+      setPurchases(purchasesResponse.data);
       if (firstLoadPurchase == 1) {
-        const itemsResponse = await getItems()
+        const itemsResponse = await getItems();
 
-        const items = {}
-        itemsResponse.data.map((item) => (items[item.id] = item))
-        setItems(items)
+        const items = {};
+        itemsResponse.data.map((item) => (items[item.id] = item));
+        setItems(items);
 
-        firstLoadPurchase++
+        firstLoadPurchase++;
       }
-    })()
-  }, [updatePurchasesRender, debouncedPlayerId, filters.status, filters.day])
+    })();
+  }, [updatePurchasesRender, debouncedPlayerId, filters.status, filters.day]);
 
   const handleCheckoutAll = async () => {
     const purchasesPromises = purchases.map(
       (purchase) =>
         purchases.status == "notPaid" &&
         updatePurchases(purchase.id, { status: "paid" })
-    )
+    );
     const sessionsPromises = sessions.map((session) =>
       updateSessions(session.id, {
         amount: calculatePrice(session),
         status: "paid",
       })
-    )
-    await Promise.all([...purchasesPromises, ...sessionsPromises])
-    setUpdatePurchasesRender(updatePurchasesRender + 1)
-    setUpdateSessionRender(updateSessionRender + 1)
-    setVisible(false)
-  }
+    );
+    await Promise.all([...purchasesPromises, ...sessionsPromises]);
+    setUpdatePurchasesRender(updatePurchasesRender + 1);
+    setUpdateSessionRender(updateSessionRender + 1);
+    setVisible(false);
+  };
 
   useEffect(() => {
     if ((sessions.length > 0 || purchases.length > 0) && filters.playerId) {
@@ -194,11 +194,11 @@ const CheckoutScreen = () => {
                 parseFloat(purchase.count)
               : 0),
           0
-        )
+        );
 
-      setTotalPayment(total)
+      setTotalPayment(total);
     }
-  }, [sessions, purchases, filters.playerId])
+  }, [sessions, purchases, filters.playerId]);
 
   const renderSessionItem = ({ item }) =>
     games &&
@@ -237,7 +237,7 @@ const CheckoutScreen = () => {
           </Card.Actions>
         </Card>
       </>
-    )
+    );
 
   const renderPurchaseItem = ({ item }) =>
     games &&
@@ -269,7 +269,7 @@ const CheckoutScreen = () => {
           </Card.Actions>
         </Card>
       </>
-    )
+    );
 
   return (
     <ScrollView style={styles.container}>
@@ -342,7 +342,7 @@ const CheckoutScreen = () => {
         <Button
           mode="contained"
           onPress={() => {
-            setVisible(true)
+            setVisible(true);
           }}
           style={styles.checkoutAll}
         >
@@ -350,8 +350,8 @@ const CheckoutScreen = () => {
         </Button>
       ) : null}
     </ScrollView>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -391,7 +391,7 @@ function themeStyles(theme) {
     selectedButton: {
       backgroundColor: theme.colors.primaryContainer, // Active color
     },
-  })
+  });
 }
 
-export default CheckoutScreen
+export default CheckoutScreen;

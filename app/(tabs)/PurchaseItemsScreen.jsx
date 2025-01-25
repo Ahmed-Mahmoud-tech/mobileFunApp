@@ -1,7 +1,7 @@
-import useRequest from "@/axios/useRequest"
-import Popup from "@/components/Popup/Popup"
-import React, { useEffect, useState } from "react"
-import { FlatList, StyleSheet, View } from "react-native"
+import useRequest from "@/axios/useRequest";
+import Popup from "@/components/Popup/Popup";
+import React, { useEffect, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 import {
   TextInput,
   Button,
@@ -12,86 +12,95 @@ import {
   Text,
   useTheme,
   IconButton,
-} from "react-native-paper"
-import { useSelector } from "react-redux"
+} from "react-native-paper";
+import { useSelector } from "react-redux";
 
 const PurchaseItemsScreen = () => {
-  const [items, setItems] = useState([])
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const [dialogVisible, setDialogVisible] = useState(false)
-  const [currentItem, setCurrentItem] = useState(null)
-  const [itemName, setItemName] = useState("")
-  const [updateItemRender, setUpdateItemRender] = useState("")
-  const [visible, setVisible] = useState(false)
-  const [price, setPrice] = useState("")
-  const [messageTitle, setMessageTitle] = useState()
-  const [messageDescription, setMessageDescription] = useState()
-  const [handleYes, setHandleYes] = useState(null)
-  const [handleNo, setHandleNo] = useState(null)
-  const [yesWord, setYesWord] = useState("Yes")
-  const [noWord, setNoWord] = useState("No")
+  const [items, setItems] = useState([]);
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [itemName, setItemName] = useState("");
+  const [updateItemRender, setUpdateItemRender] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [price, setPrice] = useState("");
+  const [messageTitle, setMessageTitle] = useState();
+  const [messageDescription, setMessageDescription] = useState();
+  const [handleYes, setHandleYes] = useState(null);
+  const [handleNo, setHandleNo] = useState(null);
+  const [yesWord, setYesWord] = useState("Yes");
+  const [noWord, setNoWord] = useState("No");
 
-  const { postItem, getItems, updateItem, deleteItem } = useRequest()
+  const { postItem, getItems, updateItem, deleteItem } = useRequest();
 
-  const user = useSelector((state) => state.user.userInfo)
+  const user = useSelector((state) => state.user.userInfo);
 
   const openDialog = (item = null) => {
-    setCurrentItem(item)
+    setCurrentItem(item);
     if (item) {
-      setItemName(item.name)
-      setPrice(item.price.toString())
+      setItemName(item.name);
+      setPrice(item.price.toString());
     } else {
-      setItemName("")
-      setPrice("")
+      setItemName("");
+      setPrice("");
     }
-    setDialogVisible(true)
-  }
+    setDialogVisible(true);
+  };
 
   const closeDialog = () => {
-    setDialogVisible(false)
-    setItemName("")
-    setPrice("")
-  }
+    setDialogVisible(false);
+    setItemName("");
+    setPrice("");
+  };
 
   const handleSave = async () => {
     const newItem = {
       name: itemName,
       price: price,
       ownerId: user.owner,
-    }
+      isFromEmployee: user.type,
+      username: user.username,
+    };
     if (currentItem) {
-      await updateItem(currentItem.id, { ...currentItem, ...newItem })
+      await updateItem(currentItem.id, { ...currentItem, ...newItem });
     } else {
-      await postItem(newItem)
+      await postItem(newItem);
     }
 
-    setUpdateItemRender(updateItemRender + 1)
-    closeDialog()
-  }
+    setUpdateItemRender(updateItemRender + 1);
+    closeDialog();
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getItems()
-      setItems(data.data)
-    })()
-  }, [updateItemRender])
+    (async () => {
+      const data = await getItems();
+      setItems(data.data);
+    })();
+  }, [updateItemRender]);
 
-  const confirmDeleteItem = async (id) => {
-    await deleteItem(id)
-    setVisible(false)
-    setUpdateItemRender(updateItemRender + 1)
-  }
+  const confirmDeleteItem = async (item) => {
+    console.log(item, "item");
 
-  const handleRemoveItem = (id) => {
-    setHandleYes(() => () => confirmDeleteItem(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this item?")
-    setYesWord("Confirm")
-    setNoWord("No")
-    setVisible(true)
-  }
+    const query = `id=${item.id}&&ownerId=${user.owner}&&isFromEmployee=${
+      user.type
+    }&&username=${user.username}&&name=${item.name}&&price=${
+      item.price
+    }&&updatedAt=${new Date(item.updatedAt).toISOString()}`;
+    await deleteItem(query);
+    setVisible(false);
+    setUpdateItemRender(updateItemRender + 1);
+  };
+
+  const handleRemoveItem = (item) => {
+    setHandleYes(() => () => confirmDeleteItem(item));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle("Confirm");
+    setMessageDescription("Are you sure you want to delete this item?");
+    setYesWord("Confirm");
+    setNoWord("No");
+    setVisible(true);
+  };
 
   const renderItem = ({ item }) => (
     <Card style={styles.card}>
@@ -104,14 +113,14 @@ const PurchaseItemsScreen = () => {
           <IconButton
             icon="pencil"
             onPress={() => {
-              openDialog(item)
+              openDialog(item);
             }}
           />
-          <IconButton icon="delete" onPress={() => handleRemoveItem(item.id)} />
+          <IconButton icon="delete" onPress={() => handleRemoveItem(item)} />
         </View>
       </Card.Actions>
     </Card>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -169,8 +178,8 @@ const PurchaseItemsScreen = () => {
         label="Add Item"
       />
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -208,9 +217,9 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
-export default PurchaseItemsScreen
+export default PurchaseItemsScreen;
 
 // currentPurchase
 // purchasesItem
