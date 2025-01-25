@@ -50,9 +50,9 @@ const OwnerProfile = () => {
     employeeRequest: user?.employeeRequest,
     // reservation: user.reservation,
     session: user?.session,
-    purchasesItems: user.purchasesItems,
-    playersPurchases: user.playersPurchases,
-    checkout: user.checkout,
+    purchasesItems: user?.purchasesItems,
+    playersPurchases: user?.playersPurchases,
+    checkout: user?.checkout,
   });
   const [employees, setEmployees] = useState([]);
 

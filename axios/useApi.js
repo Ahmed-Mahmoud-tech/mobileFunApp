@@ -1,20 +1,23 @@
 import axios from "axios";
+import { useDispatch } from "react-redux";
 // import { toast } from "react-toastify"
-// import { useDispatch } from "react-redux"
 // import { logOut } from "../store/slices/auth"
 // import { changePreloader } from "../store/slices/main"
 // import { addUserInfo } from "../store/slices/auth"
 // import { Client_id } from "../const"
 import { BACKEND_URL } from "@/constants/main";
-import { getData } from "@/common/localStorage";
+import { getData, removeData } from "@/common/localStorage";
+import { useNavigation } from "@react-navigation/native"; // or any navigation library you're using
+import { backToLoginFun } from "@/store/slices/mainConfig";
 
 const useApi = () => {
   let axiosObject = {
     baseURL: BACKEND_URL,
   };
+  const navigation = useNavigation(); // Hook into the navigation context
 
   const mainInstance = axios.create(axiosObject);
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   mainInstance.interceptors.request.use(
     async function (config) {
@@ -53,10 +56,23 @@ const useApi = () => {
       //     })
       //   )
       // }
+
       return res;
     },
+
     async (err) => {
       console.log(err);
+      if (
+        err?.response?.data === "Invalid Token" ||
+        err?.response?.data === "Access Denied" ||
+        err?.status == 500
+      ) {
+        dispatch(backToLoginFun(true));
+
+        return null;
+      } else {
+        return Promise.reject(err);
+      }
       // dispatch(changePreloader(false))
       // if (err?.response?.status == 401) {
       //   dispatch(logOut())
@@ -71,7 +87,7 @@ const useApi = () => {
       //     })
       //   })
       // }
-      return Promise.reject(err);
+      // return Promise.reject(err);
     }
   );
   return mainInstance;

@@ -48,7 +48,7 @@ const NotificationPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await getNotification(user.id);
+        const response = await getNotification(user?.id);
         setNotification(response.data);
       } catch (error) {
         console.log("Error", error.message);

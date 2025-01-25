@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "react-native-paper";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import i18n from "../Translation/i18n";
-import { getData, removeData, saveData } from "@/common/localStorage";
+import { getData, saveData } from "@/common/localStorage";
 import useRequest from "@/axios/useRequest";
 import { setStoredUser } from "@/store/slices/user";
 import { useFocusEffect, useRootNavigationState, useRouter } from "expo-router";
@@ -20,10 +20,15 @@ import {
 } from "@/store/slices/notification";
 import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
+import { useCheckApiError } from "@/hooks/useCheckApiError";
 
 function Wrapper({ children }) {
-  const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
+  // useCheckApiError();
   const router = useRouter();
+  const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
+
+  // const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
+  // const router = useRouter();
   const { routes } = useRootNavigationState();
   const dispatch = useDispatch();
   const { getUserInfo, getNotificationCount } = useRequest();
@@ -65,11 +70,16 @@ function Wrapper({ children }) {
 
   const realRoute = routes[0].name.split("/")[1];
   useEffect(() => {
+    // const params = routes[0].params;
+    // console.log(realRoute, "=====", params);
+    // router.push("/ddd");
+
     (async () => {
       const userId = await getData("userId");
       if (userId) {
         if (!user?.email) {
           const userInfo = await getUserInfo(userId);
+          console.log(userInfo, "userInfo");
 
           if (userInfo) {
             dispatch(setStoredUser(userInfo.data));
@@ -111,15 +121,10 @@ function Wrapper({ children }) {
     })();
   }, [user?.type]);
 
-  useEffect(() => {
-    (async () => {
-      if (backToLogin == true) {
-        await removeData("token");
-        await removeData("userId");
-        router.push("/LoginScreen");
-      }
-    })();
-  }, [backToLogin]);
+  // useEffect(() => {
+  //   console.log("555555555555555555555599", backToLogin);
+  //   // if (backToLogin == true) router.push("/LoginScreen");
+  // }, [backToLogin]);
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -144,6 +149,7 @@ function Wrapper({ children }) {
             </Animated.View>
           </View>
         )}
+
         {(user?.type || notAuth.includes(realRoute) || backToLogin) && (
           <View style={styles.childrenContainer}>{children}</View>
         )}

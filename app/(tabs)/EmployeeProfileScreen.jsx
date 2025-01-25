@@ -19,9 +19,9 @@ import { useSelector, useDispatch } from "react-redux";
 let start = 0;
 const EmployeeProfileScreen = () => {
   const user = useSelector((state) => state.user.userInfo);
-  const [name, setName] = useState(user.username || "");
+  const [name, setName] = useState(user?.username || "");
   const [editMode, setEditMode] = useState(false);
-  const [phone, setPhone] = useState(user.phoneNumber || "");
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
   const [ownerRequests, setOwnerRequests] = useState([]);
   const [update, setUpdate] = useState(0);
   const { updateUser, getEmployeeRequest, updateRequest } = useRequest();
@@ -35,7 +35,7 @@ const EmployeeProfileScreen = () => {
         phoneNumber: phone,
         username: name,
       };
-      await updateUser(user.id, data);
+      await updateUser(user?.id, data);
     }
     setEditMode(!editMode);
   };
