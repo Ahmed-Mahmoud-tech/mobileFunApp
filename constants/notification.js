@@ -46,18 +46,30 @@ export const notificationTypes = (data) => {
       time: data.time,
     },
     // add note for session checkout update also
-    // newCheckout: {
-    //   title: "Checkout",
-    //   body: `Player ${data.playerId} checkout now. with a mount of ${data.amount}.`,
-    //   from: data.author,
-    //   time: data.time,
-    // },
-    // UpdateCheckout: {
-    //   title: "Update Checkout",
-    //   body: `Player ${data.playerId} checkout canceled.`,
-    //   from: data.author,
-    //   time: data.time,
-    // },
+    sessionCheckout: {
+      title: "Session Checkout",
+      body: `Player ${data.playerId} checkout now for room ${data.section} worth ${data.amount}.`,
+      from: data.author,
+      time: data.time,
+    },
+    cancelSessionCheckout: {
+      title: "Cancel Session Checkout",
+      body: `Player ${data.playerId} checkout cancel now for room ${data.section} worth ${data.amount}.`,
+      from: data.author,
+      time: data.time,
+    },
+    itemCheckout: {
+      title: "Purchase Item Checkout",
+      body: `Player ${data.playerId} checkout now for item ${data.item} worth ${data.amount} with count ${data.count}.`,
+      from: data.author,
+      time: data.time,
+    },
+    cancelItemCheckout: {
+      title: "Cancel Purchase Item  Checkout",
+      body: `Player ${data.playerId} checkout cancel now for item ${data.item} with count ${data.count}.`,
+      from: data.author,
+      time: data.time,
+    },
     employeeAcceptOwnerRequest: {
       title: "Accepted Request",
       body: `${data.author} accept your request.`,

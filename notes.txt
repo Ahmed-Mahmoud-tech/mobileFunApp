@@ -28,3 +28,5 @@ load when take action
 if accept update the menu as employee
 
 translate
+
+update session when notifications update

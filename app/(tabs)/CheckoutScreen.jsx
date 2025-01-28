@@ -87,20 +87,20 @@ const CheckoutScreen = () => {
     })();
   }, [updateSessionRender, debouncedPlayerId, filters.status, filters.day]);
 
-  const handleSessionCheckout = async (sessionId, price) => {
-    await updateSessions(sessionId, { amount: price, status: "paid" });
+  const handleSessionCheckout = async (sessionId, data) => {
+    await updateSessions(sessionId, data);
     setUpdateSessionRender(updateSessionRender + 1);
   };
-  const handleSessionCancel = async (sessionId) => {
-    await updateSessions(sessionId, { amount: null, status: "notPaid" });
+  const handleSessionCancel = async (sessionId, data) => {
+    await updateSessions(sessionId, data);
     setUpdateSessionRender(updateSessionRender + 1);
   };
-  const handlePurchaseCheckout = async (purchaseId) => {
-    await updatePurchases(purchaseId, { status: "paid" });
+  const handlePurchaseCheckout = async (purchaseId, body) => {
+    await updatePurchases(purchaseId, body);
     setUpdatePurchasesRender(updatePurchasesRender + 1);
   };
-  const handlePurchaseCancel = async (purchaseId) => {
-    await updatePurchases(purchaseId, { status: "notPaid" });
+  const handlePurchaseCancel = async (purchaseId, body) => {
+    await updatePurchases(purchaseId, body);
     setUpdatePurchasesRender(updatePurchasesRender + 1);
   };
 
@@ -144,6 +144,7 @@ const CheckoutScreen = () => {
       if (status) params.status = status == "All" ? "" : status;
       if (day)
         params.createdAt = new Date(new Date(day).toDateString()).getTime();
+      console.log(params, "0000000000000000000");
 
       const purchasesResponse = await getPurchases({ params });
       setPurchases(purchasesResponse.data);
@@ -224,13 +225,33 @@ const CheckoutScreen = () => {
             {item.status == "notPaid" ? (
               <Button
                 onPress={() =>
-                  handleSessionCheckout(item.id, calculatePrice(item))
+                  handleSessionCheckout(item.id, {
+                    amount: calculatePrice(item),
+                    author: user.username,
+                    sectionName: rooms[item.sectionId].sectionName,
+                    playerId: item.playerId,
+                    status: "paid",
+                    isFromEmployee: user.type === "employee" ? "employee" : "",
+                    ownerId: user.owner,
+                  })
                 }
               >
                 Checkout
               </Button>
             ) : (
-              <Button onPress={() => handleSessionCancel(item.id)}>
+              <Button
+                onPress={() =>
+                  handleSessionCancel(item.id, {
+                    amount: null,
+                    author: user.username,
+                    sectionName: rooms[item.sectionId].sectionName,
+                    playerId: item.playerId,
+                    status: "notPaid",
+                    isFromEmployee: user.type === "employee" ? "employee" : "",
+                    ownerId: user.owner,
+                  })
+                }
+              >
                 Cancel
               </Button>
             )}
@@ -258,11 +279,36 @@ const CheckoutScreen = () => {
           </Card.Content>
           <Card.Actions>
             {item.status == "notPaid" ? (
-              <Button onPress={() => handlePurchaseCheckout(item.id)}>
+              <Button
+                onPress={() =>
+                  handlePurchaseCheckout(item.id, {
+                    amount: +items[item.item].price * +item.count,
+                    count: item.count,
+                    author: user.username,
+                    itemName: items[item.item].name,
+                    playerId: item.playerId,
+                    status: "paid",
+                    isFromEmployee: user.type === "employee" ? "employee" : "",
+                    ownerId: user.owner,
+                  })
+                }
+              >
                 Checkout
               </Button>
             ) : (
-              <Button onPress={() => handlePurchaseCancel(item.id)}>
+              <Button
+                onPress={() =>
+                  handlePurchaseCancel(item.id, {
+                    count: item.count,
+                    author: user.username,
+                    itemName: items[item.item].name,
+                    playerId: item.playerId,
+                    status: "notPaid",
+                    isFromEmployee: user.type === "employee" ? "employee" : "",
+                    ownerId: user.owner,
+                  })
+                }
+              >
                 Cancel
               </Button>
             )}
@@ -308,6 +354,7 @@ const CheckoutScreen = () => {
           <Text style={styles.emptyText}>No session found!</Text>
         }
       />
+
       <FlatList
         data={purchases}
         renderItem={renderPurchaseItem}
