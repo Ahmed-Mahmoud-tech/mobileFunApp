@@ -4,6 +4,7 @@ const initialState = {
   menuStatus: true,
   route: "",
   backToLogin: false,
+  preloader: false,
 };
 
 export const mainConfigSlice = createSlice({
@@ -19,11 +20,18 @@ export const mainConfigSlice = createSlice({
     backToLoginFun: (state, action) => {
       state.backToLogin = action.payload;
     },
+    changePreloader: (state, action) => {
+      state.preloader = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { ChangeMenuStatus, changeRoute, backToLoginFun } =
-  mainConfigSlice.actions;
+export const {
+  ChangeMenuStatus,
+  changeRoute,
+  backToLoginFun,
+  changePreloader,
+} = mainConfigSlice.actions;
 
 export default mainConfigSlice.reducer;

@@ -1,7 +1,7 @@
 import useRequest from "@/axios/useRequest";
 import { saveData } from "@/common/localStorage";
 import { utcToLocal } from "@/common/time";
-import { setCurrentToken } from "@/store/slices/user";
+import { setCurrentToken, setStoredUser } from "@/store/slices/user";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import {
@@ -45,6 +45,7 @@ const EmployeeProfileScreen = () => {
 
   const updateRequestAction = async (id, status, fromUser) => {
     const response = await updateRequest(id, { status, fromUser });
+    dispatch(setStoredUser({ ...user, owner: fromUser }));
     saveData("token", response.data.token);
     // if (status == "accepted") {
     //   dispatch(setCurrentToken({ ...user, owner }))

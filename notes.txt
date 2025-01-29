@@ -7,26 +7,11 @@ npx eas build -p android
 npx eas build --profile development --platform android
 
 
-
-// when invalid token go to login
-
-Notification
-
-    checkout for sessions and purchase if new or update by Cancel test from employee we have error
-
-    end time Notification
-
-    add game before session not that no games please add game
-    
-notifications sorting for is_read and time and add filter for date 
-
-
+#########################################
 validation
-
-load when take action
-
-if accept update the menu as employee
 
 translate
 
-update session when notifications update
+end session time Notification
+
+DELETE ON CASCADE

@@ -134,6 +134,10 @@ const useRequest = () => {
     return await Request.get(`api/notifications/${id}`);
   };
 
+  const updateNotification = async (data) => {
+    return await Request.put(`api/notifications`, data);
+  };
+
   const getNotificationCount = async (id) => {
     return await Request.get(`api/notifications/count/${id}`);
   };
@@ -170,6 +174,7 @@ const useRequest = () => {
     updateRequest,
     getNotification,
     getNotificationCount,
+    updateNotification,
   };
 };
 export default useRequest;

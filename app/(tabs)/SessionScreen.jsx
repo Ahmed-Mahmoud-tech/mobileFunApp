@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import Popup from "@/components/Popup/Popup";
 import { utcToLocal } from "@/common/time";
 import SessionRenderHeader from "@/components/SessionRenderHeader/SessionRenderHeader";
-
+import { useRouter } from "expo-router";
 const SessionsScreen = () => {
   const [sessions, setSessions] = useState([]);
   const [filters, setFilters] = useState({
@@ -67,7 +67,7 @@ const SessionsScreen = () => {
     deleteSessions,
   } = useRequest();
   const user = useSelector((state) => state.user.userInfo);
-
+  const router = useRouter();
   // Open Dialog to Add/Edit Session
   const openDialog = async (session = null) => {
     const playersList = await playerIdList();
@@ -243,8 +243,10 @@ const SessionsScreen = () => {
   }, [filters.playerId]);
 
   const confirmDeleteSession = async (item) => {
+    console.log(item?.startTime, "llllllllllllll");
+
     const deletedQuery = {
-      startTime: item.startTime.toISOString(),
+      startTime: new Date(item?.startTime).toISOString(),
       sectionId: item.sectionId,
       ownerId: item.ownerId,
       sectionName: roomDropDown[item.sectionId],
@@ -329,6 +331,16 @@ const SessionsScreen = () => {
               placeholder="Choose a Game"
               style={styles.input}
               selected={currentSession?.gameId?.toString()}
+              noData={
+                <Text
+                // onClick={() => {
+                //   router.push("/GamesScreen");
+                //   closeDialog();
+                // }}
+                >
+                  Create a Game please
+                </Text>
+              }
             />
             <SegmentedButtons
               value={sessionType}
@@ -352,6 +364,7 @@ const SessionsScreen = () => {
               onSelect={setRoomId} // Pass handleSelect function to handle selection
               placeholder="Choose a Room"
               selected={currentSession?.sectionId?.toString()}
+              noData={<Text>Create a room please</Text>}
             />
 
             <Button
@@ -451,4 +464,5 @@ function themeStyles(theme) {
     },
   });
 }
+
 export default SessionsScreen;

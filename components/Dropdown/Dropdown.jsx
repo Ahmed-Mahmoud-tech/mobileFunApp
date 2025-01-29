@@ -8,7 +8,14 @@ import {
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
-const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
+const Dropdown = ({
+  data,
+  onSelect,
+  placeholder,
+  flag,
+  selected,
+  noData = "No data",
+}) => {
   console.log(data, "00000000000000000044", flag);
 
   const [isVisible, setIsVisible] = useState(false); // Controls dropdown visibility
@@ -88,6 +95,7 @@ const Dropdown = ({ data, onSelect, placeholder, flag, selected }) => {
             <FlatList
               data={Object.keys(data)}
               renderItem={renderItem}
+              ListEmptyComponent={noData}
               keyExtractor={(item, index) => index.toString()}
             />
           </View>

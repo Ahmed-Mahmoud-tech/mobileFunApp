@@ -20,7 +20,7 @@ import { utcToLocal } from "@/common/time";
 import useRequest from "@/axios/useRequest";
 
 const NotificationPage = () => {
-  const { getNotification } = useRequest();
+  const { getNotification, updateNotification } = useRequest();
   const unReadCount = useSelector((state) => state.notification.unReadCount);
   const dispatch = useDispatch();
   const [notification, setNotification] = useState([]);
@@ -48,13 +48,31 @@ const NotificationPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await getNotification(user?.id);
+        const date = new Date(new Date(filters.date).toDateString()).getTime();
+        console.log(date, "date");
+
+        const response = await getNotification(`${user?.id}?startDate=${date}`);
         setNotification(response.data);
       } catch (error) {
         console.log("Error", error.message);
       }
     })();
   }, [unReadCount]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const unreadNotificationIds = notification
+          .map((item) => (item.is_read == false ? item.id : null))
+          .filter((id) => id !== null);
+        if (unreadNotificationIds.length > 0) {
+          await updateNotification({ ids: unreadNotificationIds });
+        }
+      } catch (error) {
+        console.log("Error", error.message);
+      }
+    })();
+  }, [notification]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -103,7 +121,7 @@ const NotificationPage = () => {
         <Divider />
         <Card.Content>
           {console.log(notification, "notification")}
-          {notification.length > 0 ? (
+          {notification?.length > 0 ? (
             notification.map((notification, index) => {
               const notificationType = notificationTypes(notification.body)[
                 notification.body.type

@@ -196,49 +196,6 @@ const MainDrawer = () => {
           Object.values(
             user.owner ? menu[user.type] : menu.realEmployeeMenu
           ).map((item, index) => <View key={index}>{item}</View>)}
-        {/* <Drawer.Item
-          label="Login"
-          active={active === "LoginScreen"}
-          onPress={() => {
-            changeRouteFun("LoginScreen")
-          }}
-        />
-        <Drawer.Item
-          label="Main Info"
-          active={active === "MainInfoScreen"}
-          onPress={() => {
-            changeRouteFun("MainInfoScreen")
-          }}
-        />
-        <Drawer.Item
-          label="Register"
-          active={active === "RegisterScreen"}
-          onPress={() => {
-            changeRouteFun("RegisterScreen")
-          }}
-        />
-        <Drawer.Item
-          label="Verify Email Screen"
-          active={active === "VerifyEmailScreen"}
-          onPress={() => {
-            changeRouteFun("VerifyEmailScreen")
-          }}
-        />
-        <Drawer.Item
-          label="Forgot Password"
-          active={active === "ForgotPasswordScreen"}
-          onPress={() => {
-            changeRouteFun("ForgotPasswordScreen")
-          }}
-        /> */}
-
-        {/* <Drawer.Item
-          label="Notification"
-          active={active === "NotificationScreen"}
-          onPress={() => {
-            changeRouteFun("NotificationScreen")
-          }}
-        /> */}
       </Drawer.Section>
     </ScrollView>
   );

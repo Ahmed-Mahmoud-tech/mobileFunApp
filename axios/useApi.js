@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useDispatch } from "react-redux";
+import { changePreloader } from "@/store/slices/mainConfig";
 // import { toast } from "react-toastify"
 // import { logOut } from "../store/slices/auth"
-// import { changePreloader } from "../store/slices/main"
 // import { addUserInfo } from "../store/slices/auth"
 // import { Client_id } from "../const"
 import { BACKEND_URL } from "@/constants/main";
@@ -21,7 +21,7 @@ const useApi = () => {
 
   mainInstance.interceptors.request.use(
     async function (config) {
-      // dispatch(changePreloader(true))
+      dispatch(changePreloader(true));
       const noAuthRoutes = ["/api/auth/google", "/api/auth/google/callback"];
       //* add auth
       if (!noAuthRoutes.includes(config.url)) {
@@ -44,7 +44,7 @@ const useApi = () => {
 
   mainInstance.interceptors.response.use(
     async (res) => {
-      // dispatch(changePreloader(false))
+      dispatch(changePreloader(false));
       // res.data?.data?.token?.accessToken &&
       //   localStorage.setItem("token", res.data?.data?.token?.accessToken)
       // const roles = ["", "superAdmin"]
@@ -61,6 +61,7 @@ const useApi = () => {
     },
 
     async (err) => {
+      dispatch(changePreloader(false));
       console.log(err);
       if (
         err?.response?.data === "Invalid Token" ||
@@ -73,7 +74,6 @@ const useApi = () => {
       } else {
         return Promise.reject(err);
       }
-      // dispatch(changePreloader(false))
       // if (err?.response?.status == 401) {
       //   dispatch(logOut())
       //   return Promise.reject(err)

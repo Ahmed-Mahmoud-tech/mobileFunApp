@@ -20,9 +20,11 @@ import {
 } from "@/store/slices/notification";
 import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
+import Loading from "../Loading/Loading";
 
 function Wrapper({ children }) {
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
+  const preloader = useSelector((state) => state.mainConfig.preloader);
   const router = useRouter();
   const { routes } = useRootNavigationState();
   const dispatch = useDispatch();
@@ -148,6 +150,7 @@ function Wrapper({ children }) {
           <View style={styles.childrenContainer}>{children}</View>
         )}
       </View>
+      {preloader && <Loading />}
     </I18nextProvider>
   );
 }
