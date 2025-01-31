@@ -15,9 +15,11 @@ import {
   IconButton,
 } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 let start = 0;
 const EmployeeProfileScreen = () => {
+  const { t } = useTranslation();
   const user = useSelector((state) => state.user.userInfo);
   const [name, setName] = useState(user?.username || "");
   const [editMode, setEditMode] = useState(false);
@@ -81,17 +83,17 @@ const EmployeeProfileScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Personal Info Section */}
       <Card style={styles.card}>
-        <Card.Title title="Personal Information" />
+        <Card.Title title={t("personal_information")} />
         <Card.Content>
           <TextInput
-            label="Name"
+            label={t("name")}
             value={name}
             onChangeText={setName}
             style={styles.input}
             editable={editMode}
           />
           <TextInput
-            label="Phone"
+            label={t("phone")}
             value={phone}
             onChangeText={setPhone}
             style={styles.input}
@@ -104,7 +106,7 @@ const EmployeeProfileScreen = () => {
             onPress={handleEditToggle}
             style={styles.button}
           >
-            {editMode ? "Save" : "Open edit mode"}
+            {editMode ? t("save") : t("open_edit_mode")}
           </Button>
         </Card.Actions>
       </Card>
@@ -152,7 +154,7 @@ const EmployeeProfileScreen = () => {
                         }
                         style={styles.button}
                       >
-                        Reject
+                        {t("reject")}
                       </Button>
                       <Button
                         mode="contained"
@@ -165,7 +167,7 @@ const EmployeeProfileScreen = () => {
                         }
                         style={styles.button}
                       >
-                        Accept
+                        {t("accept")}
                       </Button>
                     </View>
                   ) : (
@@ -175,7 +177,7 @@ const EmployeeProfileScreen = () => {
               />
             ))
           ) : (
-            <Text style={{ margin: 10 }}>No requests found.</Text>
+            <Text style={{ margin: 10 }}>{t("no_requests_found")}</Text>
           )}
         </Card.Content>
       </Card>

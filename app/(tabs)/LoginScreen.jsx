@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { Linking } from "react-native";
 import { Button, Card, Title, useTheme } from "react-native-paper";
-
 import { StyleSheet, View } from "react-native";
 import { BACKEND_URL } from "@/constants/main";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentToken, setStoredUser } from "@/store/slices/user";
+import { useTranslation } from "react-i18next";
 
 const LoginScreen = () => {
+  const { t } = useTranslation();
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
 
@@ -30,7 +31,7 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.title}>Welcome Back!</Title>
+          <Title style={styles.title}>{t("welcome_back")}</Title>
           {/* <Paragraph style={styles.subtitle}>
             Please sign in to continue
           </Paragraph> */}
@@ -40,7 +41,7 @@ const LoginScreen = () => {
             mode="contained"
             style={{ margin: 10 }}
           >
-            Login with Google
+            {t("login_with_google")}
           </Button>
         </Card.Content>
       </Card>

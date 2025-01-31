@@ -1,6 +1,6 @@
 import Dropdown from "@/components/Dropdown/Dropdown";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, View, Alert } from "react-native";
+import { StyleSheet, ScrollView, View, Alert, I18nManager } from "react-native";
 import {
   TextInput,
   Button,
@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { notificationTypes } from "@/constants/notification";
 import { utcToLocal } from "@/common/time";
 import useRequest from "@/axios/useRequest";
+import { useTranslation } from "react-i18next";
 
 const NotificationPage = () => {
   const { getNotification, updateNotification } = useRequest();
@@ -25,7 +26,8 @@ const NotificationPage = () => {
   const dispatch = useDispatch();
   const [notification, setNotification] = useState([]);
   const theme = useTheme();
-  const styles = themeStyles(theme);
+  const { t, i18n } = useTranslation();
+  const styles = themeStyles(theme, i18n.language === "ar");
   const [filters, setFilters] = useState({
     notificationType: "all",
     date: new Date().toISOString().split("T")[0], // Default to today
@@ -117,7 +119,7 @@ const NotificationPage = () => {
 
       {/* Notification List */}
       <Card style={styles.card}>
-        <Card.Title title="Notifications" titleStyle={styles.cardTitle} />
+        <Card.Title title={t("notifications")} titleStyle={styles.cardTitle} />
         <Divider />
         <Card.Content>
           {console.log(notification, "notification")}
@@ -151,11 +153,10 @@ const NotificationPage = () => {
 
                   <Divider style={styles.spaceTop} />
                 </View>
-                // <></>
               );
             })
           ) : (
-            <Text style={styles.notFound}>No notifications found.</Text>
+            <Text style={styles.notFound}>{t("no_notifications_found")}</Text>
           )}
         </Card.Content>
       </Card>
@@ -163,11 +164,12 @@ const NotificationPage = () => {
   );
 };
 
-function themeStyles(theme) {
+function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     container: {
       padding: 16,
       backgroundColor: theme.colors.elevation.level3,
+      direction: isRTL ? "rtl" : "ltr",
     },
     card: {
       marginBottom: 16,
@@ -178,6 +180,7 @@ function themeStyles(theme) {
     },
     input: {
       marginBottom: 16,
+      textAlign: isRTL ? "right" : "left",
     },
     checkboxRow: {
       flexDirection: "row",

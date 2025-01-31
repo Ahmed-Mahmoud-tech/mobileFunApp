@@ -11,17 +11,13 @@ import {
   Text,
   IconButton,
 } from "react-native-paper";
-// import MapView, { Marker } from "react-native-maps"
-// import * as Location from "expo-location"
-
 import { removeData, saveData } from "@/common/localStorage";
 import useRequest from "@/axios/useRequest";
-import { I18nextProvider, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useLogoutFun } from "@/hooks/useLogoutFun";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentToken, setStoredUser } from "@/store/slices/user";
-import { changeRoute } from "@/store/slices/mainConfig";
-import { useRootNavigationState, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 
 const MainInfoScreen = ({}) => {
@@ -33,16 +29,12 @@ const MainInfoScreen = ({}) => {
   const logoutFun = useLogoutFun();
   const dispatch = useDispatch();
   const router = useRouter();
-  //   const [location, setLocation] = useState(null) // Stores latitude and longitude
-  //   const [isMapVisible, setIsMapVisible] = useState(false)
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
-  const styles = themeStyles(theme);
+  const styles = themeStyles(theme, i18n.language === "ar");
   const { googleLogOut, updateUser } = useRequest();
   const route = useRoute();
   const params = route.params;
-  // const { routes } = useRootNavigationState();
-  // const params = routes[0].params;
   const user = useSelector((state) => state.user.userInfo);
 
   const handleSubmit = async () => {
@@ -111,27 +103,25 @@ const MainInfoScreen = ({}) => {
       />
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.title}>Required Info</Title>
+          <Title style={styles.title}>{t("required_info")}</Title>
 
           <TextInput
-            label="Phone Number"
+            label={t("phone_number")}
             value={phone}
             onChangeText={setPhone}
             style={styles.input}
-            keyboardType="phone-pad" // Ensures the numeric keypad for phone input
-            maxLength={15} // Optional: Limit the number of digits
+            keyboardType="phone-pad"
+            maxLength={15}
           />
-          {/* Owner/Employee Switch */}
           <View style={styles.switchContainer}>
-            <Text>Owner ? </Text>
+            <Text>{t("owner")}</Text>
             <Switch value={isOwner} onValueChange={setIsOwner} />
           </View>
 
-          {/* Additional Fields for Owner */}
           {isOwner && (
             <>
               <TextInput
-                label="Room Name"
+                label={t("room_name")}
                 value={roomName}
                 onChangeText={setRoomName}
                 style={styles.input}
@@ -155,12 +145,10 @@ const MainInfoScreen = ({}) => {
             mode="contained"
             onPress={handleSubmit}
             loading={loading}
-            disabled={
-              !phone || (isOwner && !roomName) // || !location
-            }
+            disabled={!phone || (isOwner && !roomName)}
             style={styles.button}
           >
-            <Text>Submit</Text>
+            <Text>{t("submit")}</Text>
           </Button>
 
           {/* Links
@@ -183,14 +171,12 @@ const MainInfoScreen = ({}) => {
           logoutFun();
         }}
         style={{
-          marginTop: 25,
-          marginStart: "auto",
-          fontWeight: "bold",
-          fontSize: 15,
-          color: theme.colors.onPrimaryContainer,
+          ...styles.logoutText,
+          // fontFamily:
+          //   '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',
         }}
       >
-        Logout
+        {t("logout")}
       </Text>
       {/* Map Modal */}
       {/* <Modal visible={isMapVisible} animationType="slide">
@@ -224,7 +210,7 @@ const MainInfoScreen = ({}) => {
   );
 };
 
-function themeStyles(theme) {
+function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -268,7 +254,14 @@ function themeStyles(theme) {
     },
     linkText: {
       marginTop: 10,
+    },
+    logoutText: {
+      marginTop: 25,
+      marginStart: "auto",
+      fontWeight: "bold",
+      fontSize: 15,
       color: theme.colors.onPrimaryContainer,
+      textAlign: isRTL ? "right" : "left",
     },
   });
 }

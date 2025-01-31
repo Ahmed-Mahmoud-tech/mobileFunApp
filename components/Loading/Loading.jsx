@@ -2,8 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import { View, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
-const Loading = ({ message }) => {
+const Loading = ({ message = "Loading" }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const styles = themeStyles(theme);
   return (
@@ -13,7 +15,7 @@ const Loading = ({ message }) => {
         animating={true}
         color={theme.colors.primary}
       />
-      {message && <Text style={styles.message}>{message}</Text>}
+      {message && <Text style={styles.message}>{t(message)}</Text>}
     </View>
   );
 };
@@ -22,28 +24,24 @@ Loading.propTypes = {
   message: PropTypes.string,
 };
 
-Loading.defaultProps = {
-  message: "Loading...",
-};
-
 const themeStyles = (theme) =>
   StyleSheet.create({
     loadingContainer: {
-      flex: 1,
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       justifyContent: "center",
       alignItems: "center",
-      top: 0,
-      position: "fixed",
-      left: 0,
-      width: "100%",
-      height: "100%",
       backgroundColor: theme.colors.elevation.level5,
       opacity: 0.8,
+      zIndex: 1000, // Ensure it appears above other components
     },
     message: {
       marginTop: 20,
       fontSize: 18,
-      color: theme.colors.text,
+      color: theme.colors.secondary,
     },
   });
 

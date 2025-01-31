@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, View, Alert } from "react-native";
+import { StyleSheet, ScrollView, View, Alert, I18nManager } from "react-native";
 import {
   TextInput,
   Button,
@@ -13,11 +13,14 @@ import {
   Chip,
 } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useRequest from "@/axios/useRequest";
 import { utcToLocal } from "@/common/time";
 import Popup from "@/components/Popup/Popup";
-
+import { useTranslation } from "react-i18next";
+import { setStoredUser } from "@/store/slices/user";
+I18nManager.allowRTL(true);
+I18nManager.forceRTL(true);
 let start = 0;
 const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo);
@@ -46,8 +49,15 @@ const OwnerProfile = () => {
     updateRoom,
     deleteRoom,
   } = useRequest();
+  const notificationText = {
+    session: "Session",
+    purchasesItems: "Purchases_Items",
+    playersPurchases: "Players_Purchases",
+    checkout: "Checkout",
+  };
+  const dispatch = useDispatch();
   const [notificationPreferences, setNotificationPreferences] = useState({
-    employeeRequest: user?.employeeRequest,
+    // employeeRequest: user?.employeeRequest,
     // reservation: user.reservation,
     session: user?.session,
     purchasesItems: user?.purchasesItems,
@@ -70,11 +80,12 @@ const OwnerProfile = () => {
   const [editingRoom, setEditingRoom] = useState(null);
 
   const theme = useTheme();
-  const styles = themeStyles(theme);
+  const { t, i18n } = useTranslation();
+  const styles = themeStyles(theme, i18n.language === "ar");
 
   const handleAddOrSaveRoom = async () => {
     if (!newRoomName.trim()) {
-      Alert.alert("Validation", "Please enter a room name.");
+      Alert.alert(t("Validation"), t("Please_enter_a_room_name"));
       return;
     }
     const newRoom = {
@@ -106,7 +117,7 @@ const OwnerProfile = () => {
     setHandleYes(() => () => confirmDeleteRoom(id));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are you sure you want to delete this room?");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_room?");
     setVisible(true);
     setYesWord("Confirm");
     setNoWord("No");
@@ -141,6 +152,7 @@ const OwnerProfile = () => {
       console.log(key, !prev[key]);
       const data = { [key]: !prev[key] };
       updateUser(user.id, data);
+      dispatch(setStoredUser({ ...user, ...data }));
       return {
         ...prev,
         [key]: !prev[key],
@@ -151,10 +163,13 @@ const OwnerProfile = () => {
   const handleSendRequest = async () => {
     try {
       if (!newEmployeePhone.trim()) {
-        Alert.alert("Validation", "Please enter an phone.");
+        Alert.alert(t("Validation"), t("Please_enter_an_phone"));
         return;
       }
-      Alert.alert("Request Sent", `Request sent to ${newEmployeePhone}.`);
+      Alert.alert(
+        t("request_sent"),
+        t("request_sent_to", { phone: newEmployeePhone })
+      );
       const data = {
         phone: newEmployeePhone,
         userId: user.id,
@@ -165,22 +180,22 @@ const OwnerProfile = () => {
     } catch (error) {
       if (
         error.response.data.error ==
-        "Employee not found with the provided phone number"
+        "Employee_not_found_with_the_provided_phone_number"
       ) {
         setVisible(true);
         setYesWord("Ok");
         setMessageDescription(
-          "Employee not found with the provided phone number"
+          "Employee_not_found_with_the_provided_phone_number"
         );
         setMessageTitle("Error");
         setHandleYes(() => () => setVisible(false));
         setHandleNo(null);
       } else if (
-        error.response.data.error == "This employee has already been requested."
+        error.response.data.error == "This_employee_has_already_been_requested"
       ) {
         setVisible(true);
         setYesWord("Ok");
-        setMessageDescription("This employee has already been requested.");
+        setMessageDescription("This_employee_has_already_been_requested");
         setMessageTitle("Error");
         setHandleYes(() => () => setVisible(false));
         setHandleNo(null);
@@ -245,7 +260,7 @@ const OwnerProfile = () => {
     setHandleYes(() => () => confirmDeleteRequest(requestEmployee));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are you sure you want to delete this request?");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_request?");
     setVisible(true);
     setYesWord("Confirm");
     setNoWord("No");
@@ -271,7 +286,7 @@ const OwnerProfile = () => {
       />
       {/* Owner Information Section */}
       <Card style={styles.card}>
-        <Card.Title title="Owner Profile" />
+        <Card.Title title={t("owner_profile")} />
         <Card.Content>
           {/* <Button
             mode="outlined"
@@ -289,29 +304,31 @@ const OwnerProfile = () => {
               onChange={handleBirthdateChange}
             />
           )} */}
+
           <TextInput
-            label="Name"
+            label={t("name")}
             value={name}
             onChangeText={setName}
             style={styles.input}
             editable={editMode}
+            direction="rtl"
           />
           <TextInput
-            label="Phone"
+            label={t("phone")}
             value={phone}
             onChangeText={setPhone}
             style={styles.input}
             editable={editMode}
           />
           <TextInput
-            label="Room Name"
+            label={t("room_name")}
             value={roomName}
             onChangeText={setRoomName}
             style={styles.input}
             editable={editMode}
           />
           <TextInput
-            label="Location"
+            label={t("location")}
             value={location}
             onChangeText={setLocation}
             style={styles.input}
@@ -324,7 +341,7 @@ const OwnerProfile = () => {
             onPress={handleEditToggle}
             style={styles.button}
           >
-            {editMode ? "Save" : "Edit"}
+            {editMode ? t("Save") : t("Edit")}
           </Button>
         </Card.Actions>
       </Card>
@@ -364,23 +381,23 @@ const OwnerProfile = () => {
       </Card> */}
       {/* Employee List Section */}
       <Card style={styles.card}>
-        <Card.Title title="Employees List" />
+        <Card.Title title={t("employees_list")} />
         <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
           <TextInput
-            label="employee's phone"
+            label={t("employee_phone")}
             keyboardType="phone-pad"
             value={newEmployeePhone}
             onChangeText={setNewEmployeePhone}
             style={{ ...styles.input, marginBottom: 0 }}
-            placeholder="Enter owner's phone"
+            placeholder={t("enter_employee_phone")}
           />
           <Button
             mode="contained"
             onPress={handleSendRequest}
             style={styles.button}
           >
-            Send Request
+            {t("send_request")}
           </Button>
 
           {employees.length > 0 ? (
@@ -390,7 +407,6 @@ const OwnerProfile = () => {
                 title={employee.toUserInfo.username}
                 description={
                   <>
-                    {console.log(employee, "66666666666444444444444444")}
                     <View
                       style={{
                         flex: 1,
@@ -404,7 +420,7 @@ const OwnerProfile = () => {
                         {employee.toUserInfo.phoneNumber}
                       </Text>
                       <Chip style={{ margin: 10, fontsize: 10 }}>
-                        {employee.status}
+                        {t(employee.status)}
                       </Chip>
                     </View>
                     <View>
@@ -424,18 +440,18 @@ const OwnerProfile = () => {
               />
             ))
           ) : (
-            <Text style={{ margin: 10 }}>No employees found.</Text>
+            <Text style={{ margin: 10 }}>{t("No_employees_found")}</Text>
           )}
         </Card.Content>
       </Card>
 
       {/* Rooms List Section */}
       <Card style={styles.card}>
-        <Card.Title title="Rooms List" />
+        <Card.Title title={t("rooms_list")} />
         <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
           <TextInput
-            label={editingRoom ? "Edit Room Name" : "Add Room Name"}
+            label={editingRoom ? t("Edit_room_name") : t("Add_room_name")}
             value={newRoomName}
             onChangeText={setNewRoomName}
             style={styles.input}
@@ -446,7 +462,7 @@ const OwnerProfile = () => {
               onPress={handleAddOrSaveRoom}
               style={styles.button}
             >
-              {editingRoom ? "Save" : "Add"}
+              {editingRoom ? t("Save") : t("Add")}
             </Button>
             {editingRoom && (
               <Button
@@ -454,7 +470,7 @@ const OwnerProfile = () => {
                 onPress={handleCancelEdit}
                 style={styles.button}
               >
-                Cancel
+                {t("Cancel")}
               </Button>
             )}
           </View>
@@ -480,14 +496,15 @@ const OwnerProfile = () => {
               />
             ))
           ) : (
-            <Text style={{ margin: 10 }}>No rooms found.</Text>
+            <Text style={{ margin: 10 }}>{t("No_rooms_found")}</Text>
           )}
         </Card.Content>
       </Card>
 
       {/* Notification Preferences */}
+      <Text> {notificationPreferences["purchasesItems"].toString()}</Text>
       <Card style={styles.card}>
-        <Card.Title title="Notification Preferences" />
+        <Card.Title title={t("Notification_preferences")} />
         <Divider style={{ marginBottom: 10 }} />
         <Card.Content>
           {Object.keys(notificationPreferences).map((key) => (
@@ -496,7 +513,7 @@ const OwnerProfile = () => {
                 status={notificationPreferences[key] ? "checked" : "unchecked"}
                 onPress={() => togglePreference(key)}
               />
-              <Text>{key.replace(/([A-Z])/g, " $1").trim()}</Text>
+              <Text>{t(notificationText[key])}</Text>
             </View>
           ))}
         </Card.Content>
@@ -505,17 +522,20 @@ const OwnerProfile = () => {
   );
 };
 
-function themeStyles(theme) {
+function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     container: {
       padding: 16,
       backgroundColor: theme.colors.elevation.level3,
+      direction: isRTL ? "rtl" : "ltr",
     },
     card: {
       marginBottom: 16,
     },
     input: {
-      // marginBottom: 0,
+      marginBottom: 16,
+      textAlign: isRTL ? "right" : "left",
+      direction: isRTL ? "rtl" : "ltr",
     },
     button: {
       marginTop: 8,
@@ -531,4 +551,5 @@ function themeStyles(theme) {
     },
   });
 }
+
 export default OwnerProfile;

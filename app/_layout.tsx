@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { store } from "@/store/store";
 import { Provider } from "react-redux";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
+import { I18nManager } from "react-native";
 
 // const lightTheme = {
 // colors: {
@@ -73,11 +74,12 @@ export default function RootLayout() {
     return null;
   }
 
+  I18nManager.allowRTL(true)
+  I18nManager.forceRTL(true)
   return (
     <PaperProvider>
       <Provider store={store}>
         <Wrapper>
-          {console.log("0000000000000000000000")}
 
           <Stack
             // initialRouteName="(tabs)/LoginScreen"

@@ -1,11 +1,12 @@
 import React from "react";
 import { Linking } from "react-native";
 import { Button, Card, Title, useTheme } from "react-native-paper";
-
 import { StyleSheet, View } from "react-native";
 import { BACKEND_URL } from "@/constants/main";
+import { useTranslation } from "react-i18next";
 
 const LoginScreen = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const styles = themeStyles(theme);
 
@@ -23,7 +24,7 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.title}>Welcome Back!</Title>
+          <Title style={styles.title}>{t("welcome_back")}</Title>
           {/* <Paragraph style={styles.subtitle}>
             Please sign in to continue
           </Paragraph> */}
@@ -33,7 +34,7 @@ const LoginScreen = () => {
             mode="contained"
             style={{ margin: 10 }}
           >
-            Login with Googleee
+            {t("login_with_google")}
           </Button>
         </Card.Content>
       </Card>

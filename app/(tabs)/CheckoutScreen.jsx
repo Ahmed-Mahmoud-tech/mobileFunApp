@@ -15,12 +15,14 @@ import { utcToLocal } from "@/common/time";
 import { calculateTimeDifference } from "@/common/timeDifference";
 import RenderCheckOutHeader from "@/components/RenderCheckOutHeader/RenderCheckOutHeader";
 import Popup from "@/components/Popup/Popup";
+import { useTranslation } from "react-i18next";
 
 let firstLoadSession = 1;
 let firstLoadPurchase = 1;
 const CheckoutScreen = () => {
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const styles = themeStyles(theme);
+  const styles = themeStyles(theme, i18n.language === "ar");
   const {
     getPurchases,
     updatePurchases,
@@ -208,16 +210,27 @@ const CheckoutScreen = () => {
         <Card style={styles.card}>
           <Card.Content>
             <Text style={styles.itemName}>{games[item.gameId].name}</Text>
-            <Text>Type: {item.type}</Text>
-            <Text>Room ID: {rooms[item.sectionId].sectionName}</Text>
-            <Text>Start: {utcToLocal(item.startTime)}</Text>
-            <Text>End: {item.endTime ? utcToLocal(item.endTime) : "N/A"}</Text>
-            <Text>Player ID: {item.playerId}</Text>
             <Text>
-              Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}
+              {t("type")}: {item.type}
             </Text>
             <Text>
-              Price:
+              {t("room_id")}: {rooms[item.sectionId].sectionName}
+            </Text>
+            <Text>
+              {t("start")}: {utcToLocal(item.startTime)}
+            </Text>
+            <Text>
+              {t("end")}: {item.endTime ? utcToLocal(item.endTime) : t("n/a")}
+            </Text>
+            <Text>
+              {t("player_id")}: {item.playerId}
+            </Text>
+            <Text>
+              {t("status")}:{" "}
+              {item.status == "notPaid" ? t("not_paid") : t("paid")}
+            </Text>
+            <Text>
+              {t("price")}:
               {item.amount ? parseFloat(item.amount) : calculatePrice(item)}
             </Text>
           </Card.Content>
@@ -236,7 +249,7 @@ const CheckoutScreen = () => {
                   })
                 }
               >
-                Checkout
+                {t("checkout")}
               </Button>
             ) : (
               <Button
@@ -252,7 +265,7 @@ const CheckoutScreen = () => {
                   })
                 }
               >
-                Cancel
+                {t("cancel")}
               </Button>
             )}
           </Card.Actions>
@@ -268,13 +281,17 @@ const CheckoutScreen = () => {
           <Card.Content>
             <Text style={styles.itemName}>{items[item.item].name}</Text>
             <Text>
-              Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}
+              {t("status")}:{" "}
+              {item.status == "notPaid" ? t("not_paid") : t("paid")}
             </Text>
-            <Text>Count: {item.count}</Text>
-            <Text>Player ID: {item.playerId}</Text>
             <Text>
-              Total Price:
-              {+items[item.item].price * +item.count}
+              {t("count")}: {item.count}
+            </Text>
+            <Text>
+              {t("player_id")}: {item.playerId}
+            </Text>
+            <Text>
+              {t("total_price")}:{+items[item.item].price * +item.count}
             </Text>
           </Card.Content>
           <Card.Actions>
@@ -293,7 +310,7 @@ const CheckoutScreen = () => {
                   })
                 }
               >
-                Checkout
+                {t("checkout")}
               </Button>
             ) : (
               <Button
@@ -309,7 +326,7 @@ const CheckoutScreen = () => {
                   })
                 }
               >
-                Cancel
+                {t("cancel")}
               </Button>
             )}
           </Card.Actions>
@@ -320,13 +337,13 @@ const CheckoutScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Popup
-        title={`Are you sure to checkout all purchases and sessions for player ID ${filters.playerId} ?`}
-        description={"The total payment is " + totalPayment}
+        title={t("checkout_all_confirmation", { playerId: filters.playerId })}
+        description={t("total_payment", { totalPayment })}
         handleYes={() => handleCheckoutAll()}
         handleNo={() => setVisible(false)}
         visible={visible}
-        yes={"Confirm"}
-        no={"Cancel"}
+        yes={t("confirm")}
+        no={t("cancel")}
       />
 
       <RenderCheckOutHeader
@@ -345,13 +362,14 @@ const CheckoutScreen = () => {
               fontWeight: "bold",
               margin: 5,
               marginBottom: 10,
+              textAlign: i18n.language === "ar" ? "right" : "left",
             }}
           >
-            Sessions
+            {t("sessions")}
           </Text>
         }
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No session found!</Text>
+          <Text style={styles.emptyText}>{t("no_session_found")}</Text>
         }
       />
 
@@ -366,13 +384,14 @@ const CheckoutScreen = () => {
               fontWeight: "bold",
               margin: 5,
               marginBottom: 10,
+              textAlign: i18n.language === "ar" ? "right" : "left",
             }}
           >
-            Purchases
+            {t("purchases")}
           </Text>
         }
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No purchases found!</Text>
+          <Text style={styles.emptyText}>{t("no_purchases_found")}</Text>
         }
       />
 
@@ -393,14 +412,14 @@ const CheckoutScreen = () => {
           }}
           style={styles.checkoutAll}
         >
-          Checkout All ({totalPayment})
+          {t("checkout_all")} ({totalPayment})
         </Button>
       ) : null}
     </ScrollView>
   );
 };
 
-function themeStyles(theme) {
+function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     container: {
       flex: 1,

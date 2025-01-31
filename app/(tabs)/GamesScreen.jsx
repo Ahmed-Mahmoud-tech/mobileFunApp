@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import useRequest from "@/axios/useRequest"
-import Popup from "@/components/Popup/Popup"
-import { FlatList, StyleSheet, View } from "react-native"
+import React, { useEffect, useState } from "react";
+import useRequest from "@/axios/useRequest";
+import Popup from "@/components/Popup/Popup";
+import { FlatList, StyleSheet, View } from "react-native";
 import {
   TextInput,
   Button,
@@ -12,115 +12,119 @@ import {
   Text,
   useTheme,
   IconButton,
-} from "react-native-paper"
-import { useSelector } from "react-redux"
+} from "react-native-paper";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const GamesScreen = () => {
-  const [games, setGames] = useState([])
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const [dialogVisible, setDialogVisible] = useState(false)
-  const [currentGame, setCurrentGame] = useState(null)
-  const [gameName, setGameName] = useState("")
-  const [singlePrice, setSinglePrice] = useState("")
-  const [multiPrice, setMultiPrice] = useState("")
-  const [gameId, setGameId] = useState("")
-  const [updateGameRender, setUpdateGameRender] = useState("")
-  const [visible, setVisible] = useState(false)
-  const [messageTitle, setMessageTitle] = useState()
-  const [messageDescription, setMessageDescription] = useState()
-  const [handleYes, setHandleYes] = useState(null)
-  const [handleNo, setHandleNo] = useState(null)
-  const [yesWord, setYesWord] = useState("Yes")
-  const [noWord, setNoWord] = useState("No")
+  const { t } = useTranslation();
+  const [games, setGames] = useState([]);
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [currentGame, setCurrentGame] = useState(null);
+  const [gameName, setGameName] = useState("");
+  const [singlePrice, setSinglePrice] = useState("");
+  const [multiPrice, setMultiPrice] = useState("");
+  const [gameId, setGameId] = useState("");
+  const [updateGameRender, setUpdateGameRender] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState();
+  const [messageDescription, setMessageDescription] = useState();
+  const [handleYes, setHandleYes] = useState(null);
+  const [handleNo, setHandleNo] = useState(null);
+  const [yesWord, setYesWord] = useState(t("yes"));
+  const [noWord, setNoWord] = useState(t("no"));
 
-  const user = useSelector((state) => state.user.userInfo)
+  const user = useSelector((state) => state.user.userInfo);
 
-  const { postGame, getGames, updateGame, deleteGame } = useRequest()
+  const { postGame, getGames, updateGame, deleteGame } = useRequest();
 
   const openDialog = (game = null) => {
-    setCurrentGame(game)
+    setCurrentGame(game);
     if (game) {
-      setGameName(game.name)
-      setSinglePrice(game.singlePrice.toString())
-      setMultiPrice(game.multiPrice.toString())
+      setGameName(game.name);
+      setSinglePrice(game.singlePrice.toString());
+      setMultiPrice(game.multiPrice.toString());
     } else {
-      setGameName("")
-      setSinglePrice("")
-      setMultiPrice("")
+      setGameName("");
+      setSinglePrice("");
+      setMultiPrice("");
     }
-    setDialogVisible(true)
-  }
+    setDialogVisible(true);
+  };
 
   const closeDialog = () => {
-    setDialogVisible(false)
-    setGameName("")
-    setSinglePrice("")
-    setMultiPrice("")
-  }
+    setDialogVisible(false);
+    setGameName("");
+    setSinglePrice("");
+    setMultiPrice("");
+  };
 
   const handleSave = async () => {
     const newGame = {
       name: gameName,
       singlePrice: singlePrice,
       multiPrice: multiPrice,
-    }
+    };
 
     if (currentGame) {
-      await updateGame(currentGame.id, { ...currentGame, ...newGame })
+      await updateGame(currentGame.id, { ...currentGame, ...newGame });
     } else {
-      await postGame(newGame)
+      await postGame(newGame);
     }
 
-    setUpdateGameRender(updateGameRender + 1)
-    closeDialog()
-  }
+    setUpdateGameRender(updateGameRender + 1);
+    closeDialog();
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getGames()
-      setGames(data.data)
-    })()
-  }, [updateGameRender])
+    (async () => {
+      const data = await getGames();
+      setGames(data.data);
+    })();
+  }, [updateGameRender]);
 
   const confirmDeleteGame = async (id) => {
-    await deleteGame(id)
-    setVisible(false)
-    setUpdateGameRender(updateGameRender + 1)
-  }
+    await deleteGame(id);
+    setVisible(false);
+    setUpdateGameRender(updateGameRender + 1);
+  };
 
   const handleRemoveGame = (id) => {
-    setHandleYes(() => () => confirmDeleteGame(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this game?")
-    setYesWord("Confirm")
-    setNoWord("No")
-    setVisible(true)
-  }
+    setHandleYes(() => () => confirmDeleteGame(id));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle(t("confirm"));
+    setMessageDescription(t("confirm_delete_game"));
+    setYesWord(t("confirm"));
+    setNoWord(t("no"));
+    setVisible(true);
+  };
 
   const renderGame = ({ item }) => (
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.gameName}>{item.name}</Text>
         <Text style={{ marginBottom: 5 }}>
-          Single Price: ${item.singlePrice}
+          {t("single_price")}: ${item.singlePrice}
         </Text>
-        <Text style={{ marginBottom: 5 }}>Multi Price: ${item.multiPrice}</Text>
+        <Text style={{ marginBottom: 5 }}>
+          {t("multi_price")}: ${item.multiPrice}
+        </Text>
       </Card.Content>
       <Card.Actions>
         <View style={styles.gameActions}>
           <IconButton
             icon="pencil"
             onPress={() => {
-              openDialog(item)
+              openDialog(item);
             }}
           />
           <IconButton icon="delete" onPress={() => handleRemoveGame(item.id)} />
         </View>
       </Card.Actions>
     </Card>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -139,28 +143,30 @@ const GamesScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No games added yet!</Text>
+          <Text style={styles.emptyText}>{t("no_games_added_yet")}</Text>
         }
       />
       <Portal>
         <Dialog visible={dialogVisible} onDismiss={closeDialog}>
-          <Dialog.Title>{currentGame ? "Edit Game" : "Add Game"}</Dialog.Title>
+          <Dialog.Title>
+            {currentGame ? t("edit_game") : t("add_game")}
+          </Dialog.Title>
           <Dialog.Content>
             <TextInput
-              label="Game Name"
+              label={t("game_name")}
               value={gameName}
               onChangeText={setGameName}
               style={styles.input}
             />
             <TextInput
-              label="Single Price"
+              label={t("single_price")}
               value={singlePrice}
               onChangeText={setSinglePrice}
               keyboardType="numeric"
               style={styles.input}
             />
             <TextInput
-              label="Multi Price"
+              label={t("multi_price")}
               value={multiPrice}
               onChangeText={setMultiPrice}
               keyboardType="numeric"
@@ -168,12 +174,12 @@ const GamesScreen = () => {
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={closeDialog}>Cancel</Button>
+            <Button onPress={closeDialog}>{t("cancel")}</Button>
             <Button
               onPress={handleSave}
               disabled={!gameName || !singlePrice || !multiPrice}
             >
-              Save
+              {t("save")}
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -182,11 +188,11 @@ const GamesScreen = () => {
         style={styles.fab}
         icon="plus"
         onPress={() => openDialog()}
-        label="Add Game"
+        label={t("add_game")}
       />
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -224,6 +230,6 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignGames: "center",
     },
-  })
+  });
 }
-export default GamesScreen
+export default GamesScreen;

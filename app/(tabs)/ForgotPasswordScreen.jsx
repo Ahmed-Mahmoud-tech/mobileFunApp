@@ -1,42 +1,41 @@
-import React, { useState } from "react"
-import { StyleSheet, View } from "react-native"
-import { TextInput, Button, useTheme, Text } from "react-native-paper"
-import { useRouter } from "expo-router"
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { TextInput, Button, useTheme, Text } from "react-native-paper";
+import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 const ForgotPasswordScreen = () => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleResetPassword = () => {
     if (!email.includes("@")) {
-      setMessage("Please enter a valid email address.")
-      return
+      setMessage(t("please_enter_valid_email"));
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     // Simulate password reset API call
     setTimeout(() => {
-      setLoading(false)
-      setMessage("If this email exists, a reset link has been sent!")
-    }, 2000)
-  }
+      setLoading(false);
+      setMessage(t("reset_link_sent"));
+    }, 2000);
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forgot Password</Text>
-      <Text style={styles.subtitle}>
-        Enter your email address, and we'll send you a link to reset your
-        password.
-      </Text>
+      <Text style={styles.title}>{t("forgot_password")}</Text>
+      <Text style={styles.subtitle}>{t("enter_email_reset_password")}</Text>
 
       {/* Email Input */}
       <TextInput
-        label="Email Address"
+        label={t("email_address")}
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -53,7 +52,7 @@ const ForgotPasswordScreen = () => {
         disabled={!email}
         style={styles.button}
       >
-        Send Reset Link
+        {t("send_reset_link")}
       </Button>
 
       {/* Success/Error Message */}
@@ -61,11 +60,11 @@ const ForgotPasswordScreen = () => {
 
       {/* Back to Login Link */}
       <Text style={styles.backLink} onPress={() => router.push("/login")}>
-        Back to Login
+        {t("back_to_login")}
       </Text>
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -105,6 +104,6 @@ function themeStyles(theme) {
       color: theme.colors.onSecondaryContainer,
       // textDecorationLine: "underline",
     },
-  })
+  });
 }
-export default ForgotPasswordScreen
+export default ForgotPasswordScreen;

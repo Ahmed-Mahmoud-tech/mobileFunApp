@@ -30,12 +30,14 @@ function Wrapper({ children }) {
   const dispatch = useDispatch();
   const { getUserInfo, getNotificationCount } = useRequest();
   const theme = useTheme();
-  const styles = themeStyles(theme);
   const [first, setFirst] = useState(false);
   const [newNote, setNewNote] = useState(false);
   const menuStatus = useSelector((state) => state.mainConfig.menuStatus);
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
+  const { t, i18n } = useTranslation();
+  const styles = themeStyles(theme, i18n.language === "ar");
+
   // Initialize height with an animated value
   const height = useMemo(() => new Animated.Value(0), []); // Start with height of 0
   // Function to animate the height value
@@ -124,9 +126,10 @@ function Wrapper({ children }) {
   }, [backToLogin]);
 
   return (
-    <I18nextProvider i18n={i18n}>
+    <I18nextProvider>
+      {preloader && <Loading />}
       {<Note visible={newNote} title="You have new notification" />}
-      <View style={styles.wrapperContainer}>
+      <View style={{ ...styles.wrapperContainer, direction: i18n.dir() }}>
         {user?.type && (
           <View style={styles.header}>
             <Header userName={user.username} />
@@ -150,15 +153,17 @@ function Wrapper({ children }) {
           <View style={styles.childrenContainer}>{children}</View>
         )}
       </View>
-      {preloader && <Loading />}
     </I18nextProvider>
   );
 }
 
-function themeStyles(theme) {
+function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     wrapperContainer: {
       flex: 1,
+      direction: isRTL ? "rtl" : "ltr",
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont,  Roboto, Helvetica, Arial, sans-serif",
     },
     header: {
       zIndex: 10,
