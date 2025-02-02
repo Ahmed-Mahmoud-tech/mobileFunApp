@@ -19,14 +19,12 @@ import { utcToLocal } from "@/common/time";
 import Popup from "@/components/Popup/Popup";
 import { useTranslation } from "react-i18next";
 import { setStoredUser } from "@/store/slices/user";
+import OwnerInfo from "@/components/OwnerInfo/OwnerInfo";
 
 let start = 0;
 const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo);
-  const [phone, setPhone] = useState(user?.phoneNumber || "");
-  const [name, setName] = useState(user?.username || "");
-  const [placeName, setPlaceName] = useState(user?.placeName || "");
-  const [location, setLocation] = useState(user?.location || "");
+
   const [newEmployeePhone, setNewEmployeePhone] = useState("");
   const [visible, setVisible] = useState(false);
   const [messageTitle, setMessageTitle] = useState();
@@ -72,7 +70,6 @@ const OwnerProfile = () => {
     { id: 1, name: "Main Hall" },
     { id: 2, name: "VIP Room" },
   ]);
-  const [editMode, setEditMode] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [newRoomName, setNewRoomName] = useState("");
   const [editedRoodId, setEditedRoodId] = useState("");
@@ -131,19 +128,6 @@ const OwnerProfile = () => {
     //     },
     //   },
     // ])
-  };
-
-  const handleEditToggle = () => {
-    setEditMode(!editMode);
-    if (editMode == true) {
-      const data = {
-        phoneNumber: phone,
-        userName: name,
-        placeName: placeName,
-        location,
-      };
-      updateUser(user.id, data);
-    }
   };
 
   const togglePreference = (key) => {
@@ -284,66 +268,7 @@ const OwnerProfile = () => {
         no={noWord}
       />
       {/* Owner Information Section */}
-      <Card style={styles.card}>
-        <Card.Title title={t("owner_profile")} />
-        <Card.Content>
-          {/* <Button
-            mode="outlined"
-            onPress={() => setShowDatePicker(true)}
-            style={styles.input}
-            disabled={!editMode}
-          >
-            Birthdate: {birthdate.toLocaleDateString()}
-          </Button>
-          {showDatePicker && (
-            <DateTimePicker
-              value={birthdate}
-              mode="date"
-              display="default"
-              onChange={handleBirthdateChange}
-            />
-          )} */}
-
-          <TextInput
-            label={t("name")}
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-            editable={editMode}
-            direction="rtl"
-          />
-          <TextInput
-            label={t("phone")}
-            value={phone}
-            onChangeText={setPhone}
-            style={styles.input}
-            editable={editMode}
-          />
-          <TextInput
-            label={t("place_name")}
-            value={placeName}
-            onChangeText={setPlaceName}
-            style={styles.input}
-            editable={editMode}
-          />
-          <TextInput
-            label={t("location")}
-            value={location}
-            onChangeText={setLocation}
-            style={styles.input}
-            editable={editMode}
-          />
-        </Card.Content>
-        <Card.Actions>
-          <Button
-            mode="contained"
-            onPress={handleEditToggle}
-            style={styles.button}
-          >
-            {editMode ? t("Save") : t("Edit")}
-          </Button>
-        </Card.Actions>
-      </Card>
+      <OwnerInfo styles={styles} updateUser={updateUser} />
       {/* Owner Request Section */}
       {/* <Card style={styles.card}>
         <Card.Title title="Employee Request" />

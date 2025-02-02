@@ -18,17 +18,11 @@ export const useLogoutFun = () => {
       await removeData("token");
       await removeData("userId");
       await saveData("logout", "true");
-      // await removeData("token");
-      // await removeData("userId");
 
       dispatch(setStoredUser(null));
       dispatch(setCurrentToken(""));
       dispatch(ChangeMenuStatus(true));
-      // await Linking.openURL("/(tabs)/LoginScreen");
 
-      // setTimeout(() => {
-      //   DevSettings.reload();
-      // }, 10000);
       await googleLogOut();
     } catch (error) {
       console.error("Error during logout:", error);

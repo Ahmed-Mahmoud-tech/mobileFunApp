@@ -219,5 +219,6 @@ export const en = {
     Play: "Play",
     Filter_by_Date: "Filter by Date",
     Filter_by_Email: "Filter by Email",
+    Please_fill_all_fields: "Please fill all fields",
   },
 };

@@ -4,6 +4,7 @@ import { Button, Card, Title, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { BACKEND_URL } from "@/constants/main";
 import { useTranslation } from "react-i18next";
+import { saveData } from "@/common/localStorage";
 
 const LoginScreen = () => {
   const { t } = useTranslation();

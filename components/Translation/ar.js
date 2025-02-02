@@ -219,5 +219,6 @@ export const ar = {
     Play: "اللعب",
     Filter_by_Date: "تصفية حسب التاريخ",
     Filter_by_Email: "تصفية حسب البريد الإلكتروني",
+    Please_fill_all_fields: "يرجى ملء جميع الحقول",
   },
 };

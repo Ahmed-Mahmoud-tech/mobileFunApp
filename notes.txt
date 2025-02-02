@@ -13,3 +13,10 @@ validation
 end session time Notification
 
 DELETE ON CASCADE
+
+
+
+
+# for mobile 
+1- update button on the header 
+2- add location input for mainInfo and OwnerProfile
