@@ -12,7 +12,7 @@ export default function NotFoundScreen() {
   useEffect(() => {
     setTimeout(() => {
       router.push("/LoginScreen");
-    }, 0);
+    }, 3000);
   }, []);
 
   return (

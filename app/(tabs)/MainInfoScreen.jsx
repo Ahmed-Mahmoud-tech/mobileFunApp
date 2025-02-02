@@ -11,7 +11,7 @@ import {
   Text,
   IconButton,
 } from "react-native-paper";
-import { removeData, saveData } from "@/common/localStorage";
+import { getData, removeData, saveData } from "@/common/localStorage";
 import useRequest from "@/axios/useRequest";
 import { useTranslation } from "react-i18next";
 import { useLogoutFun } from "@/hooks/useLogoutFun";
@@ -84,13 +84,15 @@ const MainInfoScreen = ({}) => {
   };
 
   useEffect(() => {
-    if (params && params?.token) {
-      // Alert.alert("Token", JSON.stringify(params?.token));
-      console.log(params);
-      saveData("token", params.token);
-      saveData("userId", params.userId);
-      dispatch(setCurrentToken(params.token));
-    }
+    (async () => {
+      const logout = await getData("logout");
+      if (params && params?.token && logout == "false") {
+        console.log(params);
+        saveData("token", params.token);
+        saveData("userId", params.userId);
+        dispatch(setCurrentToken(params.token));
+      }
+    })();
   }, [params?.token]);
 
   return (

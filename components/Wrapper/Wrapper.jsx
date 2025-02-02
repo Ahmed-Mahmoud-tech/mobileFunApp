@@ -21,6 +21,7 @@ import {
 import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
 import Loading from "../Loading/Loading";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 function Wrapper({ children }) {
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
@@ -59,21 +60,23 @@ function Wrapper({ children }) {
 
   const userCheck = (user, route) => {
     if (!user?.type && !notAuth.includes(route)) {
-      // Alert.alert("Error7");
       router.push("/MainInfoScreen");
     } else if (user?.type && notAuth.includes(route)) {
-      // Alert.alert(user?.type, "Error8", notAuth.includes(route));
       user?.type == "employee"
         ? router.push("/EmployeeProfileScreen")
         : router.push("/OwnerProfileScreen");
-      // } else {
-      //   Alert.alert("Error9");
     }
   };
 
   const realRoute = routes[0].name.split("/")[1];
   useEffect(() => {
     (async () => {
+      const logout = await getData("logout");
+
+      if (logout == "true") {
+        router.push("/LoginScreen");
+        return;
+      }
       const userId = await getData("userId");
 
       if (userId && realRoute) {
@@ -99,7 +102,7 @@ function Wrapper({ children }) {
         // }
       }
     })();
-  }, [currentToken, realRoute, user?.type]);
+  }, [currentToken]);
 
   const myNotification = async () => {
     const response = await getNotificationCount(user.id);

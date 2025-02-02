@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ChangeMenuStatus, changeRoute } from "@/store/slices/mainConfig";
 import { Image, StyleSheet, View } from "react-native";
 import { I18nextProvider, useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
-import { DevSettings } from "react-native";
+import { useRootNavigationState, useRouter } from "expo-router";
+// import { DevSettings } from "react-native";
 
 const Header = ({ userName }) => {
   const theme = useTheme();
@@ -32,25 +32,33 @@ const Header = ({ userName }) => {
       : i18n.changeLanguage("en");
   };
 
-  return (
-    <Appbar.Header style={styles.container}>
-      {/* <Appbar.Content title={t("welcome")} /> */}
-      <Image source={require("@/assets/images/fun.png")} style={styles.logo} />
+  // const { routes } = useRootNavigationState();
+  // const realRoute = routes[0].name.split("/")[1];
 
-      <Appbar.Content title={userName} />
-      {/* mobile uncomment */}
-      {/* <Appbar.Action icon="refresh" onPress={DevSettings.reload} /> */}
-      <View>
-        <Appbar.Action icon="bell" onPress={notificationPage} />
-        {unReadCount > 0 && (
-          <Badge size={16} style={styles.badge}>
-            {+unReadCount > 9 ? "9+" : unReadCount}
-          </Badge>
-        )}
-      </View>
-      <Appbar.Action icon="translate" onPress={_handleLanguage} />
-      <Appbar.Action icon="dots-vertical" onPress={menuChange} />
-    </Appbar.Header>
+  return (
+    <>
+      <Appbar.Header style={styles.container}>
+        {/* <Appbar.Content title={t("welcome")} /> */}
+        <Image
+          source={require("@/assets/images/fun.png")}
+          style={styles.logo}
+        />
+
+        <Appbar.Content title={userName} />
+        {/* mobile uncomment */}
+        {/* <Appbar.Action icon="refresh" onPress={DevSettings.reload} /> */}
+        <View>
+          <Appbar.Action icon="bell" onPress={notificationPage} />
+          {unReadCount > 0 && (
+            <Badge size={16} style={styles.badge}>
+              {+unReadCount > 9 ? "9+" : unReadCount}
+            </Badge>
+          )}
+        </View>
+        <Appbar.Action icon="translate" onPress={_handleLanguage} />
+        <Appbar.Action icon="dots-vertical" onPress={menuChange} />
+      </Appbar.Header>
+    </>
   );
 };
 

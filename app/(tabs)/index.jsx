@@ -12,6 +12,8 @@ const LoginScreen = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      await saveData("logout", "false");
+
       const url = `${BACKEND_URL}/api/auth/google`;
       // Open the authentication URL
       await Linking.openURL(url);
