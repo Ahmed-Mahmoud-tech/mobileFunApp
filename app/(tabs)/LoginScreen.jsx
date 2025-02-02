@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import { Linking } from "react-native";
-import { Button, Card, Title, useTheme } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { Alert, Linking } from "react-native";
+import { Button, Card, Text, Title, useTheme } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { BACKEND_URL } from "@/constants/main";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentToken, setStoredUser } from "@/store/slices/user";
 import { useTranslation } from "react-i18next";
+import { getData } from "@/common/localStorage";
+import { router } from "expo-router";
 
 const LoginScreen = () => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
-
   const theme = useTheme();
   const styles = themeStyles(theme);
   const dispatch = useDispatch();
@@ -24,18 +24,22 @@ const LoginScreen = () => {
       console.error("Error opening Google login:", error);
     }
   };
-  useEffect(() => {
-    console.log(user, "444444444444444444", currentToken);
-  }, [user, currentToken]);
+
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
         <Card.Content>
           <Title style={styles.title}>{t("welcome_back")}</Title>
-          {/* <Paragraph style={styles.subtitle}>
-            Please sign in to continue
-          </Paragraph> */}
 
+          {/* <Text>
+            {token +
+              "token" +
+              userId +
+              "userId" +
+              JSON.stringify(user) +
+              "userInfo" +
+              currentToken}
+          </Text> */}
           <Button
             onPress={() => handleGoogleLogin()}
             mode="contained"

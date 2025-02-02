@@ -1,6 +1,7 @@
 import useRequest from "@/axios/useRequest";
 import Popup from "@/components/Popup/Popup";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
 import {
   TextInput,
@@ -16,6 +17,7 @@ import {
 import { useSelector } from "react-redux";
 
 const PurchaseItemsScreen = () => {
+  const { t, i18n } = useTranslation();
   const [items, setItems] = useState([]);
   const theme = useTheme();
   const styles = themeStyles(theme);
@@ -96,7 +98,7 @@ const PurchaseItemsScreen = () => {
     setHandleYes(() => () => confirmDeleteItem(item));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are you sure you want to delete this item?");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_item");
     setYesWord("Confirm");
     setNoWord("No");
     setVisible(true);
@@ -106,7 +108,9 @@ const PurchaseItemsScreen = () => {
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text>Price: {item.price}</Text>
+        <Text>
+          {t("Price")} : {item.price}
+        </Text>
       </Card.Content>
       <Card.Actions>
         <View style={styles.itemActions}>
@@ -140,22 +144,24 @@ const PurchaseItemsScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No items added yet!</Text>
+          <Text style={styles.emptyText}>{t("No_items_added_yet")}</Text>
         }
       />
 
       <Portal>
         <Dialog visible={dialogVisible} onDismiss={closeDialog}>
-          <Dialog.Title>{currentItem ? "Edit Item" : "Add Item"}</Dialog.Title>
+          <Dialog.Title>
+            {currentItem ? t("Edit_Item") : t("Add_Item")}
+          </Dialog.Title>
           <Dialog.Content>
             <TextInput
-              label="Item Name"
+              label={t("Item_Name")}
               value={itemName}
               onChangeText={setItemName}
               style={styles.input}
             />
             <TextInput
-              label="Price"
+              label={t("Price")}
               value={price}
               onChangeText={setPrice}
               keyboardType="numeric"
@@ -163,9 +169,9 @@ const PurchaseItemsScreen = () => {
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={closeDialog}>Cancel</Button>
+            <Button onPress={closeDialog}>{t("Cancel")}</Button>
             <Button onPress={handleSave} disabled={!itemName || !price}>
-              Save
+              {t("Save")}
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -175,7 +181,7 @@ const PurchaseItemsScreen = () => {
         style={styles.fab}
         icon="plus"
         onPress={() => openDialog()}
-        label="Add Item"
+        label={t("Add_Item")}
       />
     </View>
   );

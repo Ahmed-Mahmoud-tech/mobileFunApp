@@ -59,11 +59,15 @@ function Wrapper({ children }) {
 
   const userCheck = (user, route) => {
     if (!user?.type && !notAuth.includes(route)) {
+      // Alert.alert("Error7");
       router.push("/MainInfoScreen");
     } else if (user?.type && notAuth.includes(route)) {
+      // Alert.alert(user?.type, "Error8", notAuth.includes(route));
       user?.type == "employee"
         ? router.push("/EmployeeProfileScreen")
         : router.push("/OwnerProfileScreen");
+      // } else {
+      //   Alert.alert("Error9");
     }
   };
 
@@ -71,12 +75,13 @@ function Wrapper({ children }) {
   useEffect(() => {
     (async () => {
       const userId = await getData("userId");
-      if (userId) {
+
+      if (userId && realRoute) {
         if (!user?.email) {
           const userInfo = await getUserInfo(userId);
-
           if (userInfo) {
             dispatch(setStoredUser(userInfo.data));
+
             userCheck(userInfo.data, realRoute);
             userInfo.data.token &&
               (await saveData("token", userInfo.data.token));
@@ -84,9 +89,17 @@ function Wrapper({ children }) {
         } else {
           userCheck(user, realRoute);
         }
+        // } else {
+        //   if (user?.type) {
+        //     user?.type == "employee"
+        //       ? router.push("/EmployeeProfileScreen")
+        //       : router.push("/OwnerProfileScreen");
+        // } else if (!notAuth.includes(realRoute)) {
+        //   router.push("/LoginScreen");
+        // }
       }
     })();
-  }, [currentToken]);
+  }, [currentToken, realRoute, user?.type]);
 
   const myNotification = async () => {
     const response = await getNotificationCount(user.id);
@@ -101,8 +114,6 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
-          console.log(data, "6666666666666666666");
-
           dispatch(setStoredLastNotification(data));
           await myNotification();
           setNewNote(true);
@@ -128,14 +139,14 @@ function Wrapper({ children }) {
   return (
     <I18nextProvider>
       {preloader && <Loading />}
-      {<Note visible={newNote} title="You have new notification" />}
+      {<Note visible={newNote} title={t("You_have_new_notification")} />}
       <View style={{ ...styles.wrapperContainer, direction: i18n.dir() }}>
         {user?.type && (
           <View style={styles.header}>
             <Header userName={user.username} />
           </View>
         )}
-        {first && (
+        {first && user?.type && (
           <View style={styles.drawerContainer}>
             <Animated.View
               style={[

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, FlatList, ScrollView } from "react-native";
-import {
-  TextInput,
-  Button,
-  Text,
-  Card,
-  SegmentedButtons,
-  useTheme,
-} from "react-native-paper";
+import { StyleSheet, View, FlatList } from "react-native";
+import { TextInput, Button, Text, Card, useTheme } from "react-native-paper";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import useRequest from "@/axios/useRequest";
 import { useSelector } from "react-redux";
@@ -74,7 +67,8 @@ const CheckoutScreen = () => {
       const sessionResponse = await getSessions({ params });
 
       setSessions(sessionResponse.data);
-      if (firstLoadSession == 1) {
+      // if (firstLoadSession == 1) {
+      if (!rooms) {
         const gameResponse = await getGames();
         const games = {};
         gameResponse.data.map((item) => (games[item.id] = item));
@@ -84,7 +78,7 @@ const CheckoutScreen = () => {
         const rooms = {};
         roomResponse.data.map((item) => (rooms[item.id] = item));
         setRooms(rooms);
-        firstLoadSession++;
+        // firstLoadSession++;
       }
     })();
   }, [updateSessionRender, debouncedPlayerId, filters.status, filters.day]);
@@ -146,18 +140,18 @@ const CheckoutScreen = () => {
       if (status) params.status = status == "All" ? "" : status;
       if (day)
         params.createdAt = new Date(new Date(day).toDateString()).getTime();
-      console.log(params, "0000000000000000000");
 
       const purchasesResponse = await getPurchases({ params });
       setPurchases(purchasesResponse.data);
-      if (firstLoadPurchase == 1) {
+      // if (firstLoadPurchase == 1) {
+      if (!items) {
         const itemsResponse = await getItems();
 
         const items = {};
         itemsResponse.data.map((item) => (items[item.id] = item));
         setItems(items);
 
-        firstLoadPurchase++;
+        // firstLoadPurchase++;
       }
     })();
   }, [updatePurchasesRender, debouncedPlayerId, filters.status, filters.day]);
@@ -206,192 +200,172 @@ const CheckoutScreen = () => {
   const renderSessionItem = ({ item }) =>
     games &&
     rooms && (
-      <>
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text style={styles.itemName}>{games[item.gameId].name}</Text>
-            <Text>
-              {t("type")}: {item.type}
-            </Text>
-            <Text>
-              {t("room_id")}: {rooms[item.sectionId].sectionName}
-            </Text>
-            <Text>
-              {t("start")}: {utcToLocal(item.startTime)}
-            </Text>
-            <Text>
-              {t("end")}: {item.endTime ? utcToLocal(item.endTime) : t("n/a")}
-            </Text>
-            <Text>
-              {t("player_id")}: {item.playerId}
-            </Text>
-            <Text>
-              {t("status")}:{" "}
-              {item.status == "notPaid" ? t("not_paid") : t("paid")}
-            </Text>
-            <Text>
-              {t("price")}:
-              {item.amount ? parseFloat(item.amount) : calculatePrice(item)}
-            </Text>
-          </Card.Content>
-          <Card.Actions>
-            {item.status == "notPaid" ? (
-              <Button
-                onPress={() =>
-                  handleSessionCheckout(item.id, {
-                    amount: calculatePrice(item),
-                    author: user.username,
-                    sectionName: rooms[item.sectionId].sectionName,
-                    playerId: item.playerId,
-                    status: "paid",
-                    isFromEmployee: user.type === "employee" ? "employee" : "",
-                    ownerId: user.owner,
-                  })
-                }
-              >
-                {t("checkout")}
-              </Button>
-            ) : (
-              <Button
-                onPress={() =>
-                  handleSessionCancel(item.id, {
-                    amount: null,
-                    author: user.username,
-                    sectionName: rooms[item.sectionId].sectionName,
-                    playerId: item.playerId,
-                    status: "notPaid",
-                    isFromEmployee: user.type === "employee" ? "employee" : "",
-                    ownerId: user.owner,
-                  })
-                }
-              >
-                {t("cancel")}
-              </Button>
-            )}
-          </Card.Actions>
-        </Card>
-      </>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text style={styles.itemName}>{games[item.gameId].name}</Text>
+          <Text>
+            {t("type")}: {item.type}
+          </Text>
+          <Text>
+            {t("room_id")}: {rooms[item.sectionId].sectionName}
+          </Text>
+          <Text>
+            {t("start")}: {utcToLocal(item.startTime)}
+          </Text>
+          <Text>
+            {t("end")}: {item.endTime ? utcToLocal(item.endTime) : t("n/a")}
+          </Text>
+          <Text>
+            {t("player_id")}: {item.playerId}
+          </Text>
+          <Text>
+            {t("status")}:{" "}
+            {item.status == "notPaid" ? t("not_paid") : t("paid")}
+          </Text>
+          <Text>
+            {t("price")}:
+            {item.amount ? parseFloat(item.amount) : calculatePrice(item)}
+          </Text>
+        </Card.Content>
+        <Card.Actions>
+          {item.status == "notPaid" ? (
+            <Button
+              onPress={() =>
+                handleSessionCheckout(item.id, {
+                  amount: calculatePrice(item),
+                  author: user.username,
+                  sectionName: rooms[item.sectionId].sectionName,
+                  playerId: item.playerId,
+                  status: "paid",
+                  isFromEmployee: user.type === "employee" ? "employee" : "",
+                  ownerId: user.owner,
+                })
+              }
+            >
+              {t("Checkout")}
+            </Button>
+          ) : (
+            <Button
+              onPress={() =>
+                handleSessionCancel(item.id, {
+                  amount: null,
+                  author: user.username,
+                  sectionName: rooms[item.sectionId].sectionName,
+                  playerId: item.playerId,
+                  status: "notPaid",
+                  isFromEmployee: user.type === "employee" ? "employee" : "",
+                  ownerId: user.owner,
+                })
+              }
+            >
+              {t("Cancel")}
+            </Button>
+          )}
+        </Card.Actions>
+      </Card>
     );
 
   const renderPurchaseItem = ({ item }) =>
     games &&
     rooms && (
-      <>
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text style={styles.itemName}>{items[item.item].name}</Text>
-            <Text>
-              {t("status")}:{" "}
-              {item.status == "notPaid" ? t("not_paid") : t("paid")}
-            </Text>
-            <Text>
-              {t("count")}: {item.count}
-            </Text>
-            <Text>
-              {t("player_id")}: {item.playerId}
-            </Text>
-            <Text>
-              {t("total_price")}:{+items[item.item].price * +item.count}
-            </Text>
-          </Card.Content>
-          <Card.Actions>
-            {item.status == "notPaid" ? (
-              <Button
-                onPress={() =>
-                  handlePurchaseCheckout(item.id, {
-                    amount: +items[item.item].price * +item.count,
-                    count: item.count,
-                    author: user.username,
-                    itemName: items[item.item].name,
-                    playerId: item.playerId,
-                    status: "paid",
-                    isFromEmployee: user.type === "employee" ? "employee" : "",
-                    ownerId: user.owner,
-                  })
-                }
-              >
-                {t("checkout")}
-              </Button>
-            ) : (
-              <Button
-                onPress={() =>
-                  handlePurchaseCancel(item.id, {
-                    count: item.count,
-                    author: user.username,
-                    itemName: items[item.item].name,
-                    playerId: item.playerId,
-                    status: "notPaid",
-                    isFromEmployee: user.type === "employee" ? "employee" : "",
-                    ownerId: user.owner,
-                  })
-                }
-              >
-                {t("cancel")}
-              </Button>
-            )}
-          </Card.Actions>
-        </Card>
-      </>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text style={styles.itemName}>{items[item.item].name}</Text>
+          <Text>
+            {t("status")}:{" "}
+            {item.status == "notPaid" ? t("not_paid") : t("paid")}
+          </Text>
+          <Text>
+            {t("count")}: {item.count}
+          </Text>
+          <Text>
+            {t("player_id")}: {item.playerId}
+          </Text>
+          <Text>
+            {t("total_price")}:{+items[item.item].price * +item.count}
+          </Text>
+        </Card.Content>
+        <Card.Actions>
+          {item.status == "notPaid" ? (
+            <Button
+              onPress={() =>
+                handlePurchaseCheckout(item.id, {
+                  amount: +items[item.item].price * +item.count,
+                  count: item.count,
+                  author: user.username,
+                  itemName: items[item.item].name,
+                  playerId: item.playerId,
+                  status: "paid",
+                  isFromEmployee: user.type === "employee" ? "employee" : "",
+                  ownerId: user.owner,
+                })
+              }
+            >
+              {t("Checkout")}
+            </Button>
+          ) : (
+            <Button
+              onPress={() =>
+                handlePurchaseCancel(item.id, {
+                  count: item.count,
+                  author: user.username,
+                  itemName: items[item.item].name,
+                  playerId: item.playerId,
+                  status: "notPaid",
+                  isFromEmployee: user.type === "employee" ? "employee" : "",
+                  ownerId: user.owner,
+                })
+              }
+            >
+              {t("cancel")}
+            </Button>
+          )}
+        </Card.Actions>
+      </Card>
     );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Popup
         title={t("checkout_all_confirmation", { playerId: filters.playerId })}
         description={t("total_payment", { totalPayment })}
         handleYes={() => handleCheckoutAll()}
         handleNo={() => setVisible(false)}
         visible={visible}
-        yes={t("confirm")}
-        no={t("cancel")}
+        yes={t("Confirm")}
+        no={t("Cancel")}
       />
-
-      <RenderCheckOutHeader
-        filters={filters}
-        setFilters={setFilters}
-        showDatePicker={showDatePicker}
-      />
+      {/* <Text>{JSON.stringify([...sessions, ...purchases, games, rooms])}</Text> */}
       <FlatList
-        data={sessions}
-        renderItem={renderSessionItem}
+        data={[...sessions, ...purchases]}
+        renderItem={({ item }) =>
+          item.gameId
+            ? renderSessionItem({ item })
+            : renderPurchaseItem({ item })
+        }
         keyExtractor={(item) => item.id.toString()}
         ListHeaderComponent={
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              margin: 5,
-              marginBottom: 10,
-              textAlign: i18n.language === "ar" ? "right" : "left",
-            }}
-          >
-            {t("sessions")}
-          </Text>
+          <>
+            <RenderCheckOutHeader
+              filters={filters}
+              setFilters={setFilters}
+              showDatePicker={showDatePicker}
+            />
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                margin: 5,
+                marginBottom: 10,
+                textAlign: i18n.language === "ar" ? "left" : "right",
+              }}
+            >
+              {t("sessions_and_purchases")}
+            </Text>
+          </>
         }
         ListEmptyComponent={
           <Text style={styles.emptyText}>{t("no_session_found")}</Text>
-        }
-      />
-
-      <FlatList
-        data={purchases}
-        renderItem={renderPurchaseItem}
-        keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              margin: 5,
-              marginBottom: 10,
-              textAlign: i18n.language === "ar" ? "right" : "left",
-            }}
-          >
-            {t("purchases")}
-          </Text>
-        }
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>{t("no_purchases_found")}</Text>
         }
       />
 
@@ -415,7 +389,7 @@ const CheckoutScreen = () => {
           {t("checkout_all")} ({totalPayment})
         </Button>
       ) : null}
-    </ScrollView>
+    </View>
   );
 };
 

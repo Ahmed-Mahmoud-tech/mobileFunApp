@@ -80,26 +80,26 @@ const NotificationPage = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Filters */}
       <Card style={styles.card}>
-        <Card.Title title="Filters" />
+        <Card.Title title={t("Filters")} />
         <Divider />
         <Card.Content>
           <Dropdown
             data={{
-              all: "All",
-              employeeRequest: "Employee Request",
-              reservation: "Reservation",
-              play: "Play",
-              purchasesItems: "Purchases Items",
-              playersPurchases: "Players Purchases",
-              checkout: "Checkout",
+              all: t("All"),
+              employeeRequest: t("Employee_Request"),
+              reservation: t("Reservation"),
+              play: t("Play"),
+              purchasesItems: t("Purchases_Items"),
+              playersPurchases: t("Players_Purchases"),
+              checkout: t("Checkout"),
             }}
             onSelect={notificationType} // Pass handleSelect function to handle selection
-            placeholder="Choose a Game"
+            placeholder={t("Choose_a_Game")}
           />
 
           {/* Date Filter */}
           <TextInput
-            label="Filter by Date"
+            label={t("Filter_by_Date")}
             value={filters.date}
             onChangeText={(value) => handleFilterChange("date", value)}
             style={styles.input}
@@ -108,7 +108,7 @@ const NotificationPage = () => {
 
           {/* Email Filter */}
           <TextInput
-            label="Filter by Email"
+            label={t("Filter_by_Email")}
             value={filters.email}
             onChangeText={(value) => handleFilterChange("email", value)}
             style={styles.input}
@@ -167,6 +167,7 @@ const NotificationPage = () => {
 function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     container: {
+      flex: 1,
       padding: 16,
       backgroundColor: theme.colors.elevation.level3,
       direction: isRTL ? "rtl" : "ltr",

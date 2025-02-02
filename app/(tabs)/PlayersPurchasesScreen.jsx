@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { FlatList, StyleSheet, View, TouchableOpacity } from "react-native"
+import React, { useState, useEffect } from "react";
+import { FlatList, StyleSheet, View, TouchableOpacity } from "react-native";
 import {
   TextInput,
   Button,
@@ -11,47 +11,49 @@ import {
   useTheme,
   Text,
   IconButton,
-} from "react-native-paper"
-import DateTimePicker from "@react-native-community/datetimepicker"
-import useRequest from "@/axios/useRequest"
-import { useSelector } from "react-redux"
-import FilterableDropdown from "@/components/FilterableDropDown/FilterableDropDown"
-import { utcToLocal } from "@/common/time"
-import Popup from "@/components/Popup/Popup"
-import PlayerPurchaseRenderHeader from "@/components/PlayerPurchaseRenderHeader/PlayerPurchaseRenderHeader"
-import Dropdown from "@/components/Dropdown/Dropdown"
+} from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import useRequest from "@/axios/useRequest";
+import { useSelector } from "react-redux";
+import FilterableDropdown from "@/components/FilterableDropDown/FilterableDropDown";
+import { utcToLocal } from "@/common/time";
+import Popup from "@/components/Popup/Popup";
+import PlayerPurchaseRenderHeader from "@/components/PlayerPurchaseRenderHeader/PlayerPurchaseRenderHeader";
+import Dropdown from "@/components/Dropdown/Dropdown";
+import { useTranslation } from "react-i18next";
 
 const PlayersPurchasesScreen = () => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
-  const [purchases, setPurchases] = useState([])
+  const [purchases, setPurchases] = useState([]);
 
   const [filters, setFilters] = useState({
     playerId: "",
     status: "all",
     createdAt: new Date().toDateString(),
-  })
+  });
 
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false)
-  const [dialogVisible, setDialogVisible] = useState(false)
-  const [currentPurchase, setCurrentPurchase] = useState(null)
-  const [purchasesItem, setPurchasesItem] = useState({})
-  const [count, setCount] = useState("")
-  const [playerId, setPlayerId] = useState("")
-  const [players, setPlayers] = useState("")
-  const [newPlayer, setNewPlayer] = useState("")
-  const [debouncedPlayerId, setDebouncedPlayerId] = useState("")
-  const [status, setStatus] = useState("notPaid") // Track status in the popup
-  const [itemsDropdown, setItemsDropdown] = useState([])
-  const [updatePurchaseRender, setUpdatePurchaseRender] = useState("")
-  const [visible, setVisible] = useState(false)
-  const [messageTitle, setMessageTitle] = useState()
-  const [messageDescription, setMessageDescription] = useState()
-  const [handleYes, setHandleYes] = useState(null)
-  const [handleNo, setHandleNo] = useState(null)
-  const [yesWord, setYesWord] = useState("Yes")
-  const [noWord, setNoWord] = useState("No")
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [currentPurchase, setCurrentPurchase] = useState(null);
+  const [purchasesItem, setPurchasesItem] = useState({});
+  const [count, setCount] = useState("");
+  const [playerId, setPlayerId] = useState("");
+  const [players, setPlayers] = useState("");
+  const [newPlayer, setNewPlayer] = useState("");
+  const [debouncedPlayerId, setDebouncedPlayerId] = useState("");
+  const [status, setStatus] = useState("notPaid"); // Track status in the popup
+  const [itemsDropdown, setItemsDropdown] = useState([]);
+  const [updatePurchaseRender, setUpdatePurchaseRender] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [messageTitle, setMessageTitle] = useState();
+  const [messageDescription, setMessageDescription] = useState();
+  const [handleYes, setHandleYes] = useState(null);
+  const [handleNo, setHandleNo] = useState(null);
+  const [yesWord, setYesWord] = useState("Yes");
+  const [noWord, setNoWord] = useState("No");
 
   const {
     getItems,
@@ -60,40 +62,39 @@ const PlayersPurchasesScreen = () => {
     updatePurchases,
     deletePurchases,
     playerIdList,
-  } = useRequest()
+  } = useRequest();
 
-  const user = useSelector((state) => state.user.userInfo)
+  const user = useSelector((state) => state.user.userInfo);
 
   const openDialog = async (purchase = null) => {
-    const playersList = await playerIdList()
-
-    setNewPlayer(Math.max(...playersList.data.playerIds))
-    const playersObject = {}
-    playersList.data.playerIds.map((id) => (playersObject[id] = id))
-    setPlayers(playersObject)
+    const playersList = await playerIdList();
+    setNewPlayer(Math.max(...playersList.data.playerIds));
+    const playersObject = {};
+    playersList.data.playerIds.map((id) => (playersObject[id] = id));
+    setPlayers(playersObject);
     if (purchase) {
-      setCurrentPurchase(purchase)
-      setPurchasesItem(itemsDropdown.find((item) => item.id === purchase.item))
-      setCount(purchase.count.toString())
-      setPlayerId(purchase.playerId.toString())
-      setStatus(purchase.status) // Initialize status with current value
+      setCurrentPurchase(purchase);
+      setPurchasesItem(itemsDropdown.find((item) => item.id === purchase.item));
+      setCount(purchase.count.toString());
+      setPlayerId(purchase.playerId.toString());
+      setStatus(purchase.status); // Initialize status with current value
     } else {
-      setCurrentPurchase()
-      setPurchasesItem({})
-      setCount("")
-      setPlayerId("")
-      setStatus("notPaid") // Default status
+      setCurrentPurchase();
+      setPurchasesItem({});
+      setCount("");
+      setPlayerId("");
+      setStatus("notPaid"); // Default status
     }
-    setDialogVisible(true)
-  }
+    setDialogVisible(true);
+  };
 
   const closeDialog = () => {
-    setDialogVisible(false)
-    setPurchasesItem({})
-    setCount("")
-    setPlayerId("")
-    setStatus("notPaid")
-  }
+    setDialogVisible(false);
+    setPurchasesItem({});
+    setCount("");
+    setPlayerId("");
+    setStatus("notPaid");
+  };
 
   const handleSave = async () => {
     const newPurchase = {
@@ -103,27 +104,27 @@ const PlayersPurchasesScreen = () => {
       status,
       ownerId: user.owner,
       // item:
-    }
+    };
 
     if (currentPurchase) {
       await updatePurchases(currentPurchase.id, {
         // ...currentPurchase,
         ...newPurchase,
-      })
+      });
     } else {
-      await postPurchases(newPurchase)
+      await postPurchases(newPurchase);
     }
 
-    setUpdatePurchaseRender(updatePurchaseRender + 1)
-    closeDialog()
-  }
+    setUpdatePurchaseRender(updatePurchaseRender + 1);
+    closeDialog();
+  };
 
   useEffect(() => {
-    ;(async () => {
-      const data = await getItems()
-      setItemsDropdown(data.data)
-    })()
-  }, [])
+    (async () => {
+      const data = await getItems();
+      setItemsDropdown(data.data);
+    })();
+  }, []);
 
   // useEffect(() => {
   //   ;(async () => {
@@ -134,56 +135,56 @@ const PlayersPurchasesScreen = () => {
   //   })()
   // }, [updatePurchaseRender])
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        const { status, createdAt, playerId } = filters
+        const { status, createdAt, playerId } = filters;
 
         // Build query parameters dynamically
-        const params = {}
-        if (playerId) params.playerId = debouncedPlayerId
-        if (status) params.status = status == "all" ? "" : status
-        if (createdAt) params.createdAt = new Date(createdAt).getTime()
+        const params = {};
+        if (playerId) params.playerId = debouncedPlayerId;
+        if (status) params.status = status == "all" ? "" : status;
+        if (createdAt) params.createdAt = new Date(createdAt).getTime();
 
-        const data = await getPurchases({ params })
-        setPurchases(data.data)
+        const data = await getPurchases({ params });
+        setPurchases(data.data);
         // setError("")
       } catch (err) {
         // setError(err.response?.data?.error || "An error occurred")
         // setPurchases([])
       }
-    })()
+    })();
   }, [
     updatePurchaseRender,
     debouncedPlayerId,
     filters.status,
     filters.createdAt,
-  ])
+  ]);
 
   // Debounce the playerId value
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedPlayerId(filters.playerId) // Update debounced value after 2 seconds
-    }, 1000)
+      setDebouncedPlayerId(filters.playerId); // Update debounced value after 2 seconds
+    }, 1000);
 
     // Cleanup the timeout if user types again before 2 seconds
-    return () => clearTimeout(handler)
-  }, [filters.playerId])
+    return () => clearTimeout(handler);
+  }, [filters.playerId]);
 
   const confirmDeletePurchase = async (id) => {
-    await deletePurchases(id)
-    setVisible(false)
-    setUpdatePurchaseRender(updatePurchaseRender + 1)
-  }
+    await deletePurchases(id);
+    setVisible(false);
+    setUpdatePurchaseRender(updatePurchaseRender + 1);
+  };
 
   const handleRemovePurchase = (id) => {
-    setHandleYes(() => () => confirmDeletePurchase(id))
-    setHandleNo(() => () => setVisible(false))
-    setMessageTitle("Confirm")
-    setMessageDescription("Are you sure you want to delete this Purchase?")
-    setYesWord("Confirm")
-    setNoWord("No")
-    setVisible(true)
-  }
+    setHandleYes(() => () => confirmDeletePurchase(id));
+    setHandleNo(() => () => setVisible(false));
+    setMessageTitle("Confirm");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_Purchase");
+    setYesWord("Confirm");
+    setNoWord("No");
+    setVisible(true);
+  };
 
   const renderPurchaseItem = ({ item }) => (
     <Card style={styles.card}>
@@ -191,10 +192,18 @@ const PlayersPurchasesScreen = () => {
         <Text style={styles.itemName}>
           {itemsDropdown.find((dropItem) => dropItem.id === item.item).name}
         </Text>
-        <Text>Count: {item.count}</Text>
-        <Text>Player ID: {item.playerId}</Text>
-        <Text>Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}</Text>
-        <Text>Date: {utcToLocal(item.createdAt)} </Text>
+        <Text>
+          {t("Count")}: {item.count}
+        </Text>
+        <Text>
+          {t("Player_ID")}: {item.playerId}
+        </Text>
+        <Text>
+          {t("Status")}: {item.status == "notPaid" ? t("Not_Paid") : t("Paid")}
+        </Text>
+        <Text>
+          {t("Date")}: {utcToLocal(item.createdAt)}{" "}
+        </Text>
       </Card.Content>
 
       <Card.Actions>
@@ -202,7 +211,7 @@ const PlayersPurchasesScreen = () => {
           <IconButton
             icon="pencil"
             onPress={() => {
-              openDialog(item)
+              openDialog(item);
             }}
           />
           <IconButton
@@ -212,7 +221,7 @@ const PlayersPurchasesScreen = () => {
         </View>
       </Card.Actions>
     </Card>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -231,12 +240,12 @@ const PlayersPurchasesScreen = () => {
           mode="date"
           value={new Date(filters.createdAt)}
           onChange={(event, selectedDate) => {
-            setDatePickerVisible(false)
+            setDatePickerVisible(false);
             if (selectedDate) {
               setFilters((prev) => ({
                 ...prev,
                 createdAt: selectedDate.toDateString(),
-              }))
+              }));
             }
           }}
         />
@@ -255,21 +264,21 @@ const PlayersPurchasesScreen = () => {
         }
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No purchases found!</Text>
+          <Text style={styles.emptyText}>{t("No_purchases_found")}</Text>
         }
       />
 
       <Portal>
         <Dialog visible={dialogVisible} onDismiss={closeDialog}>
           <Dialog.Title>
-            {currentPurchase ? "Edit Purchase" : "Add Purchase"}
+            {currentPurchase ? t("Edit_Purchase") : t("Add_Purchase")}
           </Dialog.Title>
           <Dialog.Content>
             <View style={{ zIndex: 10 }}>
               <FilterableDropdown
                 data={itemsDropdown}
                 onSelect={setPurchasesItem} // Pass handleSelect function to handle selection
-                placeholder="Choose an Item"
+                placeholder={t("Choose_an_Item")}
                 value={purchasesItem}
               />
             </View>
@@ -283,7 +292,7 @@ const PlayersPurchasesScreen = () => {
             <Dropdown
               data={players}
               onSelect={setPlayerId} // Pass handleSelect function to handle selection
-              placeholder="Choose a PlayerId"
+              placeholder={t("Choose_a_PlayerId")}
               flag={newPlayer}
               selected={currentPurchase?.playerId?.toString()}
             />
@@ -292,19 +301,19 @@ const PlayersPurchasesScreen = () => {
                 value={status}
                 onValueChange={setStatus} // Update the status in the popup
                 buttons={[
-                  { value: "paid", label: "Paid" },
-                  { value: "notPaid", label: "Not Paid" },
+                  { value: "paid", label: t("Paid") },
+                  { value: "notPaid", label: t("Not_Paid") },
                 ]}
               />
             </View>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={closeDialog}>Cancel</Button>
+            <Button onPress={closeDialog}>{t("Cancel")}</Button>
             <Button
               onPress={handleSave}
               disabled={!purchasesItem.name || !count || !playerId}
             >
-              Save
+              {t("Save")}
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -314,11 +323,11 @@ const PlayersPurchasesScreen = () => {
         style={styles.fab}
         icon="plus"
         onPress={() => openDialog()}
-        label="Add Purchase"
+        label={t("Add_Purchase")}
       />
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -378,6 +387,6 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
-export default PlayersPurchasesScreen
+export default PlayersPurchasesScreen;

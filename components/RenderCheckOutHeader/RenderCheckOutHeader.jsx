@@ -1,20 +1,22 @@
-import { StyleSheet, View } from "react-native"
+import { useTranslation } from "react-i18next";
+import { StyleSheet, View } from "react-native";
 import {
   TextInput,
   Button,
   SegmentedButtons,
   useTheme,
   Text,
-} from "react-native-paper"
+} from "react-native-paper";
 // Render filters above the FlatList
 const RenderCheckOutHeader = ({ filters, setFilters, showDatePicker }) => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
   return (
     <View style={styles.filters}>
       <TextInput
-        label="Player ID"
+        label={t("Player_ID")}
         value={filters.playerId}
         onChangeText={(value) =>
           setFilters((prev) => ({ ...prev, playerId: value }))
@@ -31,12 +33,12 @@ const RenderCheckOutHeader = ({ filters, setFilters, showDatePicker }) => {
         buttons={[
           {
             value: "paid",
-            label: "Paid",
+            label: t("Paid"),
             style: filters.status === "Paid" ? styles.selectedButton : {},
           },
           {
             value: "notPaid",
-            label: "Not Paid",
+            label: t("Not_Paid"),
             style: filters.status === "Not Paid" ? styles.selectedButton : {},
           },
           {
@@ -45,7 +47,7 @@ const RenderCheckOutHeader = ({ filters, setFilters, showDatePicker }) => {
             style: filters.status === "All" ? styles.selectedButton : {},
           },
         ]}
-        style={styles.segmentedButtons}
+        style={{ direction: "ltr" }}
       />
 
       <Button
@@ -53,11 +55,11 @@ const RenderCheckOutHeader = ({ filters, setFilters, showDatePicker }) => {
         onPress={showDatePicker}
         style={styles.datePicker}
       >
-        Filter Day: {filters.day.toLocaleDateString()}
+        {t("Filter_Day")}: {filters.day.toLocaleDateString()}
       </Button>
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -116,7 +118,7 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
 
-export default RenderCheckOutHeader
+export default RenderCheckOutHeader;

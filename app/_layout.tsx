@@ -74,8 +74,6 @@ export default function RootLayout() {
     return null;
   }
 
-  I18nManager.allowRTL(true)
-  I18nManager.forceRTL(true)
   return (
     <PaperProvider>
       <Provider store={store}>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   View,
   TouchableOpacity,
@@ -14,10 +15,9 @@ const Dropdown = ({
   placeholder,
   flag,
   selected,
-  noData = "No data",
+  noData = "No_data",
 }) => {
-  console.log(data, "00000000000000000044", flag);
-
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false); // Controls dropdown visibility
   const [selectedItem, setSelectedItem] = useState(
     selected ? data[selected] : null
@@ -54,7 +54,7 @@ const Dropdown = ({
         style={{ ...styles.dropdownButton }}
       >
         <Text style={styles.buttonText}>
-          {selectedItem ? selectedItem : placeholder || "Select an option"}
+          {selectedItem ? selectedItem : placeholder || t("Select_an_option")}
         </Text>
       </TouchableOpacity>
 
@@ -86,7 +86,7 @@ const Dropdown = ({
                   >
                     <Text>{data[flag]}</Text>
                     <Text style={{ color: "orange", fontWeight: "bold" }}>
-                      New
+                      {t("New")}
                     </Text>
                   </View>
                 </Text>
@@ -95,7 +95,7 @@ const Dropdown = ({
             <FlatList
               data={Object.keys(data)}
               renderItem={renderItem}
-              ListEmptyComponent={noData}
+              ListEmptyComponent={t(noData)}
               keyExtractor={(item, index) => index.toString()}
             />
           </View>

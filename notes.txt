@@ -10,8 +10,6 @@ npx eas build --profile development --platform android
 #########################################
 validation
 
-translate
-
 end session time Notification
 
 DELETE ON CASCADE

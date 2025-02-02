@@ -19,14 +19,13 @@ import { utcToLocal } from "@/common/time";
 import Popup from "@/components/Popup/Popup";
 import { useTranslation } from "react-i18next";
 import { setStoredUser } from "@/store/slices/user";
-I18nManager.allowRTL(true);
-I18nManager.forceRTL(true);
+
 let start = 0;
 const OwnerProfile = () => {
   const user = useSelector((state) => state.user.userInfo);
   const [phone, setPhone] = useState(user?.phoneNumber || "");
   const [name, setName] = useState(user?.username || "");
-  const [roomName, setRoomName] = useState(user?.roomName || "");
+  const [placeName, setPlaceName] = useState(user?.placeName || "");
   const [location, setLocation] = useState(user?.location || "");
   const [newEmployeePhone, setNewEmployeePhone] = useState("");
   const [visible, setVisible] = useState(false);
@@ -117,7 +116,7 @@ const OwnerProfile = () => {
     setHandleYes(() => () => confirmDeleteRoom(id));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are_you_sure_you_want_to_delete_this_room?");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_room");
     setVisible(true);
     setYesWord("Confirm");
     setNoWord("No");
@@ -140,7 +139,7 @@ const OwnerProfile = () => {
       const data = {
         phoneNumber: phone,
         userName: name,
-        roomName,
+        placeName: placeName,
         location,
       };
       updateUser(user.id, data);
@@ -260,7 +259,7 @@ const OwnerProfile = () => {
     setHandleYes(() => () => confirmDeleteRequest(requestEmployee));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are_you_sure_you_want_to_delete_this_request?");
+    setMessageDescription("Are_you_sure_you_want_to_delete_this_request");
     setVisible(true);
     setYesWord("Confirm");
     setNoWord("No");
@@ -321,9 +320,9 @@ const OwnerProfile = () => {
             editable={editMode}
           />
           <TextInput
-            label={t("room_name")}
-            value={roomName}
-            onChangeText={setRoomName}
+            label={t("place_name")}
+            value={placeName}
+            onChangeText={setPlaceName}
             style={styles.input}
             editable={editMode}
           />
@@ -502,7 +501,6 @@ const OwnerProfile = () => {
       </Card>
 
       {/* Notification Preferences */}
-      <Text> {notificationPreferences["purchasesItems"].toString()}</Text>
       <Card style={styles.card}>
         <Card.Title title={t("Notification_preferences")} />
         <Divider style={{ marginBottom: 10 }} />

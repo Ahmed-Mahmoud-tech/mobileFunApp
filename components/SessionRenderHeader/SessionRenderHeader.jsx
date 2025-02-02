@@ -1,20 +1,22 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native"
+import { useTranslation } from "react-i18next";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import {
   TextInput,
   Button,
   SegmentedButtons,
   useTheme,
   Text,
-} from "react-native-paper"
+} from "react-native-paper";
 // Render filters above the FlatList
 const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
   return (
     <>
       <TextInput
-        label="Player ID"
+        label={t("Player_ID")}
         value={filters.playerId}
         onChangeText={(value) =>
           setFilters((prev) => ({ ...prev, playerId: value }))
@@ -33,19 +35,19 @@ const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
           buttons={[
             {
               value: "single",
-              label: "Single",
+              label: t("Single"),
               style:
                 filters.sessionType === "Single" ? styles.selectedButton : {},
             },
             {
               value: "multi",
-              label: "Multi",
+              label: t("Multi"),
               style:
                 filters.sessionType === "Multi" ? styles.selectedButton : {},
             },
             {
               value: "All",
-              label: "All",
+              label: t("All"),
               style: filters.sessionType === "All" ? styles.selectedButton : {},
             },
           ]}
@@ -59,17 +61,17 @@ const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
           buttons={[
             {
               value: "paid",
-              label: "Paid",
+              label: t("Paid"),
               style: filters.status === "payed" ? styles.selectedButton : {},
             },
             {
               value: "notPaid",
-              label: "Not Paid",
+              label: t("Not_Paid"),
               style: filters.status === "Not Paid" ? styles.selectedButton : {},
             },
             {
               value: "All",
-              label: "All",
+              label: t("All"),
               style: filters.status === "All" ? styles.selectedButton : {},
             },
           ]}
@@ -80,12 +82,12 @@ const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
           onPress={() => showDatePicker("startDate")}
           style={styles.datePicker}
         >
-          Filter Start Date: {filters.startDate.toLocaleDateString()}
+          {t("Filter_Start_Date")}: {filters.startDate.toLocaleDateString()}
         </Button>
       </View>
     </>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -97,6 +99,7 @@ function themeStyles(theme) {
     filters: {
       flexDirection: "column",
       padding: 10,
+      direction: "ltr",
     },
     filterInput: {
       marginBottom: 10,
@@ -145,7 +148,7 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
 
-export default SessionRenderHeader
+export default SessionRenderHeader;

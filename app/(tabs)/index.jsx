@@ -25,10 +25,6 @@ const LoginScreen = () => {
       <Card style={styles.card}>
         <Card.Content>
           <Title style={styles.title}>{t("welcome_back")}</Title>
-          {/* <Paragraph style={styles.subtitle}>
-            Please sign in to continue
-          </Paragraph> */}
-
           <Button
             onPress={() => handleGoogleLogin()}
             mode="contained"

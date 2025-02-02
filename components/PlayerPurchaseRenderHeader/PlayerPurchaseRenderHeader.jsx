@@ -1,31 +1,33 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native"
+import { useTranslation } from "react-i18next";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import {
   TextInput,
   Button,
   SegmentedButtons,
   useTheme,
   Text,
-} from "react-native-paper"
+} from "react-native-paper";
 // Render filters above the FlatList
 const PlayerPurchaseRenderHeader = ({
   filters,
   setFilters,
   setDatePickerVisible,
 }) => {
-  const theme = useTheme()
-  const styles = themeStyles(theme)
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = themeStyles(theme);
 
   const handleStatusFilterChange = (value) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       status: value,
-    }))
-  }
+    }));
+  };
 
   return (
     <View style={styles.filters}>
       <TextInput
-        label="Player ID"
+        label={t("Player_ID")}
         value={filters.playerId}
         onChangeText={(text) =>
           setFilters((prev) => ({ ...prev, playerId: text }))
@@ -33,27 +35,30 @@ const PlayerPurchaseRenderHeader = ({
         style={[styles.filterInput, styles.inputRow]}
       />
       <View style={[styles.filterInput, styles.inputRow]}>
-        <SegmentedButtons
-          value={filters.status}
-          onValueChange={handleStatusFilterChange} // Update the status filter
-          buttons={[
-            {
-              value: "all",
-              label: "All",
-              style: filters.status === "all" ? styles.selectedButton : {},
-            },
-            {
-              value: "paid",
-              label: "Paid",
-              style: filters.status === "paid" ? styles.selectedButton : {},
-            },
-            {
-              value: "notPaid",
-              label: "Not Paid",
-              style: filters.status === "notPaid" ? styles.selectedButton : {},
-            },
-          ]}
-        />
+        <View style={{ direction: "ltr" }}>
+          <SegmentedButtons
+            value={filters.status}
+            onValueChange={handleStatusFilterChange} // Update the status filter
+            buttons={[
+              {
+                value: "all",
+                label: t("All"),
+                style: filters.status === "all" ? styles.selectedButton : {},
+              },
+              {
+                value: "paid",
+                label: t("Paid"),
+                style: filters.status === "paid" ? styles.selectedButton : {},
+              },
+              {
+                value: "notPaid",
+                label: t("Not_Paid"),
+                style:
+                  filters.status === "notPaid" ? styles.selectedButton : {},
+              },
+            ]}
+          />
+        </View>
       </View>
       <TouchableOpacity
         style={[styles.datePicker, styles.inputRow]}
@@ -72,11 +77,11 @@ const PlayerPurchaseRenderHeader = ({
         }
         style={styles.resetButton}
       >
-        Show All
+        {t("Show_All")}
       </Button>
     </View>
-  )
-}
+  );
+};
 
 function themeStyles(theme) {
   return StyleSheet.create({
@@ -136,7 +141,7 @@ function themeStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
     },
-  })
+  });
 }
 
-export default PlayerPurchaseRenderHeader
+export default PlayerPurchaseRenderHeader;

@@ -132,7 +132,7 @@ const EmployeeProfileScreen = () => {
                         {request.fromUserInfo.phoneNumber}
                       </Text>
                       <Chip style={{ margin: 10, fontsize: 10 }}>
-                        {request.status}
+                        {t(request.status)}
                       </Chip>
                     </View>
                     <View>
@@ -167,7 +167,7 @@ const EmployeeProfileScreen = () => {
                         }
                         style={styles.button}
                       >
-                        {t("accept")}
+                        {t("Accept")}
                       </Button>
                     </View>
                   ) : (

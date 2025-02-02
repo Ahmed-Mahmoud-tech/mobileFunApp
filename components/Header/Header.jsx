@@ -5,7 +5,7 @@ import { ChangeMenuStatus, changeRoute } from "@/store/slices/mainConfig";
 import { Image, StyleSheet, View } from "react-native";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-// import { DevSettings } from "react-native";
+import { DevSettings } from "react-native";
 
 const Header = ({ userName }) => {
   const theme = useTheme();
@@ -39,7 +39,7 @@ const Header = ({ userName }) => {
 
       <Appbar.Content title={userName} />
       {/* mobile uncomment */}
-      {/* <Appbar.Action icon="refresh" onPress={DevSettings.reload()} /> */}
+      {/* <Appbar.Action icon="refresh" onPress={DevSettings.reload} /> */}
       <View>
         <Appbar.Action icon="bell" onPress={notificationPage} />
         {unReadCount > 0 && (

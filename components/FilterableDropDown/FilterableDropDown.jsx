@@ -66,40 +66,43 @@
 
 // export default FilterableDropdown
 
-import React, { useState } from "react"
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   View,
   FlatList,
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
-} from "react-native"
-import { Button, Menu, TextInput } from "react-native-paper"
+} from "react-native";
+import { Button, Menu, TextInput, useTheme } from "react-native-paper";
 
 const FilterableDropdown = ({ data, placeholder, onSelect, value }) => {
-  const [visible, setVisible] = useState(false)
-  const [filterText, setFilterText] = useState("")
-
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const [filterText, setFilterText] = useState("");
+  const theme = useTheme();
+  const styles = themeStyles(theme);
   const filteredOptions = data.filter((option) => {
-    return option.name.toLowerCase().includes(filterText.toLowerCase())
-  })
+    return option.name.toLowerCase().includes(filterText.toLowerCase());
+  });
 
   const handleSelect = (item) => {
-    setVisible(false)
-    console.log(item, "00000000000000000000000name1")
+    setVisible(false);
+    console.log(item, "00000000000000000000000name1");
 
-    onSelect(item) // Call the onSelect function
-  }
+    onSelect(item); // Call the onSelect function
+  };
 
   const handleOverlayPress = () => {
-    setVisible(false)
-    setFilterText("") // Optionally clear the filter text
-  }
+    setVisible(false);
+    setFilterText(""); // Optionally clear the filter text
+  };
 
   return (
     <View style={styles.container}>
       <Button onPress={() => setVisible(true)} mode="outlined">
-        {value.name ? value.name : "Select an option"}
+        {value.name ? value.name : t("Select_an_option")}
       </Button>
 
       {visible && (
@@ -126,37 +129,38 @@ const FilterableDropdown = ({ data, placeholder, onSelect, value }) => {
         </View>
       )}
     </View>
-  )
+  );
+};
+
+function themeStyles(theme) {
+  return StyleSheet.create({
+    container: {
+      marginVertical: 10,
+      position: "relative",
+    },
+    overlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.colors.onSurfaceDisabled, // Semi-transparent black
+      zIndex: 1,
+    },
+    dropdownContainer: {
+      position: "absolute",
+      top: 50,
+      left: 0,
+      right: 0,
+      backgroundColor: theme.colors.background,
+      elevation: 4,
+      borderRadius: 4,
+      maxHeight: 200,
+      zIndex: 2,
+    },
+    input: {
+      marginBottom: 10,
+    },
+  });
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-    position: "relative",
-  },
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
-    zIndex: 1,
-  },
-  dropdownContainer: {
-    position: "absolute",
-    top: 50,
-    left: 0,
-    right: 0,
-    backgroundColor: "white",
-    elevation: 4,
-    borderRadius: 4,
-    maxHeight: 200,
-    zIndex: 2,
-  },
-  input: {
-    marginBottom: 10,
-  },
-})
-
-export default FilterableDropdown
+export default FilterableDropdown;

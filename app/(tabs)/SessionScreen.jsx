@@ -20,7 +20,9 @@ import Popup from "@/components/Popup/Popup";
 import { utcToLocal } from "@/common/time";
 import SessionRenderHeader from "@/components/SessionRenderHeader/SessionRenderHeader";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 const SessionsScreen = () => {
+  const { t } = useTranslation();
   const [sessions, setSessions] = useState([]);
   const [filters, setFilters] = useState({
     sessionType: "All",
@@ -47,7 +49,7 @@ const SessionsScreen = () => {
   const [endTime, setEndTime] = useState(
     new Date(new Date().getTime() + 3600000)
   );
-  const [status, setStatus] = useState("Not Paid");
+  const [status, setStatus] = useState(t("Not_Paid"));
   const [datePickerType, setDatePickerType] = useState(null);
   const [visible, setVisible] = useState(false);
   const [messageTitle, setMessageTitle] = useState();
@@ -72,7 +74,6 @@ const SessionsScreen = () => {
   const openDialog = async (session = null) => {
     const playersList = await playerIdList();
     setNewPlayer(Math.max(...playersList.data.playerIds));
-    console.log(Math.max(...playersList.data.playerIds), "99999999");
 
     const playersObject = {};
     playersList.data.playerIds.map((id) => (playersObject[id] = id));
@@ -81,12 +82,12 @@ const SessionsScreen = () => {
     if (session) {
       setCurrentSession(session);
       setGame(session.gameId);
-      setSessionType(session.type == "single" ? "Single" : "Multi");
+      setSessionType(session.type == "single" ? t("Single") : t("Multi"));
       setRoomId(session.sectionId ? session.sectionId.toString() : "");
       setStartTime(new Date(session.startTime));
       setEndTime(new Date(session.endTime));
       setPlayerId(session.playerId ? session.playerId.toString() : "");
-      setStatus(session.status == "notPaid" ? "Not Paid" : "paid");
+      setStatus(session.status == "notPaid" ? t("Not_Paid") : t("paid"));
     } else {
       resetForm();
     }
@@ -96,12 +97,12 @@ const SessionsScreen = () => {
   const resetForm = () => {
     setCurrentSession(null);
     setGame("");
-    setSessionType("Single");
+    setSessionType(t("Single"));
     setRoomId("");
     setStartTime(new Date());
     setEndTime(new Date(new Date().getTime() + 3600000));
     setPlayerId("");
-    setStatus("Not Paid");
+    setStatus(t("Not_Paid"));
   };
 
   // Close Dialog
@@ -145,12 +146,24 @@ const SessionsScreen = () => {
     <Card style={styles.card}>
       <Card.Content>
         <Text style={styles.itemName}>{gameDropDown[item.gameId]}</Text>
-        <Text>Type: {item.type == "single" ? "Single" : "Multi"}</Text>
-        <Text>Room ID: {roomDropDown[item.sectionId]}</Text>
-        <Text>Start: {utcToLocal(item.startTime)}</Text>
-        <Text>End: {utcToLocal(item.endTime)}</Text>
-        <Text>Player ID: {item.playerId}</Text>
-        <Text>Status: {item.status == "notPaid" ? "Not Paid" : "Paid"}</Text>
+        <Text>
+          {t("Type")}: {item.type == "single" ? t("Single") : t("Multi")}
+        </Text>
+        <Text>
+          {t("Room_ID")}: {roomDropDown[item.sectionId]}
+        </Text>
+        <Text>
+          {t("Start")}: {utcToLocal(item.startTime)}
+        </Text>
+        <Text>
+          {t("End")}: {utcToLocal(item.endTime)}
+        </Text>
+        <Text>
+          {t("Player_ID")}: {item.playerId}
+        </Text>
+        <Text>
+          {t("Status")}: {item.status == "notPaid" ? t("Not_Paid") : t("Paid")}
+        </Text>
       </Card.Content>
       <Card.Actions>
         <View style={styles.itemActions}>
@@ -243,8 +256,6 @@ const SessionsScreen = () => {
   }, [filters.playerId]);
 
   const confirmDeleteSession = async (item) => {
-    console.log(item?.startTime, "llllllllllllll");
-
     const deletedQuery = {
       startTime: new Date(item?.startTime).toISOString(),
       sectionId: item.sectionId,
@@ -266,7 +277,7 @@ const SessionsScreen = () => {
     setHandleYes(() => () => confirmDeleteSession(item));
     setHandleNo(() => () => setVisible(false));
     setMessageTitle("Confirm");
-    setMessageDescription("Are you sure you want to delete this Session?");
+    setMessageDescription(t("Are_you_sure_you_want_to_delete_this_Session"));
     setYesWord("Confirm");
     setNoWord("No");
     setVisible(true);
@@ -289,7 +300,7 @@ const SessionsScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No session yet!</Text>
+          <Text style={styles.emptyText}>{t("No_session_yet")}</Text>
         }
         ListHeaderComponent={
           <SessionRenderHeader
@@ -322,13 +333,13 @@ const SessionsScreen = () => {
           style={styles.dialogContainer}
         >
           <Dialog.Title>
-            {currentSession ? "Edit Session" : "Add Session"}
+            {currentSession ? t("Edit_Session") : t("Add_Session")}
           </Dialog.Title>
           <Dialog.Content>
             <Dropdown
               data={gameDropDown}
               onSelect={setGame} // Pass handleSelect function to handle selection
-              placeholder="Choose a Game"
+              placeholder={t("Choose_a_Game")}
               style={styles.input}
               selected={currentSession?.gameId?.toString()}
               noData={
@@ -338,7 +349,7 @@ const SessionsScreen = () => {
                 //   closeDialog();
                 // }}
                 >
-                  Create a Game please
+                  {t("Create_a_Game_please")}
                 </Text>
               }
             />
@@ -348,23 +359,24 @@ const SessionsScreen = () => {
               buttons={[
                 {
                   value: "Single",
-                  label: "Single",
+                  label: t("Single"),
                   style: sessionType === "Single" ? styles.selectedButton : {},
                 },
                 {
                   value: "Multi",
-                  label: "Multi",
+                  label: t("Multi"),
                   style: sessionType === "Multi" ? styles.selectedButton : {},
                 },
               ]}
-              style={styles.input}
+              style={{ ...styles.input, direction: "ltr" }}
             />
             <Dropdown
               data={roomDropDown}
               onSelect={setRoomId} // Pass handleSelect function to handle selection
-              placeholder="Choose a Room"
+              placeholder={t("Choose_a_Room")}
+              _
               selected={currentSession?.sectionId?.toString()}
-              noData={<Text>Create a room please</Text>}
+              noData={<Text>{t("Create_a_room_please")}</Text>}
             />
 
             <Button
@@ -372,44 +384,46 @@ const SessionsScreen = () => {
               onPress={() => showDatePicker("startTime")}
               style={styles.input}
             >
-              Start DateTime: {startTime.toLocaleString()}
+              {t("Start_DateTime")}: {startTime.toLocaleString()}
             </Button>
             <Button
               mode="outlined"
               onPress={() => showDatePicker("endTime")}
               style={styles.input}
             >
-              End DateTime: {endTime.toLocaleString()}
+              {t("End_DateTime")}: {endTime.toLocaleString()}
             </Button>
             <Dropdown
               data={players}
               onSelect={setPlayerId} // Pass handleSelect function to handle selection
-              placeholder="Choose a PlayerId"
+              placeholder={t("Choose_a_PlayerId")}
               flag={newPlayer}
               selected={currentSession?.playerId?.toString()}
             />
-
-            <SegmentedButtons
-              value={status}
-              onValueChange={setStatus}
-              buttons={[
-                {
-                  value: "paid",
-                  label: "Paid",
-                  style: status === "Paid" ? styles.selectedButton : {},
-                },
-                {
-                  value: "notPaid",
-                  label: "Not Paid",
-                  style: status === "Not Paid" ? styles.selectedButton : {},
-                },
-              ]}
-              style={styles.input}
-            />
+            <View style={{ direction: "ltr" }}>
+              <SegmentedButtons
+                value={status}
+                onValueChange={setStatus}
+                buttons={[
+                  {
+                    value: "paid",
+                    label: t("Paid"),
+                    style: status === t("Paid") ? styles.selectedButton : {},
+                  },
+                  {
+                    value: "notPaid",
+                    label: t("Not_Paid"),
+                    style:
+                      status === t("Not_Paid") ? styles.selectedButton : {},
+                  },
+                ]}
+                style={styles.input}
+              />
+            </View>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={closeDialog}>Cancel</Button>
-            <Button onPress={handleSave}>Save</Button>
+            <Button onPress={closeDialog}>{t("Cancel")}</Button>
+            <Button onPress={handleSave}>{t("Save")}</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

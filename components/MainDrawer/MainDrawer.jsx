@@ -5,7 +5,10 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { ChangeMenuStatus, changeRoute } from "@/store/slices/mainConfig";
 import { useLogoutFun } from "@/hooks/useLogoutFun";
+import { useTranslation } from "react-i18next";
+
 const MainDrawer = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const [active, setActive] = React.useState("");
@@ -24,7 +27,7 @@ const MainDrawer = () => {
   const employeeMenu = {
     EmployeeProfileScreen: (
       <Drawer.Item
-        label="Employee Profile"
+        label={t("Employee_Profile")}
         active={active === "EmployeeProfileScreen"}
         onPress={() => {
           changeRouteFun("EmployeeProfileScreen");
@@ -33,7 +36,7 @@ const MainDrawer = () => {
     ),
     PurchaseItemsScreen: (
       <Drawer.Item
-        label="Purchases Items"
+        label={t("Purchases_Items")}
         active={active === "PurchaseItemsScreen"}
         onPress={() => {
           changeRouteFun("PurchaseItemsScreen");
@@ -42,7 +45,7 @@ const MainDrawer = () => {
     ),
     PlayersPurchasesScreen: (
       <Drawer.Item
-        label="Players Purchases"
+        label={t("Players_Purchases")}
         active={active === "PlayersPurchasesScreen"}
         onPress={() => {
           changeRouteFun("PlayersPurchasesScreen");
@@ -51,7 +54,7 @@ const MainDrawer = () => {
     ),
     SessionScreen: (
       <Drawer.Item
-        label="Session"
+        label={t("Session")}
         active={active === "SessionScreen"}
         onPress={() => {
           changeRouteFun("SessionScreen");
@@ -60,7 +63,7 @@ const MainDrawer = () => {
     ),
     CheckoutScreen: (
       <Drawer.Item
-        label="Checkout"
+        label={t("Checkout")}
         active={active === "CheckoutScreen"}
         onPress={() => {
           changeRouteFun("CheckoutScreen");
@@ -78,7 +81,7 @@ const MainDrawer = () => {
     // ),
     LoginScreen: (
       <Drawer.Item
-        label="Logout"
+        label={t("Logout")}
         active={active === "LoginScreen"}
         onPress={() => {
           logoutFun("LoginScreen");
@@ -90,7 +93,7 @@ const MainDrawer = () => {
   const realEmployeeMenu = {
     EmployeeProfileScreen: (
       <Drawer.Item
-        label="Employee Profile"
+        label={t("Employee_Profile")}
         active={active === "EmployeeProfileScreen"}
         onPress={() => {
           changeRouteFun("EmployeeProfileScreen");
@@ -99,7 +102,7 @@ const MainDrawer = () => {
     ),
     LoginScreen: (
       <Drawer.Item
-        label="Logout"
+        label={t("Logout")}
         active={active === "LoginScreen"}
         onPress={() => {
           logoutFun("LoginScreen");
@@ -111,7 +114,7 @@ const MainDrawer = () => {
   const ownerMenu = {
     OwnerProfileScreen: (
       <Drawer.Item
-        label="Owner Profile"
+        label={t("Owner_Profile")}
         active={active === "OwnerProfileScreen"}
         onPress={() => {
           changeRouteFun("OwnerProfileScreen");
@@ -120,7 +123,7 @@ const MainDrawer = () => {
     ),
     PurchaseItemsScreen: (
       <Drawer.Item
-        label="Purchases Items"
+        label={t("Purchases_Items")}
         active={active === "PurchaseItemsScreen"}
         onPress={() => {
           changeRouteFun("PurchaseItemsScreen");
@@ -129,7 +132,7 @@ const MainDrawer = () => {
     ),
     PlayersPurchasesScreen: (
       <Drawer.Item
-        label="Players Purchases"
+        label={t("Players_Purchases")}
         active={active === "PlayersPurchasesScreen"}
         onPress={() => {
           changeRouteFun("PlayersPurchasesScreen");
@@ -138,7 +141,7 @@ const MainDrawer = () => {
     ),
     GamesScreen: (
       <Drawer.Item
-        label="Games"
+        label={t("Games")}
         active={active === "GamesScreen"}
         onPress={() => {
           changeRouteFun("GamesScreen");
@@ -147,7 +150,7 @@ const MainDrawer = () => {
     ),
     SessionScreen: (
       <Drawer.Item
-        label="Session"
+        label={t("Sessions")}
         active={active === "SessionScreen"}
         onPress={() => {
           changeRouteFun("SessionScreen");
@@ -156,7 +159,7 @@ const MainDrawer = () => {
     ),
     CheckoutScreen: (
       <Drawer.Item
-        label="Checkout"
+        label={t("Checkout")}
         active={active === "CheckoutScreen"}
         onPress={() => {
           changeRouteFun("CheckoutScreen");
@@ -174,7 +177,7 @@ const MainDrawer = () => {
     // ),
     LoginScreen: (
       <Drawer.Item
-        label="Logout"
+        label={t("Logout")}
         active={active === "LoginScreen"}
         onPress={() => {
           logoutFun("LoginScreen");

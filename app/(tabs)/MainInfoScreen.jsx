@@ -176,7 +176,7 @@ const MainInfoScreen = ({}) => {
           //   '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',
         }}
       >
-        {t("logout")}
+        {t("Logout")}
       </Text>
       {/* Map Modal */}
       {/* <Modal visible={isMapVisible} animationType="slide">
