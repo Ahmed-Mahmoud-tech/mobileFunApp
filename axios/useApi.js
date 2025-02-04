@@ -18,11 +18,12 @@ const useApi = () => {
 
   const mainInstance = axios.create(axiosObject);
   const dispatch = useDispatch();
-
+  const noLoadingRoutes = "api/notifications/count";
   mainInstance.interceptors.request.use(
     async function (config) {
-      dispatch(changePreloader(true));
-      const noAuthRoutes = ["/api/auth/google", "/api/auth/google/callback"];
+      !config.url.includes(noLoadingRoutes) && dispatch(changePreloader(true));
+
+      const noAuthRoutes = ["api/auth/google", "api/auth/google/callback"];
       //* add auth
       if (!noAuthRoutes.includes(config.url)) {
         const localStorageToken = await getData("token");

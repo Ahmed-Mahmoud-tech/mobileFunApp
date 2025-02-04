@@ -24,7 +24,6 @@ const Header = ({ userName }) => {
   };
 
   const { t, i18n } = useTranslation();
-  console.log(i18n);
 
   const _handleLanguage = () => {
     i18n.language == "en"

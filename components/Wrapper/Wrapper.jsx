@@ -21,7 +21,6 @@ import {
 import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
 import Loading from "../Loading/Loading";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 function Wrapper({ children }) {
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
@@ -142,8 +141,19 @@ function Wrapper({ children }) {
   return (
     <I18nextProvider>
       {preloader && <Loading />}
-      {<Note visible={newNote} title={t("You_have_new_notification")} />}
-      <View style={{ ...styles.wrapperContainer, direction: i18n.dir() }}>
+
+      {newNote && (
+        <View style={{ direction: i18n.dir() }}>
+          <Note visible={newNote} title={t("You_have_new_notification")} />
+        </View>
+      )}
+
+      <View
+        style={{
+          ...styles.wrapperContainer,
+          writingDirection: i18n.dir(),
+        }}
+      >
         {user?.type && (
           <View style={styles.header}>
             <Header userName={user.username} />
@@ -175,7 +185,7 @@ function themeStyles(theme, isRTL) {
   return StyleSheet.create({
     wrapperContainer: {
       flex: 1,
-      direction: isRTL ? "rtl" : "ltr",
+      writingDirection: isRTL ? "rtl" : "ltr",
       fontFamily:
         "-apple-system, BlinkMacSystemFont,  Roboto, Helvetica, Arial, sans-serif",
     },

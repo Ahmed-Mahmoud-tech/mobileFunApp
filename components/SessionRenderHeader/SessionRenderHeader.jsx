@@ -99,7 +99,7 @@ function themeStyles(theme) {
     filters: {
       flexDirection: "column",
       padding: 10,
-      direction: "ltr",
+      writingDirection: "ltr",
     },
     filterInput: {
       marginBottom: 10,

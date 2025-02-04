@@ -130,8 +130,8 @@ const useRequest = () => {
 
   /*******************   player Sessions  ******************** */
 
-  const getNotification = async (id) => {
-    return await Request.get(`api/notifications/${id}`);
+  const getNotification = async (idWParams) => {
+    return await Request.get(`api/notifications/${idWParams}`);
   };
 
   const updateNotification = async (data) => {

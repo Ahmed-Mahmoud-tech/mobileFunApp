@@ -220,5 +220,6 @@ export const en = {
     Filter_by_Date: "Filter by Date",
     Filter_by_Email: "Filter by Email",
     Please_fill_all_fields: "Please fill all fields",
+    Choose_the_notification_type: "Choose the notification type",
   },
 };

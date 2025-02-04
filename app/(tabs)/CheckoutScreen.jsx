@@ -378,7 +378,7 @@ const CheckoutScreen = () => {
       />
 
       {/* Checkout All Button */}
-      {parseFloat(totalPayment) ? (
+      {/* {parseFloat(totalPayment) ? (
         <Button
           mode="contained"
           onPress={() => {
@@ -388,7 +388,7 @@ const CheckoutScreen = () => {
         >
           {t("checkout_all")} ({totalPayment})
         </Button>
-      ) : null}
+      ) : null} */}
     </View>
   );
 };

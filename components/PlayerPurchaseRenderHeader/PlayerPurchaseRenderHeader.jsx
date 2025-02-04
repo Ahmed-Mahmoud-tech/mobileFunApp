@@ -35,30 +35,28 @@ const PlayerPurchaseRenderHeader = ({
         style={[styles.filterInput, styles.inputRow]}
       />
       <View style={[styles.filterInput, styles.inputRow]}>
-        <View style={{ direction: "ltr" }}>
-          <SegmentedButtons
-            value={filters.status}
-            onValueChange={handleStatusFilterChange} // Update the status filter
-            buttons={[
-              {
-                value: "all",
-                label: t("All"),
-                style: filters.status === "all" ? styles.selectedButton : {},
-              },
-              {
-                value: "paid",
-                label: t("Paid"),
-                style: filters.status === "paid" ? styles.selectedButton : {},
-              },
-              {
-                value: "notPaid",
-                label: t("Not_Paid"),
-                style:
-                  filters.status === "notPaid" ? styles.selectedButton : {},
-              },
-            ]}
-          />
-        </View>
+        <SegmentedButtons
+          value={filters.status}
+          onValueChange={handleStatusFilterChange} // Update the status filter
+          buttons={[
+            {
+              value: "all",
+              label: t("All"),
+              style: filters.status === "all" ? styles.selectedButton : {},
+            },
+            {
+              value: "paid",
+              label: t("Paid"),
+              style: filters.status === "paid" ? styles.selectedButton : {},
+            },
+            {
+              value: "notPaid",
+              label: t("Not_Paid"),
+              style: filters.status === "notPaid" ? styles.selectedButton : {},
+            },
+          ]}
+          style={{ direction: "ltr" }}
+        />
       </View>
       <TouchableOpacity
         style={[styles.datePicker, styles.inputRow]}

@@ -1,8 +1,6 @@
 import { utcToLocal } from "@/common/time";
-import { useTranslation } from "react-i18next";
 
-export const notificationTypes = (data) => {
-  const { t } = useTranslation();
+export const notificationTypes = (t, data) => {
   return {
     newSession: {
       title: t("New_Session"),

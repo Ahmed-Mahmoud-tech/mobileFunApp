@@ -1,6 +1,13 @@
 import Dropdown from "@/components/Dropdown/Dropdown";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, View, Alert, I18nManager } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  Alert,
+  I18nManager,
+  TouchableOpacity,
+} from "react-native";
 import {
   TextInput,
   Button,
@@ -13,6 +20,7 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { useDispatch, useSelector } from "react-redux";
 import { notificationTypes } from "@/constants/notification";
@@ -31,7 +39,6 @@ const NotificationPage = () => {
   const [filters, setFilters] = useState({
     notificationType: "all",
     date: new Date().toISOString().split("T")[0], // Default to today
-    email: "",
   });
 
   const user = useSelector((state) => state.user.userInfo);
@@ -51,15 +58,17 @@ const NotificationPage = () => {
     (async () => {
       try {
         const date = new Date(new Date(filters.date).toDateString()).getTime();
-        console.log(date, "date");
-
-        const response = await getNotification(`${user?.id}?startDate=${date}`);
-        setNotification(response.data);
+        const response = await getNotification(
+          `${user?.id}?startDate=${date}&&notificationType=${filters.notificationType}`
+        );
+        response.data && setNotification(response.data);
       } catch (error) {
         console.log("Error", error.message);
       }
     })();
-  }, [unReadCount]);
+  }, [unReadCount, filters.notificationType, filters.date]);
+
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -77,43 +86,58 @@ const NotificationPage = () => {
   }, [notification]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Filters */}
       <Card style={styles.card}>
-        <Card.Title title={t("Filters")} />
+        {/* <Card.Title title={t("Filters")} /> */}
         <Divider />
         <Card.Content>
-          <Dropdown
-            data={{
-              all: t("All"),
-              employeeRequest: t("Employee_Request"),
-              reservation: t("Reservation"),
-              play: t("Play"),
-              purchasesItems: t("Purchases_Items"),
-              playersPurchases: t("Players_Purchases"),
-              checkout: t("Checkout"),
-            }}
-            onSelect={notificationType} // Pass handleSelect function to handle selection
-            placeholder={t("Choose_a_Game")}
-          />
+          {user.id == user.owner && (
+            <Dropdown
+              data={{
+                all: t("All"),
+                employmentRequest: t("Employee_Request"),
+                sessions: t("Sessions"),
+                purchasesItems: t("Purchases_Items"),
+                playersPurchases: t("Players_Purchases"),
+                checkout: t("Checkout"),
+              }}
+              onSelect={notificationType} // Pass handleSelect function to handle selection
+              placeholder={t("Choose_the_notification_type")}
+            />
+          )}
 
           {/* Date Filter */}
-          <TextInput
+          {/* <TextInput
             label={t("Filter_by_Date")}
             value={filters.date}
             onChangeText={(value) => handleFilterChange("date", value)}
             style={styles.input}
             mode="outlined"
-          />
+          /> */}
 
-          {/* Email Filter */}
-          <TextInput
-            label={t("Filter_by_Email")}
-            value={filters.email}
-            onChangeText={(value) => handleFilterChange("email", value)}
-            style={styles.input}
-            mode="outlined"
-          />
+          {isDatePickerVisible && (
+            <DateTimePicker
+              mode="date"
+              value={new Date(filters.date)}
+              onChange={(event, selectedDate) => {
+                setDatePickerVisible(false);
+                if (selectedDate) {
+                  setFilters((prev) => ({
+                    ...prev,
+                    date: selectedDate.toDateString(),
+                  }));
+                }
+              }}
+            />
+          )}
+
+          <TouchableOpacity
+            style={[styles.datePicker, styles.inputRow]}
+            onPress={() => setDatePickerVisible(true)}
+          >
+            <Text style={styles.datePickerText}>{filters.date}</Text>
+          </TouchableOpacity>
         </Card.Content>
       </Card>
 
@@ -125,7 +149,7 @@ const NotificationPage = () => {
           {console.log(notification, "notification")}
           {notification?.length > 0 ? (
             notification.map((notification, index) => {
-              const notificationType = notificationTypes(notification.body)[
+              const notificationType = notificationTypes(t, notification.body)[
                 notification.body.type
               ];
               return (
@@ -170,7 +194,6 @@ function themeStyles(theme, isRTL) {
       flex: 1,
       padding: 16,
       backgroundColor: theme.colors.elevation.level3,
-      direction: isRTL ? "rtl" : "ltr",
     },
     card: {
       marginBottom: 16,
@@ -182,6 +205,10 @@ function themeStyles(theme, isRTL) {
     input: {
       marginBottom: 16,
       textAlign: isRTL ? "right" : "left",
+    },
+    datePickerText: {
+      fontSize: 16,
+      color: theme.colors.secondary,
     },
     checkboxRow: {
       flexDirection: "row",
@@ -209,6 +236,17 @@ function themeStyles(theme, isRTL) {
     },
     spaceTop: {
       marginTop: 10,
+    },
+    inputRow: {
+      marginBottom: 10,
+    },
+    datePicker: {
+      padding: 10,
+      borderWidth: 1,
+      borderColor: theme.colors.secondary,
+      borderRadius: 50,
+      marginBottom: 10,
+      justifyContent: "center",
     },
   });
 }

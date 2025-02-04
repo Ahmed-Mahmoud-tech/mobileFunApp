@@ -296,16 +296,15 @@ const PlayersPurchasesScreen = () => {
               flag={newPlayer}
               selected={currentPurchase?.playerId?.toString()}
             />
-            <View style={styles.inputRow}>
-              <SegmentedButtons
-                value={status}
-                onValueChange={setStatus} // Update the status in the popup
-                buttons={[
-                  { value: "paid", label: t("Paid") },
-                  { value: "notPaid", label: t("Not_Paid") },
-                ]}
-              />
-            </View>
+            <SegmentedButtons
+              value={status}
+              onValueChange={setStatus} // Update the status in the popup
+              buttons={[
+                { value: "paid", label: t("Paid") },
+                { value: "notPaid", label: t("Not_Paid") },
+              ]}
+              style={{ direction: "ltr" }}
+            />
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={closeDialog}>{t("Cancel")}</Button>

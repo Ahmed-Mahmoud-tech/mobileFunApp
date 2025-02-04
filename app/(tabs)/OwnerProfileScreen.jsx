@@ -450,7 +450,7 @@ function themeStyles(theme, isRTL) {
     container: {
       padding: 16,
       backgroundColor: theme.colors.elevation.level3,
-      direction: isRTL ? "rtl" : "ltr",
+      writingDirection: isRTL ? "rtl" : "ltr",
     },
     card: {
       marginBottom: 16,
@@ -458,7 +458,7 @@ function themeStyles(theme, isRTL) {
     input: {
       marginBottom: 16,
       textAlign: isRTL ? "right" : "left",
-      direction: isRTL ? "rtl" : "ltr",
+      writingDirection: isRTL ? "rtl" : "ltr",
     },
     button: {
       marginTop: 8,
