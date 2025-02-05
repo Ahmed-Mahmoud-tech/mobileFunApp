@@ -28,7 +28,7 @@ const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
       <View style={styles.filters}>
         <SegmentedButtons
           value={filters.sessionType}
-          style={styles.input}
+          style={{ ...styles.input, direction: "ltr" }}
           onValueChange={(value) =>
             setFilters((prev) => ({ ...prev, sessionType: value }))
           }
@@ -54,7 +54,7 @@ const SessionRenderHeader = ({ filters, setFilters, showDatePicker }) => {
         />
         <SegmentedButtons
           value={filters.status}
-          style={styles.input}
+          style={{ ...styles.input, direction: "ltr" }}
           onValueChange={(value) =>
             setFilters((prev) => ({ ...prev, status: value }))
           }

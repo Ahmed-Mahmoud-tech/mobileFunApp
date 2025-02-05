@@ -221,5 +221,8 @@ export const en = {
     Filter_by_Email: "Filter by Email",
     Please_fill_all_fields: "Please fill all fields",
     Choose_the_notification_type: "Choose the notification type",
+    Not_Set: "Not Set",
+    Clear_End_Time: "Clear End Time",
+    Add_End_Time: "Add End Time",
   },
 };

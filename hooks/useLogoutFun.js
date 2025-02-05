@@ -22,6 +22,7 @@ export const useLogoutFun = () => {
       dispatch(setStoredUser(null));
       dispatch(setCurrentToken(""));
       dispatch(ChangeMenuStatus(true));
+      router.push("/LoginScreen");
 
       await googleLogOut();
     } catch (error) {

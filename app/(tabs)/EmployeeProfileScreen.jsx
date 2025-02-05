@@ -98,6 +98,7 @@ const EmployeeProfileScreen = () => {
             onChangeText={setPhone}
             style={styles.input}
             editable={editMode}
+            type="phone"
           />
         </Card.Content>
         <Card.Actions>

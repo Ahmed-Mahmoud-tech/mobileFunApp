@@ -90,7 +90,6 @@ const NotificationPage = () => {
       {/* Filters */}
       <Card style={styles.card}>
         {/* <Card.Title title={t("Filters")} /> */}
-        <Divider />
         <Card.Content>
           {user.id == user.owner && (
             <Dropdown
@@ -107,15 +106,6 @@ const NotificationPage = () => {
             />
           )}
 
-          {/* Date Filter */}
-          {/* <TextInput
-            label={t("Filter_by_Date")}
-            value={filters.date}
-            onChangeText={(value) => handleFilterChange("date", value)}
-            style={styles.input}
-            mode="outlined"
-          /> */}
-
           {isDatePickerVisible && (
             <DateTimePicker
               mode="date"
@@ -131,9 +121,8 @@ const NotificationPage = () => {
               }}
             />
           )}
-
           <TouchableOpacity
-            style={[styles.datePicker, styles.inputRow]}
+            style={[styles.datePicker]}
             onPress={() => setDatePickerVisible(true)}
           >
             <Text style={styles.datePickerText}>{filters.date}</Text>
@@ -200,7 +189,6 @@ function themeStyles(theme, isRTL) {
     },
     cardTitle: {
       fontWeight: "bold",
-      marginBottom: -8,
     },
     input: {
       marginBottom: 16,
@@ -237,15 +225,11 @@ function themeStyles(theme, isRTL) {
     spaceTop: {
       marginTop: 10,
     },
-    inputRow: {
-      marginBottom: 10,
-    },
     datePicker: {
       padding: 10,
       borderWidth: 1,
       borderColor: theme.colors.secondary,
       borderRadius: 50,
-      marginBottom: 10,
       justifyContent: "center",
     },
   });

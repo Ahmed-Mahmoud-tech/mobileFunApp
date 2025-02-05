@@ -47,8 +47,7 @@ const SessionsScreen = () => {
   const [debouncedPlayerId, setDebouncedPlayerId] = useState("");
   const [playerId, setPlayerId] = useState("");
   const [endTime, setEndTime] = useState(
-    new Date(new Date().getTime() + 60000)
-    // new Date(new Date().getTime() + 3600000)
+    new Date(new Date().getTime() + 3600000)
   );
   const [status, setStatus] = useState("notPaid");
   const [datePickerType, setDatePickerType] = useState(null);
@@ -103,7 +102,7 @@ const SessionsScreen = () => {
     setSessionType("single");
     setRoomId("");
     setStartTime(new Date());
-    setEndTime(new Date(new Date().getTime() + 60000));
+    setEndTime(new Date(new Date().getTime() + 3600000));
     setPlayerId("");
     setStatus("notPaid");
   };
@@ -123,8 +122,8 @@ const SessionsScreen = () => {
       gameId: parseInt(game),
       type: sessionType,
       sectionId: roomId ? roomId : null,
-      startTime: startTime.getTime(),
-      endTime: showEndTime ? endTime.getTime() : null,
+      startTime: startTime.toISOString(),
+      endTime: showEndTime ? endTime.toISOString() : null,
       playerId: playerId ? playerId : null,
       status: status,
       // status: status == "notPaid" ? "notPaid" : "paid",
@@ -197,7 +196,7 @@ const SessionsScreen = () => {
     } else if (datePickerType === "endTime") {
       setEndTime(selectedDate);
     } else if (datePickerType === "startDate") {
-      setFilters((prev) => ({ ...prev, startDate: selectedDate.getTime() }));
+      setFilters((prev) => ({ ...prev, startDate: selectedDate }));
     }
     hideDatePicker();
   };
@@ -261,7 +260,7 @@ const SessionsScreen = () => {
 
   const confirmDeleteSession = async (item) => {
     const deletedQuery = {
-      startTime: new Date(item?.startTime).getTime(),
+      startTime: new Date(item?.startTime).toISOString(),
       sectionId: item.sectionId,
       ownerId: item.ownerId,
       sectionName: roomDropDown[item.sectionId],

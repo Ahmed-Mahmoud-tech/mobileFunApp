@@ -8,7 +8,6 @@ npx eas build --profile development --platform android
 
 
 #########################################
-validation
 
 end session time Notification
 

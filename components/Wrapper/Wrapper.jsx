@@ -21,6 +21,7 @@ import {
 import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
 import Loading from "../Loading/Loading";
+import { Audio } from "expo-av";
 
 function Wrapper({ children }) {
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
@@ -31,7 +32,7 @@ function Wrapper({ children }) {
   const { getUserInfo, getNotificationCount } = useRequest();
   const theme = useTheme();
   const [first, setFirst] = useState(false);
-  const [newNote, setNewNote] = useState(false);
+  const [newNote, setNewNote] = useState("");
   const menuStatus = useSelector((state) => state.mainConfig.menuStatus);
   const user = useSelector((state) => state.user.userInfo);
   const currentToken = useSelector((state) => state.user.currentToken);
@@ -116,12 +117,27 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
-          dispatch(setStoredLastNotification(data));
-          await myNotification();
-          setNewNote(true);
-          setTimeout(() => {
-            setNewNote(false);
-          }, 2000);
+          if (data.message == "Session_end") {
+            const { sound } = await Audio.Sound.createAsync(
+              require("@/assets/sound/session_end.mp3")
+            );
+            setNewNote(data.message);
+            await sound.playAsync();
+          } else {
+            dispatch(setStoredLastNotification(data));
+            await myNotification();
+            setNewNote("You_have_new_notification");
+
+            // Play notification sound
+            const { sound } = await Audio.Sound.createAsync(
+              require("@/assets/sound/notification.mp3")
+            );
+            await sound.playAsync();
+
+            setTimeout(() => {
+              setNewNote("");
+            }, 2000);
+          }
         });
         return () => newSocket.disconnect();
       }
@@ -144,7 +160,7 @@ function Wrapper({ children }) {
 
       {newNote && (
         <View style={{ direction: i18n.dir() }}>
-          <Note visible={newNote} title={t("You_have_new_notification")} />
+          <Note visible={!!newNote} title={t(newNote)} />
         </View>
       )}
 

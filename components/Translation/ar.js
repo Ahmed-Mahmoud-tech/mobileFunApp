@@ -221,5 +221,8 @@ export const ar = {
     Filter_by_Email: "تصفية حسب البريد الإلكتروني",
     Please_fill_all_fields: "يرجى ملء جميع الحقول",
     Choose_the_notification_type: "اختر نوع الإشعار",
+    Not_Set: "غير محدد",
+    Clear_End_Time: "مسح وقت النهاية",
+    Add_End_Time: "إضافة وقت النهاية",
   },
 };
