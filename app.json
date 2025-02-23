@@ -47,6 +47,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      "expo-audio",
+      [
+        "expo-notifications",
+        {
+          "sounds": ["./assets/sound/notification.wav"]
+        }
       ]
     ],
     "experiments": {

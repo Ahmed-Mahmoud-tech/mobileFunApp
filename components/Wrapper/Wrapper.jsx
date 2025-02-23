@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header/Header";
 import MainDrawer from "@/components/MainDrawer/MainDrawer";
 // import { Stack, useNavigation } from "expo-router"
-
 import { Alert, Animated, StyleSheet, Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useTheme } from "react-native-paper";
@@ -22,8 +21,10 @@ import Popup from "../Popup/Popup";
 import Note from "../Note/Note";
 import Loading from "../Loading/Loading";
 import { Audio } from "expo-av";
+import useNotification from "../../hooks/useNotification";
 
 function Wrapper({ children }) {
+  const { scheduleNotification } = useNotification();
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
   const preloader = useSelector((state) => state.mainConfig.preloader);
   const router = useRouter();
@@ -38,6 +39,7 @@ function Wrapper({ children }) {
   const currentToken = useSelector((state) => state.user.currentToken);
   const { t, i18n } = useTranslation();
   const styles = themeStyles(theme, i18n.language === "ar");
+  const [sound, setSound] = useState();
 
   // Initialize height with an animated value
   const height = useMemo(() => new Animated.Value(0), []); // Start with height of 0
@@ -57,6 +59,64 @@ function Wrapper({ children }) {
   }, [menuStatus]);
 
   const notAuth = ["LoginScreen", "MainInfoScreen", "index"];
+
+  async function playSound(soundUrl) {
+    console.log("Loading Sound");
+    let theSound;
+    if (soundUrl == "endTime") {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../assets/sound/endTime.wav")
+      );
+      theSound = sound;
+    } else {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../assets/sound/notification.wav")
+      );
+      theSound = sound;
+    }
+    console.log(theSound, "444444444");
+
+    setSound(theSound);
+    await theSound.playAsync();
+  }
+  // async function playSound(soundUrl) {
+  //   console.log("Loading Sound");
+  //   let theSound;
+  //   if (soundUrl == "endTime") {
+  //     const { sound } = await Audio.Sound.createAsync(
+  //       require("../../assets/sound/endTime.wav")
+  //     );
+  //     theSound = sound;
+  //   } else {
+  //     const { sound } = await Audio.Sound.createAsync(
+  //       require("../../assets/sound/notification.wav")
+  //     );
+  //     theSound = sound;
+  //   }
+  //   console.log(theSound, "444444444");
+
+  //   setSound(theSound);
+  //   await sound.playAsync();
+  // }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  // async function playSound(path) {
+  //   const sound = new Audio.Sound();
+  //   try {
+  //     await sound.loadAsync(require(path));
+  //     await sound.playAsync();
+  //   } catch (error) {
+  //     console.error("Error playing sound:", error);
+  //   }
+  // }
 
   const userCheck = (user, route) => {
     if (!user?.type && !notAuth.includes(route)) {
@@ -117,22 +177,18 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
+          await playSound("notification");
+          await scheduleNotification("title", "body");
+          Alert.alert("title", "body");
+          console.log("xxxxxxxxxxxxxxxxxxxxx");
+
           if (data.message == "Session_end") {
-            const { sound } = await Audio.Sound.createAsync(
-              require("@/assets/sound/session_end.mp3")
-            );
+            await playSound("endTime");
             setNewNote(data.message);
-            await sound.playAsync();
           } else {
             dispatch(setStoredLastNotification(data));
             await myNotification();
             setNewNote("You_have_new_notification");
-
-            // Play notification sound
-            const { sound } = await Audio.Sound.createAsync(
-              require("@/assets/sound/notification.mp3")
-            );
-            await sound.playAsync();
 
             setTimeout(() => {
               setNewNote("");
@@ -153,6 +209,10 @@ function Wrapper({ children }) {
       }
     })();
   }, [backToLogin]);
+  useEffect(async () => {
+    await playSound("notification");
+    await scheduleNotification("title", "body");
+  }, []);
 
   return (
     <I18nextProvider>

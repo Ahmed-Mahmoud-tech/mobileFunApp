@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { Button, Snackbar } from "react-native-paper";
 
 function Note({ title, visible }) {
@@ -8,7 +8,6 @@ function Note({ title, visible }) {
   // const onToggleSnackBar = () => setVisible(!visible);
 
   // const onDismissSnackBar = () => setVisible(false);
-
   return (
     <View style={styles.container}>
       {/* <Button onPress={onToggleSnackBar}>{visible ? "Hide" : "Show"}</Button> */}
