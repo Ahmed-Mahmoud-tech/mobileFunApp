@@ -137,7 +137,7 @@ export const ar = {
     Choose_an_Item: "اختر عنصرًا",
     Choose_a_PlayerId: "اختر معرف لاعب",
     Add_Purchase: "إضافة شراء",
-    You_have_new_notification: "لديك إشعار جديد",
+    You_have_new_notification: "لديك إشعار جديد0000",
     Player_ID: "معرف اللاعب",
     All: "الكل",
     Paid: "مدفوع",

@@ -6,6 +6,10 @@ const useRequest = () => {
   const googleLogOut = async () => {
     return await Request.get(`api/auth/logout`);
   };
+  const expoRegister = async (body) => {
+    return await Request.post(`api/auth/expoRegister`, body);
+  };
+
   const getUserInfo = async (userId) => {
     return await Request.get(`api/users/${userId}`);
   };
@@ -175,6 +179,7 @@ const useRequest = () => {
     getNotification,
     getNotificationCount,
     updateNotification,
+    expoRegister,
   };
 };
 export default useRequest;

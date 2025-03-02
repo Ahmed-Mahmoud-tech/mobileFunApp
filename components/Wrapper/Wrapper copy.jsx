@@ -23,16 +23,14 @@ import Loading from "../Loading/Loading";
 import { Audio } from "expo-av";
 import useNotification from "../../hooks/useNotification";
 
-import * as Notifications from "expo-notifications";
-
 function Wrapper({ children }) {
-  // const { scheduleNotification } = useNotification();
+  const { scheduleNotification } = useNotification();
   const backToLogin = useSelector((state) => state.mainConfig.backToLogin);
   const preloader = useSelector((state) => state.mainConfig.preloader);
   const router = useRouter();
   const { routes } = useRootNavigationState();
   const dispatch = useDispatch();
-  const { getUserInfo, getNotificationCount, expoRegister } = useRequest();
+  const { getUserInfo, getNotificationCount } = useRequest();
   const theme = useTheme();
   const [first, setFirst] = useState(false);
   const [newNote, setNewNote] = useState("");
@@ -179,23 +177,23 @@ function Wrapper({ children }) {
         });
 
         newSocket.on(user?.id, async (data) => {
-          // await playSound("notification");
-          // await scheduleNotification("title", "body");
-          // Alert.alert("title", "body");
-          // console.log("xxxxxxxxxxxxxxxxxxxxx");
+          await playSound("notification");
+          await scheduleNotification("title", "body");
+          Alert.alert("title", "body");
+          console.log("xxxxxxxxxxxxxxxxxxxxx");
 
-          if (data.message == "Session_end") {
-            await playSound("endTime");
-            setNewNote(data.message);
-          } else {
-            dispatch(setStoredLastNotification(data));
-            await myNotification();
-            setNewNote("You_have_new_notification");
+          // if (data.message == "Session_end") {
+          //   await playSound("endTime");
+          //   setNewNote(data.message);
+          // } else {
+          //   dispatch(setStoredLastNotification(data));
+          //   await myNotification();
+          //   setNewNote("You_have_new_notification");
 
-            setTimeout(() => {
-              setNewNote("");
-            }, 2000);
-          }
+          //   setTimeout(() => {
+          //     setNewNote("");
+          //   }, 2000);
+          // }
         });
         return () => newSocket.disconnect();
       }
@@ -218,27 +216,6 @@ function Wrapper({ children }) {
   //   })();
   // }, []);
 
-  useEffect(() => {
-    const registerForPushNotifications = async () => {
-      console.log("kkkkkkkkkkkkkk000000");
-      const { status } = await Notifications.requestPermissionsAsync();
-      console.log("kkkkkkkkkkkkkk0000001");
-      if (status !== "granted") {
-        alert("You need to enable permissions for notifications!");
-        return;
-      }
-
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log("kkkkkkkkkkkkkk0000002", token);
-      console.log("Push token:", token);
-
-      // Send the token to your backend server
-      const response = await expoRegister({ token });
-      console.log(response, "kkkkkkkkkkkkkk");
-    };
-
-    registerForPushNotifications();
-  }, []);
   return (
     <I18nextProvider>
       {preloader && <Loading />}
