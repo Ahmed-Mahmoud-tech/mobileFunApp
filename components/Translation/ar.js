@@ -39,7 +39,6 @@ export const ar = {
     name: "اسم",
     phone: "هاتف",
     save: "حفظ",
-    open_edit_mode: "فتح وضع التحرير",
     reject: "رفض",
     Accept: "قبول",
     no_requests_found: "لم يتم العثور على طلبات.",

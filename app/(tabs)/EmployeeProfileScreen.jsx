@@ -21,6 +21,8 @@ let start = 0;
 const EmployeeProfileScreen = () => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.user.userInfo);
+  console.log(user, "user");
+
   const [name, setName] = useState(user?.username || "");
   const [editMode, setEditMode] = useState(false);
   const [phone, setPhone] = useState(user?.phoneNumber || "");
@@ -107,7 +109,7 @@ const EmployeeProfileScreen = () => {
             onPress={handleEditToggle}
             style={styles.button}
           >
-            {editMode ? t("save") : t("open_edit_mode")}
+            {editMode ? t("save") : t("Edit")}
           </Button>
         </Card.Actions>
       </Card>

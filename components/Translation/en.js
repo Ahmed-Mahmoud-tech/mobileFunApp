@@ -39,7 +39,6 @@ export const en = {
     name: "Name",
     phone: "Phone",
     save: "Save",
-    open_edit_mode: "Open edit mode",
     reject: "Reject",
     Accept: "Accept",
     no_requests_found: "No requests found.",

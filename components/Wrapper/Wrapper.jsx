@@ -145,6 +145,8 @@ function Wrapper({ children }) {
         if (!user?.email) {
           const userInfo = await getUserInfo(userId);
           if (userInfo) {
+            console.log(userInfo.data, "userInfo.data");
+
             dispatch(setStoredUser(userInfo.data));
 
             userCheck(userInfo.data, realRoute);

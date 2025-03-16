@@ -45,12 +45,15 @@ const MainInfoScreen = ({}) => {
       roomName,
       location: "location",
     };
+
     await updateUser(user.id, data);
     if (isOwner) {
-      dispatch(setStoredUser({ ...user, type: "owner" }));
+      dispatch(setStoredUser({ ...user, ...data }));
       router.push("/OwnerProfileScreen");
     } else {
-      dispatch(setStoredUser({ ...user, type: "employee" }));
+      dispatch(
+        setStoredUser({ ...user, type: "employee", phoneNumber: phone })
+      );
       router.push("/EmployeeProfileScreen");
     }
     setLoading(false);
@@ -123,7 +126,7 @@ const MainInfoScreen = ({}) => {
           {isOwner && (
             <>
               <TextInput
-                label={t("room_name")}
+                label={t("place_name")}
                 value={roomName}
                 onChangeText={setRoomName}
                 style={styles.input}
